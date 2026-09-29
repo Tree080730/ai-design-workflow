@@ -15,7 +15,7 @@ AI Design Workflow separates two responsibilities:
 
 ## Status
 
-`v0.1.1` is an early working release. The CLI has automated tests and a React + Vite adapter. The Skills are valid and usable, but full agent-specific installation and real-project evaluations are still expanding.
+`v0.1.2` is an early working release. The CLI has automated tests, a React + Vite adapter, common E2E directory discovery, and risk-triggered user-flow verification guidance. Agent-specific installation and broader real-project evaluations will continue to expand.
 
 ## Quick start
 
@@ -63,6 +63,8 @@ Three core Skills form the decision layer:
 
 `rules-governance` is an optional review Skill for rule drift, token compliance, and design-documentation coverage.
 
+For high-risk changes involving routing, asynchronous recovery, cross-page state, persistence, or reversible actions, the Workflow requires verification of the complete state loop and prefers the project's existing E2E framework. Static styling changes do not require E2E by default. The CLI does not install test dependencies or download browser runtimes automatically.
+
 Install the needed directories under `skills/` using the Skill mechanism supported by your agent. Cloning this repository alone does not automatically register them.
 
 ## Generated project structure
@@ -84,6 +86,8 @@ DEV-WORKFLOW.md
 ```
 
 The Project Adapter is a cache and index. Source code and executable configuration remain authoritative.
+
+Scanning recognizes common `test/`, `tests/`, `e2e/`, `playwright/`, and `cypress/e2e/` directories and records them in the Adapter. Directory detection does not mean the tests have been executed or passed.
 
 ## Repository structure
 

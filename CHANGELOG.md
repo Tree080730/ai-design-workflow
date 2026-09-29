@@ -2,9 +2,14 @@
 
 ## Unreleased
 
+## 0.1.2
+
 - Added explicit grid, alignment-anchor, equal-height, baseline, and responsive-reordering requirements to Design System layout guidance and generated project templates.
 - Added mandatory desktop and narrow-screen geometry checks before proposal previews can be presented for confirmation.
 - Added layout geometry to the delivery quality checklist and regression coverage for generated layout contracts.
+- Added structural discovery for common E2E directories, including `e2e`, `playwright`, and `cypress/e2e`, with Adapter regression coverage.
+- Added risk-triggered E2E guidance for recovery, persistence, reversal, boundary states, browser runtime preparation, and accessible selectors.
+- Clarified that experimental and disposable benchmark projects may keep Design System assets in `candidate` status instead of producing premature stable documentation.
 
 ## 0.1.1
 

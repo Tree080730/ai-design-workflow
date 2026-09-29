@@ -38,6 +38,12 @@ node packages/cli/bin/design-workflow.mjs doctor /path/to/project
 
 Use `check --strict` in CI when any reported issue should fail the job.
 
+## 6. Verify high-risk flows
+
+Routing, asynchronous recovery, cross-page state, persistence, and reversible actions should be verified as complete user-state loops. Reuse the project's existing E2E framework when available; static styling changes do not require E2E by default.
+
+Test dependencies and browser runtimes are separate. For example, a Playwright project may still require an explicit `npx playwright install chromium` before its first run. The Harness does not perform that download automatically, and browser binaries, traces, and reports should remain local or in CI artifacts.
+
 ## Updating an existing project
 
 Run `scan` first. `init` preserves existing `RULES.md`, `DEV-WORKFLOW.md`, and design-system files unless `--force` is explicitly provided. The generated Project Adapter is refreshed because it is a cache of current project facts.

@@ -53,6 +53,35 @@ test('scan detects React and Vite', () => {
   }
 });
 
+test('scan and Adapter detect common end-to-end test directories', () => {
+  const root = temporaryProject();
+  try {
+    write(
+      root,
+      'package.json',
+      JSON.stringify({
+        name: 'e2e-fixture',
+        dependencies: { react: '^18.0.0' },
+        devDependencies: { vite: '^5.0.0', '@playwright/test': '^1.50.0' },
+        scripts: { dev: 'vite', 'test:e2e': 'playwright test' },
+      }),
+    );
+    write(root, 'src/App.tsx', 'export function App() { return <main />; }\n');
+    write(root, 'e2e/app.spec.ts', "test('flow', () => {});\n");
+    write(root, 'cypress/e2e/smoke.cy.ts', "describe('flow', () => {});\n");
+
+    const scan = scanProject(root);
+    assert.deepEqual(scan.conventions.tests, ['e2e', 'cypress/e2e']);
+
+    initProject(root);
+    const adapter = JSON.parse(fs.readFileSync(path.join(root, '.design-workflow/project-adapter.json'), 'utf8'));
+    assert.deepEqual(adapter.paths.tests, ['e2e', 'cypress/e2e']);
+    assert.equal(adapter.scripts['test:e2e'], 'playwright test');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('init writes missing artifacts and does not overwrite by default', () => {
   const root = temporaryProject();
   try {
@@ -65,6 +94,10 @@ test('init writes missing artifacts and does not overwrite by default', () => {
     assert.match(
       fs.readFileSync(path.join(root, 'design-system/layout.md'), 'utf8'),
       /Geometry and alignment contract/,
+    );
+    assert.match(
+      fs.readFileSync(path.join(root, 'DEV-WORKFLOW.md'), 'utf8'),
+      /verify the complete state loop/,
     );
     const adapter = JSON.parse(
       fs.readFileSync(path.join(root, '.design-workflow/project-adapter.json'), 'utf8'),
@@ -153,6 +186,10 @@ test('CLI init and doctor complete an end-to-end setup', () => {
     const initialized = spawnSync(process.execPath, [cli, 'init', root, '--json'], { encoding: 'utf8' });
     assert.equal(initialized.status, 0);
     assert.ok(JSON.parse(initialized.stdout).written.includes('RULES.md'));
+    assert.match(
+      fs.readFileSync(path.join(root, 'RULES.md'), 'utf8'),
+      /presence of a control alone is not evidence/,
+    );
 
     const diagnosed = spawnSync(process.execPath, [cli, 'doctor', root, '--json'], { encoding: 'utf8' });
     assert.equal(diagnosed.status, 0);

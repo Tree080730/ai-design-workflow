@@ -26,6 +26,9 @@ For a new page or component without a clear design reference, use the proposal w
 ## Delivery
 
 - Run `design-workflow check` plus the project build, lint, and tests when available.
+- For routing, asynchronous recovery, cross-page state, persistence, or reversible actions, verify the complete state loop: success, failure recovery, refresh persistence, reversal, and the final empty or boundary state.
+- Reuse the project's existing E2E framework. Installing a test package does not guarantee its browser runtime is installed; prepare that runtime explicitly and keep binaries and reports out of source control.
+- Static or styling-only changes do not require E2E unless they affect a critical interaction path.
 - Synchronize design-system documents and indexes.
 - Remove temporary previews.
 - Produce a delivery summary with decisions, files, verification, and known risks.

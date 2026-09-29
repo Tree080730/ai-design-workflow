@@ -24,6 +24,7 @@
 
 - Run the project build and available static checks.
 - Exercise the primary interaction path.
+- When a change affects recovery, persistence, cross-page state, or reversible actions, verify the resulting state after failure, refresh, retry, and reversal where applicable; the presence of a control alone is not evidence that the flow works.
 - Record unverified behavior in the delivery summary.
 
 ## Rule boundaries

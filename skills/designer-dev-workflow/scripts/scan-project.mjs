@@ -69,7 +69,7 @@ const result = {
     designSystem: ['design-system', 'docs/design-system', 'style-guide'].filter(isDirectory),
     components: ['src/components', 'app/components', 'components'].filter(isDirectory),
     pages: ['src/pages', 'app', 'pages'].filter(isDirectory),
-    tests: ['test', 'tests', '__tests__', 'src/__tests__'].filter(isDirectory),
+    tests: ['test', 'tests', '__tests__', 'src/__tests__', 'e2e', 'playwright', 'cypress/e2e'].filter(isDirectory),
   },
   note: 'This is a structural snapshot. Confirm real business code and executable commands before updating the Project Adapter.',
 };

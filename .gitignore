@@ -5,3 +5,5 @@ dist/
 .DS_Store
 .design-workflow/specs/*
 !.design-workflow/specs/.gitkeep
+.design-workflow/deliveries/*
+!.design-workflow/deliveries/.gitkeep

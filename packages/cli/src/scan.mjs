@@ -3,6 +3,7 @@ import path from 'node:path';
 import { listFiles, pathExists, readJson, toPosix } from './fs-utils.mjs';
 
 const SOURCE_ROOTS = ['src', 'app', 'pages', 'packages'];
+const TEST_ROOTS = ['test', 'tests', '__tests__', 'src/__tests__', 'e2e', 'playwright', 'cypress/e2e'];
 
 function existingDirectories(root, candidates) {
   return candidates.filter((relative) => {
@@ -96,7 +97,7 @@ export function scanProject(target = process.cwd()) {
       designSystem: existingDirectories(root, ['design-system', 'docs/design-system', 'style-guide']),
       components: existingDirectories(root, ['src/components', 'app/components', 'components']),
       pages: existingDirectories(root, ['src/pages', 'app', 'pages']),
-      tests: existingDirectories(root, ['test', 'tests', '__tests__', 'src/__tests__']),
+      tests: existingDirectories(root, TEST_ROOTS),
     },
     fileCount: sourceFiles.length,
     sourceFiles: sourceFiles.slice(0, 100).map((file) => toPosix(path.relative(root, file))),
