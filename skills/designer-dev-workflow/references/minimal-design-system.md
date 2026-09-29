@@ -24,7 +24,7 @@ design-system/
 - 至少定义正文/标题字号、基础间距和圆角。
 - 源码侧有唯一 token 入口，例如 `src/styles/tokens.css`。
 - `components/README.md` 和 `pages/README.md` 可以为空清单，但必须说明登记方式。
-- `layout.md` 记录容器、栅格或移动端基准。
+- `layout.md` 记录容器、栅格、跨列对齐锚点、需要等高的模块、关键基线与移动端重排规则；未知关系明确标记为待确认。
 - `interaction.md` 记录加载、空、错误、禁用和反馈模式。
 
 ## CSS 示例

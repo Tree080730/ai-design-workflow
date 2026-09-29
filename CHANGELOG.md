@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added explicit grid, alignment-anchor, equal-height, baseline, and responsive-reordering requirements to Design System layout guidance and generated project templates.
+- Added mandatory desktop and narrow-screen geometry checks before proposal previews can be presented for confirmation.
+- Added layout geometry to the delivery quality checklist and regression coverage for generated layout contracts.
+
 ## 0.1.1
 
 - Fixed first-run Adapter generation to use a post-initialization project scan.

@@ -62,6 +62,10 @@ test('init writes missing artifacts and does not overwrite by default', () => {
     assert.equal(fs.readFileSync(path.join(root, 'RULES.md'), 'utf8'), '# Existing rules\n');
     assert.ok(fs.existsSync(path.join(root, '.design-workflow/project-adapter.json')));
     assert.ok(fs.existsSync(path.join(root, 'design-system/tokens/colors.json')));
+    assert.match(
+      fs.readFileSync(path.join(root, 'design-system/layout.md'), 'utf8'),
+      /Geometry and alignment contract/,
+    );
     const adapter = JSON.parse(
       fs.readFileSync(path.join(root, '.design-workflow/project-adapter.json'), 'utf8'),
     );
