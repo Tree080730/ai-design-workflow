@@ -2,6 +2,40 @@ import path from 'node:path';
 import { pathExists, readJson } from './fs-utils.mjs';
 import { scanProject } from './scan.mjs';
 
+function normalized(value) {
+  if (Array.isArray(value)) return [...value].sort();
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, entry]) => [key, normalized(entry)]),
+    );
+  }
+  return value;
+}
+
+function adapterMismatches(adapter, scan) {
+  const comparisons = [
+    ['mode', adapter.mode, scan.mode],
+    ['adapter', adapter.adapter, scan.adapter],
+    ['packageManager', adapter.packageManager, scan.packageManager],
+    ['technologies', adapter.technologies, scan.technologySignals],
+    ['scripts', adapter.scripts, scan.scripts],
+  ];
+
+  const pathKeys = new Set([
+    ...Object.keys(adapter.paths || {}),
+    ...Object.keys(scan.conventions || {}),
+  ]);
+  for (const key of pathKeys) {
+    comparisons.push([`paths.${key}`, adapter.paths?.[key] || [], scan.conventions?.[key] || []]);
+  }
+
+  return comparisons
+    .filter(([, recorded, current]) => JSON.stringify(normalized(recorded)) !== JSON.stringify(normalized(current)))
+    .map(([field]) => field);
+}
+
 export function doctorProject(target = process.cwd()) {
   const scan = scanProject(target);
   const checks = [];
@@ -28,13 +62,14 @@ export function doctorProject(target = process.cwd()) {
   } else {
     try {
       const adapter = readJson(adapterPath);
+      const mismatches = adapterMismatches(adapter, scan);
       checks.push({
         name: 'project-adapter',
-        status: adapter.adapter === scan.adapter ? 'pass' : 'warn',
+        status: mismatches.length ? 'warn' : 'pass',
         message:
-          adapter.adapter === scan.adapter
+          mismatches.length === 0
             ? 'Project Adapter matches the current structural scan.'
-            : `Adapter records ${adapter.adapter}, but the current scan detects ${scan.adapter}.`,
+            : `Project Adapter is stale. Changed fields: ${mismatches.join(', ')}. Run design-workflow init to refresh the generated Adapter without replacing existing project files.`,
       });
     } catch (error) {
       checks.push({ name: 'project-adapter', status: 'error', message: error.message });

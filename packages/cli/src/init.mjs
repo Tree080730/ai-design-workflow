@@ -32,8 +32,9 @@ function copyTemplate(sourceRelative, targetPath, force) {
 export function initProject(target = process.cwd(), options = {}) {
   const root = path.resolve(target);
   fs.mkdirSync(root, { recursive: true });
-  const scan = scanProject(root);
+  const initialScan = scanProject(root);
   const written = [];
+  const updated = [];
   const skipped = [];
 
   for (const [source, destination] of TEMPLATE_FILES) {
@@ -43,31 +44,11 @@ export function initProject(target = process.cwd(), options = {}) {
 
   const stateDirectory = path.join(root, '.design-workflow');
   fs.mkdirSync(path.join(stateDirectory, 'specs'), { recursive: true });
-  const adapterPath = path.join(stateDirectory, 'project-adapter.json');
-  if (!pathExists(adapterPath) || options.force) {
-    writeJson(adapterPath, {
-      schemaVersion: 1,
-      harnessVersion: VERSION,
-      projectName: scan.projectName,
-      mode: scan.mode,
-      adapter: scan.adapter,
-      packageManager: scan.packageManager,
-      technologies: scan.technologySignals,
-      scripts: scan.scripts,
-      paths: scan.conventions,
-      verifiedAt: scan.scannedAt,
-      source: 'Generated from a structural scan. Source code and configuration remain authoritative.',
-    });
-    written.push('.design-workflow/project-adapter.json');
-  } else {
-    skipped.push('.design-workflow/project-adapter.json');
-  }
-
   const configPath = path.join(stateDirectory, 'config.json');
   if (!pathExists(configPath) || options.force) {
     writeJson(configPath, {
       schemaVersion: 1,
-      adapter: scan.adapter,
+      adapter: initialScan.adapter,
       strictChecks: false,
       designSystemDirectory: 'design-system',
     });
@@ -76,5 +57,33 @@ export function initProject(target = process.cwd(), options = {}) {
     skipped.push('.design-workflow/config.json');
   }
 
-  return { root, mode: scan.mode, adapter: scan.adapter, written, skipped };
+  const refreshedScan = scanProject(root);
+  const adapterPath = path.join(stateDirectory, 'project-adapter.json');
+  const adapterExisted = pathExists(adapterPath);
+  writeJson(adapterPath, {
+    schemaVersion: 1,
+    harnessVersion: VERSION,
+    projectName: refreshedScan.projectName,
+    mode: refreshedScan.mode,
+    adapter: refreshedScan.adapter,
+    packageManager: refreshedScan.packageManager,
+    technologies: refreshedScan.technologySignals,
+    scripts: refreshedScan.scripts,
+    paths: {
+      ...refreshedScan.conventions,
+      projectAdapter: ['.design-workflow/project-adapter.json'],
+    },
+    verifiedAt: refreshedScan.scannedAt,
+    source: 'Generated from a structural scan. Source code and configuration remain authoritative.',
+  });
+  (adapterExisted ? updated : written).push('.design-workflow/project-adapter.json');
+
+  return {
+    root,
+    mode: refreshedScan.mode,
+    adapter: refreshedScan.adapter,
+    written,
+    updated,
+    skipped,
+  };
 }

@@ -14,7 +14,7 @@ Use `--json` when another tool or agent will consume the result.
 node packages/cli/bin/design-workflow.mjs init /path/to/project
 ```
 
-The command creates only missing files. Review generated starter tokens and replace them with product evidence before treating them as design decisions.
+The command creates only missing project files and refreshes the generated Project Adapter. Review starter tokens and replace them with product evidence before treating them as design decisions.
 
 ## 3. Install Skills
 
@@ -40,4 +40,4 @@ Use `check --strict` in CI when any reported issue should fail the job.
 
 ## Updating an existing project
 
-Run `scan` first. `init` will preserve existing `RULES.md`, `DEV-WORKFLOW.md`, design-system files, and Harness state unless `--force` is explicitly provided.
+Run `scan` first. `init` preserves existing `RULES.md`, `DEV-WORKFLOW.md`, and design-system files unless `--force` is explicitly provided. The generated Project Adapter is refreshed because it is a cache of current project facts.

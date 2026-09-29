@@ -47,6 +47,7 @@ function printInit(result) {
   console.log(`Initialized ${result.root}`);
   console.log(`Mode: ${result.mode}; adapter: ${result.adapter}`);
   console.log(`Written: ${result.written.length ? result.written.join(', ') : 'none'}`);
+  console.log(`Updated: ${result.updated.length ? result.updated.join(', ') : 'none'}`);
   console.log(`Skipped: ${result.skipped.length ? result.skipped.join(', ') : 'none'}`);
 }
 

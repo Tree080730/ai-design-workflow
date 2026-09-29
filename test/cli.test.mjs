@@ -62,9 +62,17 @@ test('init writes missing artifacts and does not overwrite by default', () => {
     assert.equal(fs.readFileSync(path.join(root, 'RULES.md'), 'utf8'), '# Existing rules\n');
     assert.ok(fs.existsSync(path.join(root, '.design-workflow/project-adapter.json')));
     assert.ok(fs.existsSync(path.join(root, 'design-system/tokens/colors.json')));
+    const adapter = JSON.parse(
+      fs.readFileSync(path.join(root, '.design-workflow/project-adapter.json'), 'utf8'),
+    );
+    assert.deepEqual(adapter.paths.rules, ['RULES.md']);
+    assert.deepEqual(adapter.paths.developmentWorkflow, ['DEV-WORKFLOW.md']);
+    assert.deepEqual(adapter.paths.projectAdapter, ['.design-workflow/project-adapter.json']);
+    assert.deepEqual(adapter.paths.designSystem, ['design-system']);
 
     const second = initProject(root);
-    assert.ok(second.skipped.includes('.design-workflow/project-adapter.json'));
+    assert.ok(second.updated.includes('.design-workflow/project-adapter.json'));
+    assert.equal(fs.readFileSync(path.join(root, 'RULES.md'), 'utf8'), '# Existing rules\n');
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -94,7 +102,27 @@ test('doctor is healthy after init', () => {
     initProject(root);
     const result = doctorProject(root);
     assert.equal(result.healthy, true);
-    assert.ok(result.checks.every((entry) => entry.status !== 'error'));
+    assert.ok(result.checks.every((entry) => entry.status === 'pass'));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('doctor reports an Adapter that drifted from the project', () => {
+  const root = temporaryProject();
+  try {
+    initProject(root);
+    fs.mkdirSync(path.join(root, 'src/components'), { recursive: true });
+    const result = doctorProject(root);
+    const adapterCheck = result.checks.find((entry) => entry.name === 'project-adapter');
+    assert.equal(adapterCheck.status, 'warn');
+    assert.match(adapterCheck.message, /paths\.components/);
+
+    const refreshed = initProject(root);
+    assert.ok(refreshed.updated.includes('.design-workflow/project-adapter.json'));
+    const afterRefresh = doctorProject(root);
+    const refreshedCheck = afterRefresh.checks.find((entry) => entry.name === 'project-adapter');
+    assert.equal(refreshedCheck.status, 'pass');
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

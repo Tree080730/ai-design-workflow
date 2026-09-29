@@ -15,7 +15,7 @@ AI Design Workflow separates two responsibilities:
 
 ## Status
 
-`v0.1.0` is an early working release. The CLI has automated tests and a React + Vite adapter. The Skills are valid and usable, but full agent-specific installation and real-project evaluations are still expanding.
+`v0.1.1` is an early working release. The CLI has automated tests and a React + Vite adapter. The Skills are valid and usable, but full agent-specific installation and real-project evaluations are still expanding.
 
 ## Quick start
 
@@ -40,14 +40,14 @@ npx ai-design-workflow check
 npx ai-design-workflow doctor
 ```
 
-`init` creates only missing files by default. `init --force` explicitly allows managed starter files to be replaced. `check --strict` exits non-zero when issues are found.
+`init` creates only missing project files by default and safely refreshes the generated Project Adapter. `init --force` explicitly allows managed starter files to be replaced. `check --strict` exits non-zero when issues are found.
 
 ## Commands
 
 | Command | Purpose | Writes files |
 |---|---|---|
 | `scan` | Detect stack, project mode, commands, paths, and adapter | No |
-| `init` | Create workflow state, rules, and a minimal design system | Yes, missing files only |
+| `init` | Create workflow assets and refresh the generated Adapter | Yes; existing project files are preserved unless `--force` is used |
 | `check` | Report hardcoded colors and missing design documentation | No |
 | `doctor` | Diagnose runtime and project workflow setup | No |
 
