@@ -1,0 +1,32 @@
+{
+  "name": "ai-design-workflow",
+  "version": "0.1.0",
+  "description": "A lightweight, agent-agnostic harness for design-system-aware AI development workflows.",
+  "type": "module",
+  "bin": {
+    "design-workflow": "bin/design-workflow.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates",
+    "adapters",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "ai",
+    "design-system",
+    "workflow",
+    "agent",
+    "cli"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tree080730/ai-design-workflow.git",
+    "directory": "packages/cli"
+  }
+}

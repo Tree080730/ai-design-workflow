@@ -1,0 +1,20 @@
+{
+  "name": "react-vite",
+  "detect": {
+    "dependencies": ["react"],
+    "devDependenciesAny": ["vite"],
+    "filesAny": ["vite.config.ts", "vite.config.js", "vite.config.mts"]
+  },
+  "recommendedPaths": {
+    "pages": "src/pages",
+    "components": "src/components",
+    "styles": "src/styles",
+    "designSystem": "design-system"
+  },
+  "recommendedScripts": {
+    "development": "dev",
+    "build": "build",
+    "lint": "lint",
+    "test": "test"
+  }
+}

@@ -21,9 +21,9 @@ description: 面向设计与前端交付的通用协同流程。用于启动新�
 - 没有真实业务骨架：0-1 模式。
 - 已有真实业务代码：已有项目模式，即使规则或设计系统缺失。
 
-无 Adapter 时按 [Project Adapter 模板](references/project-adapter-template.md) 生成快照；可先运行 `node scripts/scan-project.mjs <项目目录>` 获取客观扫描结果。已有 Adapter 时核验关键命令和目录。发现差异先展示变化，再更新索引。
+优先运行 `design-workflow scan <项目目录> --json` 获取客观扫描结果；CLI 不可用时运行 `node scripts/scan-project.mjs <项目目录>`。无 Adapter 时由 `design-workflow init` 生成 `.design-workflow/project-adapter.json`，或按 [Project Adapter 模板](references/project-adapter-template.md) 手工生成。已有 Adapter 时核验关键命令和目录。发现差异先展示变化，再更新索引。
 
-0-1 模式先确认目标平台和技术方案，再建立：项目骨架、最小设计系统、项目规则、开发流程和 Adapter。读取 [最小设计系统](references/minimal-design-system.md)、[RULES 模板](references/rules-template.md) 与 [DEV-WORKFLOW 模板](references/dev-workflow-template.md)；设计系统需要完整定义时调用 `design-system-builder`。
+0-1 模式先确认目标平台和技术方案，再建立：项目骨架、最小设计系统、项目规则、开发流程和 Adapter。优先通过 `design-workflow init` 创建缺失资产；CLI 不可用时读取 [最小设计系统](references/minimal-design-system.md)、[RULES 模板](references/rules-template.md) 与 [DEV-WORKFLOW 模板](references/dev-workflow-template.md)。设计系统需要完整定义时调用 `design-system-builder`。
 
 React + Vite 项目可读取 [Adapter 示例](references/react-vite-adapter-example.md)，但必须用真实扫描结果替换示例值。
 
@@ -46,7 +46,7 @@ React + Vite 项目可读取 [Adapter 示例](references/react-vite-adapter-exam
 
 可追加组件库、动效、工程、文档等专项标签。
 
-任何会修改代码、样式、配置或文档的任务，先生成 [技术方案模板](references/solution-spec-template.md)，至少说明：路径、复用判断、改动范围、风险和验收标准。得到用户明确确认后再实现。
+任何会修改代码、样式、配置或文档的任务，先在 `.design-workflow/specs/` 中按 [技术方案模板](references/solution-spec-template.md) 生成 spec，至少说明：路径、复用判断、改动范围、风险和验收标准。得到用户明确确认后再实现。
 
 ## Phase 3：没有明确设计稿时选方案
 
@@ -63,7 +63,7 @@ React + Vite 项目可读取 [Adapter 示例](references/react-vite-adapter-exam
 
 ## Phase 5：质量检查
 
-至少检查：运行/构建、核心交互、设计系统复用、视觉预览、代码规范、共享影响、文档完整性和未验证风险。使用 [质量检查模板](references/quality-check-template.md) 输出结果。
+先运行 `design-workflow check`，再检查运行/构建、核心交互、设计系统复用、视觉预览、代码规范、共享影响、文档完整性和未验证风险。使用 [质量检查模板](references/quality-check-template.md) 输出结果。
 
 ## Phase 6：交付沉淀
 

@@ -1,0 +1,26 @@
+:root {
+  --example-background: #ffffff;
+  --example-text: #111827;
+  --example-action: #2563eb;
+}
+
+body {
+  margin: 0;
+  background: var(--example-background);
+  color: var(--example-text);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.example-shell {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+button {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--example-action);
+  color: var(--example-background);
+}

@@ -50,7 +50,7 @@
 ## 7. 索引
 
 - 开发路径：`DEV-WORKFLOW.md`
-- 项目映射：`.agent/project-adapter.md`
+- 项目映射：`.design-workflow/project-adapter.json`
 - 设计系统：`design-system/README.md`
 ```
 

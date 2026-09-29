@@ -31,7 +31,7 @@
 4. 新增资产并同步文档。
 
 ## 交付
-- Spec：.agent/specs/{date}-{slug}.md
+- Spec：.design-workflow/specs/{date}-{slug}.md
 - 预览：npm run dev 输出的实际地址
 - 交付文档：deliverables/{date}-{slug}/TASK-SUMMARY.md
 ```

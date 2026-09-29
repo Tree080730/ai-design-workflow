@@ -61,7 +61,11 @@ const result = {
   conventions: {
     rules: ['RULES.md', 'docs/RULES.md'].filter(exists),
     developmentWorkflow: ['DEV-WORKFLOW.md', 'docs/DEV-WORKFLOW.md'].filter(exists),
-    projectAdapter: ['.agent/project-adapter.md', '.codex/project-adapter.md'].filter(exists),
+    projectAdapter: [
+      '.design-workflow/project-adapter.json',
+      '.agent/project-adapter.md',
+      '.codex/project-adapter.md',
+    ].filter(exists),
     designSystem: ['design-system', 'docs/design-system', 'style-guide'].filter(isDirectory),
     components: ['src/components', 'app/components', 'components'].filter(isDirectory),
     pages: ['src/pages', 'app', 'pages'].filter(isDirectory),

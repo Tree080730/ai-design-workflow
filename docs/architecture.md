@@ -1,14 +1,29 @@
 # 架构说明
 
-## 1. 三层职责
+## 1. Harness 与 Skills 的职责
 
 | 层 | 解决的问题 | 典型输入 | 主要输出 |
 |---|---|---|---|
+| Harness | 哪些操作必须确定、可重复、可测试 | 代码仓库、CLI 参数 | 扫描结果、初始化文件、检查与诊断 |
 | Workflow | 一次需求应按什么顺序完成 | 用户需求、代码仓库 | Adapter、方案 spec、实现、检查报告、交付记录 |
 | Design System | 页面应遵循什么视觉与组件规则 | PRD、现有页面、截图、品牌信息 | tokens、布局、交互、组件和页面规范 |
 | Proposal | 没有明确设计稿时如何选择方向 | 需求、设计系统、现有组件 | 方案摘要、选中方案预览、决策记录 |
 
 `rules-governance` 位于检查层：它验证前三层产物是否保持一致，但不参与普通需求的方案决策。
+
+```text
+CLI Harness
+├─ scan：只读识别项目
+├─ init：非覆盖式创建运行资产
+├─ check：确定性规则检查
+└─ doctor：环境与状态诊断
+        ↓ 提供事实与工具
+Skills
+├─ Workflow：编排
+├─ Design System：设计约束
+├─ Proposal：方案决策
+└─ Rules Governance：语义审查
+```
 
 ## 2. Project Adapter 的定位
 
@@ -56,8 +71,8 @@ Adapter 不是事实来源，而是项目事实的结构化索引：
 
 - `RULES.md`：项目长期有效的强制约束和索引。
 - `DEV-WORKFLOW.md`：不同需求类型在该项目中的具体落点。
-- `.agent/project-adapter.md`：技术栈、目录、命令和预览入口缓存。
-- `.agent/specs/*.md`：单次需求的技术方案与确认记录。
+- `.design-workflow/project-adapter.json`：技术栈、目录、命令和预览入口缓存。
+- `.design-workflow/specs/*.md`：单次需求的技术方案与确认记录。
 - `design-system/`：tokens、组件、页面、布局和交互规则。
 - `deliverables/`：检查结果与交付说明。
 

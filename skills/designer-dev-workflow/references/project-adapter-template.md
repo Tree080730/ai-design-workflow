@@ -1,6 +1,8 @@
-# Project Adapter
+# Project Adapter（CLI 不可用时的手工模板）
 
 > Adapter 是项目事实的索引，不是事实来源。记录核验日期；冲突时以源码、配置和可执行结果为准。
+
+Harness 默认使用 `.design-workflow/project-adapter.json`。本文件用于人工生成等价内容时确认字段范围。
 
 ## 项目概况
 

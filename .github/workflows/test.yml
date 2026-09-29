@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm install --ignore-scripts
+      - run: npm run validate
+      - run: npm ci --ignore-scripts
+        working-directory: examples/react-vite
+      - run: npm run build
+        working-directory: examples/react-vite
+      - run: npm audit --audit-level=moderate
+        working-directory: examples/react-vite

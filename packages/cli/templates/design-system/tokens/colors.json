@@ -1,0 +1,16 @@
+{
+  "primitive": {
+    "neutral-0": "#ffffff",
+    "neutral-100": "#f3f4f6",
+    "neutral-600": "#4b5563",
+    "neutral-900": "#111827",
+    "accent-600": "#2563eb"
+  },
+  "semantic": {
+    "background-default": "{primitive.neutral-0}",
+    "background-subtle": "{primitive.neutral-100}",
+    "text-primary": "{primitive.neutral-900}",
+    "text-secondary": "{primitive.neutral-600}",
+    "action-primary": "{primitive.accent-600}"
+  }
+}

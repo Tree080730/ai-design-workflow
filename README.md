@@ -1,76 +1,117 @@
-# AI Design Workflow Skills
+# AI Design Workflow
 
-一套与公司、业务和具体工具无关的 AI 协同设计开发方法。它把稳定交付拆成三个职责明确、按需协作的核心 Skill：
+[中文](README.zh-CN.md)
 
-1. `designer-dev-workflow`：控制从项目识别到交付沉淀的主流程。
-2. `design-system-builder`：把视觉决策沉淀为可复用、可检查的设计约束。
-3. `proposal-with-preview`：在没有明确设计稿时，以渐进方式生成、预览并选择方案。
+An open-source, agent-agnostic harness for design-system-aware AI development. It combines deterministic project tooling with installable Skills for judgment-heavy design and delivery decisions.
 
-另有一个支撑 Skill：`rules-governance`，用于检查规则、token、设计系统文档与源码是否发生漂移。它不是主链路入口，只在检查阶段或用户明确要求巡检时使用。
+## Why
 
-## 核心链路
+AI agents can understand a repository, but repeated delivery becomes unreliable when project discovery, design rules, previews, checks, and handoff depend on memory alone.
 
-```text
-用户需求
-  ↓
-Designer Dev Workflow
-  ├─ 项目识别：0-1 / 已有项目
-  ├─ Project Adapter：把项目差异翻译为统一上下文
-  ├─ Design System Builder：缺少或需要更新设计约束时调用
-  ├─ Proposal With Preview：无明确设计稿且存在多种方案时调用
-  ├─ 小步实现与验证
-  ├─ Rules Governance：按需巡检规则与 token
-  └─ 质量检查与交付沉淀
+AI Design Workflow separates two responsibilities:
+
+- **Harness:** deterministic scanning, initialization, checks, diagnostics, state, and templates.
+- **Skills:** requirement interpretation, route selection, design-system reasoning, proposals, and rule governance.
+
+## Status
+
+`v0.1.0` is an early working release. The CLI has automated tests and a React + Vite adapter. The Skills are valid and usable, but full agent-specific installation and real-project evaluations are still expanding.
+
+## Quick start
+
+Requirements: Node.js 18 or newer.
+
+From a clone:
+
+```bash
+npm install
+node packages/cli/bin/design-workflow.mjs scan /path/to/project
+node packages/cli/bin/design-workflow.mjs init /path/to/project
+node packages/cli/bin/design-workflow.mjs check /path/to/project
+node packages/cli/bin/design-workflow.mjs doctor /path/to/project
 ```
 
-三个 Skill 不应合并：主流程负责“何时做什么”，设计系统负责“依据什么设计”，多方案预览负责“信息不足时如何决策”。它们可以独立演进，也可以由主流程按条件调用。
+After an npm release, the intended interface is:
 
-## 目录
-
-```text
-skills/
-├── designer-dev-workflow/
-│   ├── SKILL.md
-│   ├── scripts/scan-project.mjs
-│   └── references/
-├── design-system-builder/
-│   ├── SKILL.md
-│   └── references/
-├── proposal-with-preview/
-│   ├── SKILL.md
-│   └── assets/
-└── rules-governance/
-    ├── SKILL.md
-    └── references/
-docs/
-├── architecture.md
-└── sanitization-report.md
+```bash
+npx ai-design-workflow scan
+npx ai-design-workflow init
+npx ai-design-workflow check
+npx ai-design-workflow doctor
 ```
 
-## 使用方式
+`init` creates only missing files by default. `init --force` explicitly allows managed starter files to be replaced. `check --strict` exits non-zero when issues are found.
 
-- 新项目：先由主流程识别项目状态，再建立最小设计系统和项目规则。
-- 已有项目：先生成或校验 Project Adapter，再按实际需求进入修改链路。
-- 新页面且没有设计稿：主流程调用多方案预览 Skill。
-- 已有明确设计稿：跳过多方案探索，直接按设计系统和项目规则实现。
-- 仅修改既有样式或 token：直接进入对应路径，不必调用多方案预览。
-- 检查规则、硬编码或文档覆盖度：单独调用 `rules-governance`。
+## Commands
 
-## 安装
+| Command | Purpose | Writes files |
+|---|---|---|
+| `scan` | Detect stack, project mode, commands, paths, and adapter | No |
+| `init` | Create workflow state, rules, and a minimal design system | Yes, missing files only |
+| `check` | Report hardcoded colors and missing design documentation | No |
+| `doctor` | Diagnose runtime and project workflow setup | No |
 
-将需要的 Skill 目录复制到 Agent 的 Skill 目录，或使用支持从 Git 仓库路径安装 Skill 的安装器分别安装：
+All commands support `--json` for machine-readable output.
+
+## Skills
+
+Three core Skills form the decision layer:
+
+1. `designer-dev-workflow` — orchestrates project discovery, specification, implementation, verification, and delivery.
+2. `design-system-builder` — extracts and maintains executable design constraints.
+3. `proposal-with-preview` — supports progressive multi-direction decisions when no clear design input exists.
+
+`rules-governance` is an optional review Skill for rule drift, token compliance, and design-documentation coverage.
+
+Install the needed directories under `skills/` using the Skill mechanism supported by your agent. Cloning this repository alone does not automatically register them.
+
+## Generated project structure
 
 ```text
-skills/designer-dev-workflow
-skills/design-system-builder
-skills/proposal-with-preview
-skills/rules-governance
+.design-workflow/
+├── config.json
+├── project-adapter.json
+└── specs/
+design-system/
+├── README.md
+├── tokens/
+├── components/
+├── pages/
+├── layout.md
+└── interaction.md
+RULES.md
+DEV-WORKFLOW.md
 ```
 
-安装后三个核心 Skill 应同时可被发现；`rules-governance` 可选。仅克隆本仓库不会自动注册 Skill，具体安装位置以所使用的 Agent 运行时为准。
+The Project Adapter is a cache and index. Source code and executable configuration remain authoritative.
 
-具体阶段、触发条件和产物见 [架构说明](docs/architecture.md)。
+## Repository structure
 
-## 公开版边界
+```text
+packages/cli/          Deterministic CLI harness
+skills/                Agent decision Skills
+examples/react-vite/   First supported adapter example
+test/                  Observable CLI behavior tests
+docs/                  Architecture and concepts
+```
 
-本仓库只保留通用方法、模板和决策逻辑，不包含任何原项目业务代码、公司名称、内部域名、人员信息、专有组件库、内部工具或真实业务案例。
+## Safety and scope
+
+- The CLI does not upload project content.
+- It does not generate production business code.
+- It does not silently convert one-off preferences into long-term rules.
+- It does not overwrite existing managed files unless `--force` is supplied.
+- Proposal assets are static scaffolds and must not contain production APIs or side effects.
+
+## Development
+
+```bash
+npm install
+npm run validate
+```
+
+See [Quick Start](docs/quick-start.md), [Architecture](docs/architecture.md), and [Contributing](CONTRIBUTING.md).
+
+## License
+
+[MIT](LICENSE)
