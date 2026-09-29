@@ -30,6 +30,8 @@ description: 用于从产品上下文、现有界面、截图、结构化设计�
 
 先完成核心 tokens 并确认，再继续组件和页面，避免后续规则建立在不稳定基础上。
 
+需要确定产品调性和取舍准则时读取 [设计原则模板](references/design-principles.md)；需要机器可读 token 时从 [Token 模板](references/design-tokens-template.json) 开始。
+
 ## 3. 建立结构
 
 ```text
@@ -50,11 +52,11 @@ design-system/
     └── page-name.md
 ```
 
-`README.md` 只做入口和索引；细节按需分散到 tokens、组件和页面文件，支持渐进读取。
+`README.md` 只做入口和索引；细节按需分散到 tokens、组件和页面文件，支持渐进读取。完整文件职责见 [输出结构](references/output-structure.md)。
 
 ## 4. 组件与页面规范
 
-每个组件至少记录：用途、结构、变体、状态、属性、交互、可访问性、token 引用和使用边界。
+每个组件至少记录：用途、结构、变体、状态、属性、交互、可访问性、token 引用和使用边界。创建具体文档时读取 [组件规范模板](references/component-template.md)。
 
 每个页面至少记录：结构层级、区块、组件映射、间距、状态、交互、跨页面契约和异常场景。
 

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "color": {
+    "primitive": {
+      "neutral-0": { "$value": "#ffffff", "$type": "color" },
+      "neutral-900": { "$value": "#111827", "$type": "color" },
+      "accent-600": { "$value": "#2563eb", "$type": "color" }
+    },
+    "semantic": {
+      "background-default": { "$value": "{color.primitive.neutral-0}", "$type": "color" },
+      "text-primary": { "$value": "{color.primitive.neutral-900}", "$type": "color" },
+      "action-primary": { "$value": "{color.primitive.accent-600}", "$type": "color" }
+    }
+  },
+  "space": {
+    "primitive": {
+      "1": { "$value": "0.25rem", "$type": "dimension" },
+      "2": { "$value": "0.5rem", "$type": "dimension" },
+      "4": { "$value": "1rem", "$type": "dimension" }
+    },
+    "semantic": {
+      "component-gap": { "$value": "{space.primitive.2}", "$type": "dimension" },
+      "section-gap": { "$value": "{space.primitive.4}", "$type": "dimension" }
+    }
+  }
+}

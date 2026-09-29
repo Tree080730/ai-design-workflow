@@ -21,9 +21,11 @@ description: 面向设计与前端交付的通用协同流程。用于启动新�
 - 没有真实业务骨架：0-1 模式。
 - 已有真实业务代码：已有项目模式，即使规则或设计系统缺失。
 
-无 Adapter 时按 [Project Adapter 模板](references/project-adapter-template.md) 生成快照；已有 Adapter 时核验关键命令和目录。发现差异先展示变化，再更新索引。
+无 Adapter 时按 [Project Adapter 模板](references/project-adapter-template.md) 生成快照；可先运行 `node scripts/scan-project.mjs <项目目录>` 获取客观扫描结果。已有 Adapter 时核验关键命令和目录。发现差异先展示变化，再更新索引。
 
-0-1 模式先确认目标平台和技术方案，再建立：项目骨架、最小设计系统、项目规则、开发流程和 Adapter。设计系统需要完整定义时调用 `design-system-builder`。
+0-1 模式先确认目标平台和技术方案，再建立：项目骨架、最小设计系统、项目规则、开发流程和 Adapter。读取 [最小设计系统](references/minimal-design-system.md)、[RULES 模板](references/rules-template.md) 与 [DEV-WORKFLOW 模板](references/dev-workflow-template.md)；设计系统需要完整定义时调用 `design-system-builder`。
+
+React + Vite 项目可读取 [Adapter 示例](references/react-vite-adapter-example.md)，但必须用真实扫描结果替换示例值。
 
 ## Phase 1：理解需求
 
@@ -65,7 +67,7 @@ description: 面向设计与前端交付的通用协同流程。用于启动新�
 
 ## Phase 6：交付沉淀
 
-输出变更摘要、文件清单、关键决策、交互链路、验证结果、设计系统同步情况、已知问题和后续建议。
+按 [交付文档模板](references/delivery-template.md) 输出变更摘要、文件清单、关键决策、交互链路、验证结果、设计系统同步情况、已知问题和后续建议。
 
 ## 子 Skill 编排
 
@@ -73,5 +75,6 @@ description: 面向设计与前端交付的通用协同流程。用于启动新�
 |---|---|---|
 | `design-system-builder` | 设计约束缺失、混乱或需要系统化更新 | 使用最小 token 与组件规则 |
 | `proposal-with-preview` | 无明确设计稿且存在多种合理方案 | 输出精简文本方案并等待选择 |
+| `rules-governance` | 用户要求规则巡检，或高影响变更后的完整检查 | 按质量检查模板人工核对 |
 
 子 Skill 是按需增强，不应成为主流程能否运行的硬依赖。

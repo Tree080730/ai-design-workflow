@@ -1,10 +1,12 @@
 # AI Design Workflow Skills
 
-一套与公司、业务和具体工具无关的 AI 协同设计开发方法。它把稳定交付拆成三个职责明确、按需协作的 Skill：
+一套与公司、业务和具体工具无关的 AI 协同设计开发方法。它把稳定交付拆成三个职责明确、按需协作的核心 Skill：
 
 1. `designer-dev-workflow`：控制从项目识别到交付沉淀的主流程。
 2. `design-system-builder`：把视觉决策沉淀为可复用、可检查的设计约束。
 3. `proposal-with-preview`：在没有明确设计稿时，以渐进方式生成、预览并选择方案。
+
+另有一个支撑 Skill：`rules-governance`，用于检查规则、token、设计系统文档与源码是否发生漂移。它不是主链路入口，只在检查阶段或用户明确要求巡检时使用。
 
 ## 核心链路
 
@@ -17,6 +19,7 @@ Designer Dev Workflow
   ├─ Design System Builder：缺少或需要更新设计约束时调用
   ├─ Proposal With Preview：无明确设计稿且存在多种方案时调用
   ├─ 小步实现与验证
+  ├─ Rules Governance：按需巡检规则与 token
   └─ 质量检查与交付沉淀
 ```
 
@@ -28,11 +31,17 @@ Designer Dev Workflow
 skills/
 ├── designer-dev-workflow/
 │   ├── SKILL.md
+│   ├── scripts/scan-project.mjs
 │   └── references/
 ├── design-system-builder/
-│   └── SKILL.md
-└── proposal-with-preview/
-    └── SKILL.md
+│   ├── SKILL.md
+│   └── references/
+├── proposal-with-preview/
+│   ├── SKILL.md
+│   └── assets/
+└── rules-governance/
+    ├── SKILL.md
+    └── references/
 docs/
 ├── architecture.md
 └── sanitization-report.md
@@ -45,6 +54,20 @@ docs/
 - 新页面且没有设计稿：主流程调用多方案预览 Skill。
 - 已有明确设计稿：跳过多方案探索，直接按设计系统和项目规则实现。
 - 仅修改既有样式或 token：直接进入对应路径，不必调用多方案预览。
+- 检查规则、硬编码或文档覆盖度：单独调用 `rules-governance`。
+
+## 安装
+
+将需要的 Skill 目录复制到 Agent 的 Skill 目录，或使用支持从 Git 仓库路径安装 Skill 的安装器分别安装：
+
+```text
+skills/designer-dev-workflow
+skills/design-system-builder
+skills/proposal-with-preview
+skills/rules-governance
+```
+
+安装后三个核心 Skill 应同时可被发现；`rules-governance` 可选。仅克隆本仓库不会自动注册 Skill，具体安装位置以所使用的 Agent 运行时为准。
 
 具体阶段、触发条件和产物见 [架构说明](docs/architecture.md)。
 

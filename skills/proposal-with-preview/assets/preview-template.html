@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proposal Preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        background: #f3f4f6;
+        color: #111827;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 32px; }
+      .preview-shell { max-width: 1200px; margin: 0 auto; }
+      .preview-header { margin-bottom: 24px; }
+      .preview-header h1 { margin: 0 0 8px; font-size: 24px; }
+      .preview-header p { margin: 0; color: #6b7280; }
+      .proposal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        align-items: start;
+      }
+      .proposal { min-width: 0; }
+      .proposal-meta { display: flex; justify-content: space-between; margin-bottom: 8px; }
+      .proposal-name { font-weight: 700; }
+      .proposal-note { color: #6b7280; font-size: 13px; }
+      .device {
+        width: min(100%, 375px);
+        min-height: 667px;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 10px solid #111827;
+        border-radius: 32px;
+        background: #ffffff;
+        box-shadow: 0 20px 45px rgba(17, 24, 39, 0.18);
+      }
+      .proposal-content { min-height: 647px; padding: 20px; }
+      .placeholder {
+        display: grid;
+        min-height: 607px;
+        place-items: center;
+        border: 1px dashed #d1d5db;
+        border-radius: 16px;
+        color: #6b7280;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="preview-shell">
+      <header class="preview-header">
+        <h1>方案预览</h1>
+        <p>只保留用户已选择的方案；使用项目 token 和静态模拟数据。</p>
+      </header>
+      <section class="proposal-grid">
+        <article class="proposal">
+          <div class="proposal-meta">
+            <span class="proposal-name">方案名称</span>
+            <span class="proposal-note">复用度 / 成本 / 风险</span>
+          </div>
+          <div class="device">
+            <div class="proposal-content">
+              <div class="placeholder">在这里替换为静态方案内容</div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
