@@ -2,107 +2,73 @@
 
 [English](README.md)
 
-一套面向 AI 协同设计开发的开源 Harness。它把确定性的工程操作交给 CLI，把需求理解、设计判断与方案取舍交给可安装的 Skills。
+一套运行在成熟 coding Agent 中的 **Design Harness**。通过 Skills 帮助 Agent 建立或读取设计约束、复用组件、实现规范页面，并验证适用的视觉和业务状态。
 
-## 为什么需要它
+宿主负责模型、对话、工具、权限和会话，本项目负责设计开发底座。当前不建设独立 Agent 框架或 GUI。
 
-Agent 可以临时理解一个仓库，但如果项目扫描、设计规则、方案预览、质量检查和交付完全依赖上下文记忆，多次交付后容易发生漂移。
+## 安装后直接对话开发
 
-本项目分为两层：
-
-- **Harness**：项目扫描、初始化、检查、诊断、状态和模板。
-- **Skills**：需求理解、路径分诊、设计系统、多方案决策和规则治理。
-
-## 当前状态
-
-`v0.1.2` 是可以运行的早期版本。CLI 已有自动测试、React + Vite 适配、常见 E2E 目录识别和按风险触发的用户链路验证指引；不同 Agent 的安装体验和更广泛的真实项目评测仍会继续完善。
-
-## 快速开始
-
-需要 Node.js 18 或更高版本。
+从本仓库安装到已有项目目录，需要 Node.js 18+：
 
 ```bash
-npm install
-node packages/cli/bin/design-workflow.mjs scan /你的项目路径
-node packages/cli/bin/design-workflow.mjs init /你的项目路径
-node packages/cli/bin/design-workflow.mjs check /你的项目路径
-node packages/cli/bin/design-workflow.mjs doctor /你的项目路径
+node scripts/install-host.mjs /你的项目路径 --host codex
+# 或：
+node scripts/install-host.mjs /你的项目路径 --host claude
 ```
 
-正式发布 npm 后，目标用法为：
+两种宿主都使用时可选 `--host both`；`--dry-run` 预览变化。安装会保留现有项目指令，遇到冲突或本地修改的受管理内容时停止。
+
+在宿主中打开项目，启动新会话，先让它定位可用的 `designer-dev-workflow` Skill，然后正常描述页面需求。加载自检、升级行为与适用边界见 [宿主接入说明](docs/host-integration.md)。
+
+安装只复制 Skills 并增加简短入口，不初始化产品 tokens，也不要求已有项目迁移工具链。
+
+## 核心能力
+
+| Skill | 职责 |
+|---|---|
+| `designer-dev-workflow` | 项目理解、需求分诊、方案、实现、验证与交付 |
+| `design-system-builder` | 设计约束、tokens、布局、状态和可复用资产 |
+| `proposal-with-preview` | 通过渐进预览确认有分歧的页面或组件实现方案 |
+| `rules-governance` | 按需巡检一致性与规则漂移 |
+
+0→1 建立必要的最小约束与资产；已有项目沿用真实源码和现有规范。随着页面、共享组件与业务流程迭代持续维护这些资产。创意生成不属于核心职责。
+
+高风险流程验证适用的成功、恢复、刷新、撤销和边界状态，优先使用项目已有测试和宿主浏览器能力。普通静态样式修改不默认要求 E2E。
+
+## 可选工程工具
+
+CLI 用于减少重复的确定性操作，不是使用 Skills 的前置条件。
+
+| 命令 | 用途 |
+|---|---|
+| `scan` | 只读扫描项目事实与目录 |
+| `init` | 创建缺失模板并刷新 Adapter |
+| `check` | 静态一致性候选问题与已配置映射检查 |
+| `doctor` | 结构诊断与已知约束缺口 |
+| `tokens` | 按需从 JSON 导出 CSS |
+| `task` | 按需记录验证证据和恢复任务 |
+
+源码运行示例：
 
 ```bash
-npx ai-design-workflow scan
-npx ai-design-workflow init
-npx ai-design-workflow check
-npx ai-design-workflow doctor
+node packages/cli/bin/design-workflow.mjs scan /你的项目路径 --json
 ```
 
-`init` 默认只创建缺失的项目文件，并安全刷新自动生成的 Project Adapter；只有显式使用 `--force` 才允许替换受管理的初始文件。`check --strict` 在发现问题时返回非零状态。
+初始化默认保留已有受管理模板，只有显式 `--force` 才允许替换。Adapter 是索引和缓存，源码与可执行配置是事实来源。静态检查或结构健康不代表页面质量已经通过验证。
 
-## 命令
+- [配置与诊断](docs/configuration.md)
+- [Token 接入与资产映射](docs/token-integration.md)
+- [可选任务证据追踪](docs/task-evidence.md)
 
-| 命令 | 作用 | 是否写文件 |
-|---|---|---|
-| `scan` | 识别技术栈、项目模式、命令、目录和 Adapter | 否 |
-| `init` | 创建工作流资产并刷新 Adapter | 是；除非使用 `--force`，否则保留已有项目文件 |
-| `check` | 检查硬编码颜色和设计文档覆盖 | 否 |
-| `doctor` | 检查运行环境和工作流完整性 | 否 |
+## 当前状态与开发
 
-所有命令都支持 `--json`。
-
-## Skills
-
-三个核心 Skill：
-
-1. `designer-dev-workflow`：项目识别、方案 spec、实现、验证与交付编排。
-2. `design-system-builder`：提取并维护可执行的设计约束。
-3. `proposal-with-preview`：没有明确设计稿时进行渐进式多方案决策。
-
-`rules-governance` 是可选检查 Skill，用于规则漂移、token 合规和设计文档覆盖检查。
-
-对于路由、异步恢复、跨页状态、持久化和可逆操作等高风险变化，Workflow 会要求验证完整状态闭环，并优先复用项目已有 E2E 框架。普通静态样式改动不强制 E2E。CLI 不会自动安装测试依赖或下载浏览器运行时。
-
-请使用对应 Agent 支持的 Skill 安装方式安装 `skills/` 下需要的目录。仅克隆仓库不会自动注册 Skill。
-
-## 初始化产物
-
-```text
-.design-workflow/
-├── config.json
-├── project-adapter.json
-└── specs/
-design-system/
-├── README.md
-├── tokens/
-├── components/
-├── pages/
-├── layout.md
-└── interaction.md
-RULES.md
-DEV-WORKFLOW.md
-```
-
-Project Adapter 只是索引和缓存，源码与可执行配置始终是事实来源。
-
-扫描会识别常见的 `test/`、`tests/`、`e2e/`、`playwright/` 和 `cypress/e2e/` 目录，并记录在 Adapter 中；识别到目录不代表其中的测试已经运行或通过。
-
-## 安全边界
-
-- CLI 不会上传项目内容。
-- 不自动生成生产业务代码。
-- 不把一次性偏好自动升级为长期规则。
-- 没有 `--force` 时不覆盖已有受管理文件。
-- 提案预览是静态脚手架，不得包含生产 API 或业务副作用。
-
-## 开发验证
+已发布基线为 v0.1.2，当前未发布的宿主接入和工具增强见 [CHANGELOG](CHANGELOG.md)。安装测试验证文件与独立资源可用性，尚未验证真实宿主模型会话或所有环境下的遵循效果。
 
 ```bash
-npm install
 npm run validate
 ```
 
-进一步阅读：[快速上手](docs/quick-start.md)、[架构说明](docs/architecture.md)、[贡献指南](CONTRIBUTING.md)。
+进一步阅读：[快速上手](docs/quick-start.md)、[架构](docs/architecture.md)、[贡献指南](CONTRIBUTING.md)。
 
 ## License
 

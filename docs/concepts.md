@@ -1,5 +1,7 @@
 # Concepts
 
+The design workflow and Skills are the core. The existing coding-agent host owns execution, models, permissions and sessions. CLI commands are optional helpers; managed token export and task evidence tracking are opt-in enhancements. See [Host integration](host-integration.md).
+
 ## Harness versus Skill
 
 The Harness performs deterministic operations that should be repeatable and testable. Skills guide decisions that require context, interpretation, or design judgment.

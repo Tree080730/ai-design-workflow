@@ -1,49 +1,43 @@
 # Quick Start
 
-## 1. Inspect before writing
+## 1. Install into a project
+
+From the repository checkout:
 
 ```bash
-node packages/cli/bin/design-workflow.mjs scan /path/to/project
+node scripts/install-host.mjs /path/to/project --host codex
+# Or use --host claude; --host both supports both.
 ```
 
-Use `--json` when another tool or agent will consume the result.
+For 0→1, create an empty target directory first. For existing projects, use the actual project root. Preview with `--dry-run`; existing project instructions are preserved. See [Host integration](host-integration.md).
 
-## 2. Initialize missing workflow assets
+## 2. Confirm discovery in the host
+
+Open the project and start a new host session. Ask the host to locate `designer-dev-workflow/SKILL.md` and identify the project constraints relevant to page development without changing files.
+
+Explicit invocation is available when needed: `$designer-dev-workflow` in Codex, `/designer-dev-workflow` in Claude Code. File installation alone is not proof of model-session activation.
+
+## 3. Describe the page request
+
+Use normal conversation. The Workflow Skill organizes project understanding, specification, reuse, implementation, verification and design-asset maintenance. The host uses its own tools and existing project capabilities. New projects establish minimum usable constraints; existing projects retain their design system and token pipeline.
+
+No per-request CLI setup, token migration or parallel task-record system is required.
+
+## 4. Use optional tools where useful
 
 ```bash
+node packages/cli/bin/design-workflow.mjs scan /path/to/project --json
 node packages/cli/bin/design-workflow.mjs init /path/to/project
-```
-
-The command creates only missing project files and refreshes the generated Project Adapter. Review starter tokens and replace them with product evidence before treating them as design decisions.
-
-## 3. Install Skills
-
-Install the desired directories under `skills/` using your agent's supported Skill installation mechanism. The recommended set is:
-
-- `designer-dev-workflow`
-- `design-system-builder`
-- `proposal-with-preview`
-- `rules-governance` for audits
-
-## 4. Work through a task
-
-The Workflow Skill should read the generated Project Adapter, create a task specification in `.design-workflow/specs/`, and wait for explicit confirmation before implementation.
-
-## 5. Check and diagnose
-
-```bash
 node packages/cli/bin/design-workflow.mjs check /path/to/project
 node packages/cli/bin/design-workflow.mjs doctor /path/to/project
 ```
 
-Use `check --strict` in CI when any reported issue should fail the job.
+`init` creates missing starter assets and refreshes the generated Adapter. Starter values need product evidence; `--force` permits replacing managed starter files. `check --strict` can fail CI on reported candidates. Structural diagnostics do not certify design or business readiness.
 
-## 6. Verify high-risk flows
+Token export and task evidence are independent opt-in enhancements: [Token integration](token-integration.md), [Task evidence](task-evidence.md).
 
-Routing, asynchronous recovery, cross-page state, persistence, and reversible actions should be verified as complete user-state loops. Reuse the project's existing E2E framework when available; static styling changes do not require E2E by default.
+## 5. Verify and continue development
 
-Test dependencies and browser runtimes are separate. For example, a Playwright project may still require an explicit `npx playwright install chromium` before its first run. The Harness does not perform that download automatically, and browser binaries, traces, and reports should remain local or in CI artifacts.
+Use the project build/static checks, browser previews and applicable interaction tests. High-risk changes require the relevant full state loop; static styling does not automatically require E2E. Keep actual tests and browser runtime preparation in the project/host workflow.
 
-## Updating an existing project
-
-Run `scan` first. `init` preserves existing `RULES.md`, `DEV-WORKFLOW.md`, and design-system files unless `--force` is explicitly provided. The generated Project Adapter is refreshed because it is a cache of current project facts.
+Synchronize meaningful token/component/page changes with the design system and relevant indexes. Report what was verified and what remains unverified. The next page reuses those assets rather than starting a fresh style.

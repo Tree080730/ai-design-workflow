@@ -7,6 +7,8 @@ description: 面向设计与前端交付的通用协同流程。用于启动新�
 
 把每次代码交付组织成可检查的阶段。项目事实以源码和配置为准，Project Adapter 只做索引和缓存。
 
+本 Skill 由宿主 Agent 执行，复用其模型、文件、命令、浏览器和会话能力。CLI 是可选辅助；token 导出与 task 记录是可选增强，不是使用本流程的前置条件。接入和工具边界见 [宿主接入说明](references/host-integration.md)。
+
 ## Phase 0：识别项目
 
 首次进入项目时必须检查：
@@ -21,7 +23,7 @@ description: 面向设计与前端交付的通用协同流程。用于启动新�
 - 没有真实业务骨架：0-1 模式。
 - 已有真实业务代码：已有项目模式，即使规则或设计系统缺失。
 
-优先运行 `design-workflow scan <项目目录> --json` 获取客观扫描结果；CLI 不可用时运行 `node scripts/scan-project.mjs <项目目录>`。无 Adapter 时由 `design-workflow init` 生成 `.design-workflow/project-adapter.json`，或按 [Project Adapter 模板](references/project-adapter-template.md) 手工生成。已有 Adapter 时核验关键命令和目录。发现差异先展示变化，再更新索引。
+使用宿主文件与搜索能力核验项目；CLI 已可用时可运行 `design-workflow scan <项目目录> --json` 获取结构化结果。也可从本 Skill 目录运行 `node scripts/scan-project.mjs <项目目录>`；没有 Node.js 时直接扫描源码和配置，不为扫描而要求安装运行环境。无 Adapter 时由 `design-workflow init` 生成 `.design-workflow/project-adapter.json`，或按 [Project Adapter 模板](references/project-adapter-template.md) 手工生成。已有 Adapter 时核验关键命令和目录。扫描读取 `.design-workflow/config.json` 中的设计系统目录配置；独立脚本与 CLI 使用相同扫描口径。`doctor` 的 `healthy` 仅表示没有诊断错误，`structureReady` 表示结构完整；`readiness` 提示已知约束缺口，不能替代源码接入、浏览器渲染或业务验证。发现差异先展示变化，再更新索引。
 
 0-1 模式先确认目标平台和技术方案，再建立：项目骨架、最小设计系统、项目规则、开发流程和 Adapter。优先通过 `design-workflow init` 创建缺失资产；CLI 不可用时读取 [最小设计系统](references/minimal-design-system.md)、[RULES 模板](references/rules-template.md) 与 [DEV-WORKFLOW 模板](references/dev-workflow-template.md)。设计系统需要完整定义时调用 `design-system-builder`。
 
@@ -63,9 +65,21 @@ React + Vite 项目可读取 [Adapter 示例](references/react-vite-adapter-exam
 
 ## Phase 5：质量检查
 
-先运行 `design-workflow check`，再检查运行/构建、核心交互、设计系统复用、视觉预览、代码规范、共享影响、文档完整性和未验证风险。使用 [质量检查模板](references/quality-check-template.md) 输出结果。
+检查运行/构建、核心交互、设计系统复用、视觉预览、代码规范、共享影响、文档完整性和未验证风险。CLI 已可用时可追加 `design-workflow check`；token 导出和显式资产清单只检查项目已采用的配置，不替换已有工具链。静态检查通过不能替代实际页面验证。使用 [质量检查模板](references/quality-check-template.md) 输出结果。
 
 路由、异步恢复、跨页面状态、持久化或可逆操作发生变化时，属于高风险业务流程：必须验证完整闭环，而不是只检查成功首屏。至少覆盖成功、失败后的恢复结果、持久化后的刷新结果、撤销后的最终状态和适用的空/未找到边界。优先复用项目已有自动化测试；需要建立或扩展 E2E 时读取 [E2E 基准](references/e2e-baseline.md)。普通文案、静态样式或无状态局部调整不强制 E2E。没有可运行的 E2E 基础设施时明确记录未验证风险，不得把人工打开页面表述为端到端通过。
+
+## 可选：任务状态与验证证据
+
+只有用户要求可追踪的命令证据，或项目已明确采用 task 记录时，才使用下面的机制。普通工作使用宿主计划、会话和现有检查/交付记录即可；不要求另建任务系统。
+
+需要此增强且 CLI 可用时，使用 `design-workflow task create <项目> --file <计划 JSON>` 将已接受的范围与验收项落盘。计划包含 `schemaVersion: 1`、`id`、`title`、`changeTypes`、`inputs` 与 `criteria`。`inputs` 应覆盖相关源码、tokens、共享消费页面、配置、测试定义和 spec；未登记的文件变化不会自动使证据过期。
+
+用 `task run <项目> --task <id> --check <验收项 id>` 执行已声明的静态、构建或 E2E 命令，保存实际日志与退出状态。浏览器观察用 `task record ... --file <记录 JSON>`，包含 `criterionId`、`status`、`note`、附件路径和页面/状态/视口 context。人工记录不得冒充自动化通过。
+
+采用 task 记录的项目恢复会话时先 `task list`，再 `task status` 读取阻塞项、历史和下一步。失败、未执行、缺失附件或过期证据不能算作必需项通过。采用 task 记录时，交付前运行 `task finish`；被阻止时继续处理或明确记录未完成，不伪造证据。中断锁只在原进程退出后通过 `task recover` 清理，随后重新执行中断检查。
+
+这些命令负责执行记录，不替代规范内容、用户授权或验收判断。CLI 不可用时保留同等结构的检查与交付文档，明确未自动追踪的风险。
 
 ## Phase 6：交付沉淀
 

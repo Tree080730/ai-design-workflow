@@ -7,4 +7,4 @@ dist/
 !.design-workflow/specs/.gitkeep
 .design-workflow/deliveries/*
 !.design-workflow/deliveries/.gitkeep
-.design-workflow/tasks/
+**/.design-workflow/tasks/

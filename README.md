@@ -2,119 +2,84 @@
 
 [中文](README.zh-CN.md)
 
-An open-source, agent-agnostic harness for design-system-aware AI development. It combines deterministic project tooling with installable Skills for judgment-heavy design and delivery decisions.
+A Design Harness for consistent, specification-aware page development inside existing coding agents. Its Skills guide the host to establish or read design constraints, reuse components, implement pages and verify applicable visual and business states.
 
-## Why
+The host owns models, conversation, tools, permissions and sessions. This project provides the design-development foundation. It does not require a standalone agent runtime or GUI.
 
-AI agents can understand a repository, but repeated delivery becomes unreliable when project discovery, design rules, previews, checks, and handoff depend on memory alone.
+## Start with your coding agent
 
-AI Design Workflow separates two responsibilities:
-
-- **Harness:** deterministic scanning, initialization, checks, diagnostics, state, and templates.
-- **Skills:** requirement interpretation, route selection, design-system reasoning, proposals, and rule governance.
-
-## Status
-
-`v0.1.2` is an early working release. The CLI has automated tests, a React + Vite adapter, common E2E directory discovery, and risk-triggered user-flow verification guidance. Agent-specific installation and broader real-project evaluations will continue to expand.
-
-## Quick start
-
-Requirements: Node.js 18 or newer.
-
-From a clone:
+From this checkout, install into an existing project directory with Node.js 18+:
 
 ```bash
-npm install
-node packages/cli/bin/design-workflow.mjs scan /path/to/project
-node packages/cli/bin/design-workflow.mjs init /path/to/project
-node packages/cli/bin/design-workflow.mjs check /path/to/project
-node packages/cli/bin/design-workflow.mjs doctor /path/to/project
+node scripts/install-host.mjs /path/to/project --host codex
+# Or:
+node scripts/install-host.mjs /path/to/project --host claude
 ```
 
-After an npm release, the intended interface is:
+`--host both` installs both integrations. `--dry-run` previews changes. The installer preserves existing project instructions and stops on conflicting or locally modified managed content.
+
+Open the project in the host, start a new session, and ask it to locate the available `designer-dev-workflow` Skill. Then describe your page request normally. See [Host integration](docs/host-integration.md) for activation checks, update behavior and loading limitations.
+
+Installation copies Skills and adds a short project instruction entry. It does not initialize product tokens or force an existing project to change its toolchain.
+
+## Core Skills
+
+| Skill | Responsibility |
+|---|---|
+| `designer-dev-workflow` | Project understanding, change routing, specification, implementation, verification and delivery |
+| `design-system-builder` | Executable design constraints, tokens, layouts, states and reusable assets |
+| `proposal-with-preview` | Resolve ambiguous page/component implementation choices through progressive previews |
+| `rules-governance` | Requested consistency audits and rule-drift review |
+
+For 0→1 projects, establish minimum usable constraints and assets. For existing projects, adopt real code and established rules. Maintain those assets as pages and shared components evolve. Creative ideation is not the core product responsibility.
+
+High-risk flows need relevant success, recovery, persistence, reversal and boundary verification. Reuse existing project tests and the host's browser capabilities. Static styling changes do not automatically require E2E.
+
+## Optional engineering helpers
+
+The CLI reduces repeated deterministic work; it is not a prerequisite for the Skills.
+
+| Command | Purpose |
+|---|---|
+| `scan` | Read-only project facts and discovered paths |
+| `init` | Missing starter assets and refreshed Adapter |
+| `check` | Static design consistency candidates and configured mappings |
+| `doctor` | Structural diagnostics and known constraint-input gaps |
+| `tokens` | Opt-in JSON-to-CSS export |
+| `task` | Opt-in verification evidence and recovery |
+
+Run from source, for example:
 
 ```bash
-npx ai-design-workflow scan
-npx ai-design-workflow init
-npx ai-design-workflow check
-npx ai-design-workflow doctor
+node packages/cli/bin/design-workflow.mjs scan /path/to/project --json
 ```
 
-`init` creates only missing project files by default and safely refreshes the generated Project Adapter. `init --force` explicitly allows managed starter files to be replaced. `check --strict` exits non-zero when issues are found.
+Initialization preserves existing managed starter files unless `--force` is explicit. The Project Adapter is a cache; source and executable configuration remain authoritative. Static-check success and structural health do not certify page quality.
 
-## Commands
+- [Configuration](docs/configuration.md)
+- [Token integration](docs/token-integration.md)
+- [Optional task evidence](docs/task-evidence.md)
 
-| Command | Purpose | Writes files |
-|---|---|---|
-| `scan` | Detect stack, project mode, commands, paths, and adapter | No |
-| `init` | Create workflow assets and refresh the generated Adapter | Yes; existing project files are preserved unless `--force` is used |
-| `check` | Report hardcoded colors and missing design documentation | No |
-| `doctor` | Diagnose runtime and project workflow setup | No |
+## Status and development
 
-All commands support `--json` for machine-readable output.
-
-## Skills
-
-Three core Skills form the decision layer:
-
-1. `designer-dev-workflow` — orchestrates project discovery, specification, implementation, verification, and delivery.
-2. `design-system-builder` — extracts and maintains executable design constraints.
-3. `proposal-with-preview` — supports progressive multi-direction decisions when no clear design input exists.
-
-`rules-governance` is an optional review Skill for rule drift, token compliance, and design-documentation coverage.
-
-For high-risk changes involving routing, asynchronous recovery, cross-page state, persistence, or reversible actions, the Workflow requires verification of the complete state loop and prefers the project's existing E2E framework. Static styling changes do not require E2E by default. The CLI does not install test dependencies or download browser runtimes automatically.
-
-Install the needed directories under `skills/` using the Skill mechanism supported by your agent. Cloning this repository alone does not automatically register them.
-
-## Generated project structure
-
-```text
-.design-workflow/
-├── config.json
-├── project-adapter.json
-└── specs/
-design-system/
-├── README.md
-├── tokens/
-├── components/
-├── pages/
-├── layout.md
-└── interaction.md
-RULES.md
-DEV-WORKFLOW.md
-```
-
-The Project Adapter is a cache and index. Source code and executable configuration remain authoritative.
-
-Scanning recognizes common `test/`, `tests/`, `e2e/`, `playwright/`, and `cypress/e2e/` directories and records them in the Adapter. Directory detection does not mean the tests have been executed or passed.
-
-## Repository structure
-
-```text
-packages/cli/          Deterministic CLI harness
-skills/                Agent decision Skills
-examples/react-vite/   First supported adapter example
-test/                  Observable CLI behavior tests
-docs/                  Architecture and concepts
-```
-
-## Safety and scope
-
-- The CLI does not upload project content.
-- It does not generate production business code.
-- It does not silently convert one-off preferences into long-term rules.
-- It does not overwrite existing managed files unless `--force` is supplied.
-- Proposal assets are static scaffolds and must not contain production APIs or side effects.
-
-## Development
+The released baseline is v0.1.2; unreleased host installation and optional tooling changes are listed in [CHANGELOG](CHANGELOG.md). Host integration tests validate files and portable resources, not real model-session behavior or universal compliance.
 
 ```bash
-npm install
 npm run validate
 ```
 
 See [Quick Start](docs/quick-start.md), [Architecture](docs/architecture.md), and [Contributing](CONTRIBUTING.md).
+
+## Repository
+
+```text
+skills/                Design-development core
+scripts/install-host.mjs  Project-scoped host installer
+packages/cli/          Optional deterministic tools and starter assets
+examples/react-vite/   Token integration and verification fixture
+test/                  Observable behavior tests
+docs/                  Product boundaries and usage
+```
 
 ## License
 

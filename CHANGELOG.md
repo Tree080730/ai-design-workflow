@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Established host-first product boundaries and a project-scoped installer for Codex and Claude Code Skills with preserved instruction entries, conflict checks and update receipts.
+- Made token export and task evidence optional enhancements in Workflow guidance and moved installation/conversation ahead of CLI setup in the quick start.
+
 - Added opt-in task plans, persisted command/manual verification evidence, risk-based minimum acceptance coverage, blocked completion and optional risk reporting.
 - Added task discovery, stale input/artifact detection, retained attempt history and safe interrupted-lock recovery.
 
