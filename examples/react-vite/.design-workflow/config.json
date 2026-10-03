@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "designSystemDirectory": "design-system",
+  "tokens": {
+    "mode": "managed",
+    "sourceDirectory": "design-system/tokens",
+    "outputFile": "src/styles/generated-tokens.css",
+    "entryFiles": ["src/main.tsx"]
+  },
+  "assetManifest": ".design-workflow/assets.json"
+}

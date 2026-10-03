@@ -1,6 +1,8 @@
 import fs from 'node:fs';
+import { checkAssets } from './assets.mjs';
 import path from 'node:path';
 import { kebabCase, listFiles, pathExists, toPosix } from './fs-utils.mjs';
+import { checkTokens, stripComments } from './tokens.mjs';
 import { scanProject } from './scan.mjs';
 
 const SOURCE_EXTENSIONS = new Set(['.css', '.scss', '.less', '.jsx', '.tsx', '.vue', '.svelte']);
@@ -13,13 +15,13 @@ function isTokenDefinition(file) {
   return /(?:^|\/)(?:tokens?|theme|variables)(?:[./_-]|$)/.test(normalized);
 }
 
-function scanHardcodedColors(root, sourceRoots) {
+function scanHardcodedColors(root, sourceRoots, tokenDefinitionFiles = []) {
   const issues = [];
   for (const relativeRoot of sourceRoots) {
     const absoluteRoot = path.join(root, relativeRoot);
     for (const file of listFiles(absoluteRoot, { excluded: EXCLUDED_DIRECTORIES })) {
-      if (!SOURCE_EXTENSIONS.has(path.extname(file)) || isTokenDefinition(file)) continue;
-      const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+      if (!SOURCE_EXTENSIONS.has(path.extname(file)) || isTokenDefinition(file) || tokenDefinitionFiles.includes(toPosix(path.relative(root,file)))) continue;
+      const lines = stripComments(fs.readFileSync(file, 'utf8')).split(/\r?\n/);
       lines.forEach((line, index) => {
         const matches = [...line.matchAll(COLOR_PATTERN)];
         for (const match of matches) {
@@ -38,7 +40,7 @@ function scanHardcodedColors(root, sourceRoots) {
   return issues;
 }
 
-function documentationCoverage(root, sourceDirectory, documentationDirectory, type, excludedSources = []) {
+function documentationCoverage(root, sourceDirectory, documentationDirectory, type, excludedSources = [], assets = []) {
   const absoluteSource = path.join(root, sourceDirectory);
   if (!pathExists(absoluteSource)) return [];
   const issues = [];
@@ -47,6 +49,7 @@ function documentationCoverage(root, sourceDirectory, documentationDirectory, ty
       const relative = path.relative(path.join(root, directory), file);
       return relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
     })) continue;
+    if (assets.some(asset=>asset.type === type && asset.source === toPosix(path.relative(root,file)))) continue;
     const extension = path.extname(file);
     if (!COMPONENT_EXTENSIONS.has(extension)) continue;
     const base = path.basename(file, extension);
@@ -69,15 +72,22 @@ function documentationCoverage(root, sourceDirectory, documentationDirectory, ty
 export function checkProject(target = process.cwd()) {
   const scan = scanProject(target);
   const root = scan.root;
+  const tokenChecks = checkTokens(scan);
+  const assetChecks = checkAssets(scan);
+  const tokenDefinitionFiles = scan.config.tokens?.mode === 'managed' ? [scan.config.tokens.outputFile] : (scan.config.tokens?.definitionFiles || []);
   const issues = [
-    ...scanHardcodedColors(root, scan.sourceRoots),
-    ...scan.conventions.components.flatMap((directory) => documentationCoverage(root, directory, `${scan.config.designSystemDirectory}/components`, 'component')),
-    ...scan.conventions.pages.flatMap((directory) => documentationCoverage(root, directory, `${scan.config.designSystemDirectory}/pages`, 'page', scan.conventions.components)),
+    ...tokenChecks.issues,
+    ...assetChecks.issues,
+    ...scanHardcodedColors(root, scan.sourceRoots, tokenDefinitionFiles),
+    ...scan.conventions.components.flatMap((directory) => documentationCoverage(root, directory, `${scan.config.designSystemDirectory}/components`, 'component', [], assetChecks.assets)),
+    ...scan.conventions.pages.flatMap((directory) => documentationCoverage(root, directory, `${scan.config.designSystemDirectory}/pages`, 'page', scan.conventions.components, assetChecks.assets)),
   ];
   return {
     root,
     adapter: scan.adapter,
     strictChecks: scan.config.strictChecks,
+    tokenChecks,
+    assetChecks,
     summary: {
       filesScanned: scan.fileCount,
       issues: issues.length,

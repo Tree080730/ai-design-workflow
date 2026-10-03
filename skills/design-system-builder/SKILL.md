@@ -64,6 +64,12 @@ design-system/
 
 第三方组件必须记录复用范围、覆盖理由和 token 映射，避免不透明的局部改写。
 
+## 可执行来源与映射
+
+新项目可以在 `.design-workflow/config.json` 配置 `tokens.mode=managed`、`sourceDirectory`、`outputFile` 和 `entryFiles`，使用 `design-workflow tokens` 从 JSON 导出 CSS。导出后将 CSS 接入真实入口；先确认输出文件的所有权，不用 `--force` 覆盖未知样式。已有工具链可用 `tokens.mode=external`、`definitionFiles` 和 `entryFiles` 映射 CSS 定义，无需迁移源格式。未配置或静态检查通过均不代表浏览器中的样式已经验证。
+
+组件和页面可通过配置 `assetManifest` 指向项目相对路径的 JSON 清单，记录 `schemaVersion: 1` 与 `assets`；每项包含 `type`、`name`、`source`、`document`。显式映射用于同名资产、非标准目录和失效路径检查，不能替代语义复用判断。
+
 ## 5. 验证
 
 - token 是否被真实代码引用，而非只存在于文档。

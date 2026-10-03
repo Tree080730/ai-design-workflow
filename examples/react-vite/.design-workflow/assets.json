@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "type": "page",
+      "name": "AdapterExample",
+      "source": "src/App.tsx",
+      "document": "design-system/pages/adapter-example.md"
+    }
+  ]
+}

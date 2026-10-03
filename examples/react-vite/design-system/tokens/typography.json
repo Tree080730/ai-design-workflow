@@ -1,0 +1,14 @@
+{
+  "fontFamily": {
+    "sans": "Inter, ui-sans-serif, system-ui, sans-serif"
+  },
+  "fontSize": {
+    "body": "1rem",
+    "caption": "0.875rem",
+    "title": "1.5rem"
+  },
+  "lineHeight": {
+    "body": 1.5,
+    "title": 1.25
+  }
+}

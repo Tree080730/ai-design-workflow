@@ -41,3 +41,5 @@ npm run validate
 ```
 
 Tests check byte-for-byte synchronization and observable result parity. Do not edit the distribution copies independently.
+
+Optional `tokens` and `assetManifest` settings are described in [Token integration](token-integration.md).

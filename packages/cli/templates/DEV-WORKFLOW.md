@@ -32,3 +32,12 @@ For a new page or component without a clear design reference, use the proposal w
 - Synchronize design-system documents and indexes.
 - Remove temporary previews.
 - Produce a delivery summary with decisions, files, verification, and known risks.
+
+
+## Task evidence and resumption
+
+Only when the user requests evidence tracking or the project already adopts it, persist accepted scope and criteria with `design-workflow task create`. Track relevant implementation, shared consumers, configuration, test definitions and specification files. Use `task run` for actual static/build/E2E command results and `task record` for manual attachments and observed page/state/viewport coverage. Never treat unconfigured, unexecuted or stale checks as passed.
+
+For projects using task tracking, start a resumed session with `task list` and `task status`. Use `task recover` only after the interrupted owner has exited, then rerun unfinished checks. `task finish` blocks when required evidence is absent or stale; optional gaps remain explicit risks. These records complement the task specification and do not grant new authorization.
+
+Host-native planning and verification records remain sufficient for ordinary work; CLI token export and task state are not required to use the Design Harness.

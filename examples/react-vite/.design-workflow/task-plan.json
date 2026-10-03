@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "token-integration",
+  "title": "Verify executable tokens in the adapter example",
+  "changeTypes": ["token"],
+  "inputs": [
+    ".design-workflow/config.json",
+    ".design-workflow/assets.json",
+    ".design-workflow/task-plan.json",
+    "package.json",
+    "package-lock.json",
+    "src/main.tsx",
+    "src/App.tsx",
+    "src/styles/tokens.css",
+    "src/styles/generated-tokens.css",
+    "design-system/tokens/colors.json",
+    "design-system/tokens/spacing.json",
+    "design-system/tokens/radius.json",
+    "design-system/tokens/typography.json",
+    "design-system/pages/adapter-example.md"
+  ],
+  "criteria": [
+    {
+      "id": "static",
+      "title": "Token drift, entry imports and asset paths",
+      "kind": "static",
+      "command": ["node", "../../packages/cli/bin/design-workflow.mjs", "check", ".", "--strict", "--json"]
+    },
+    {
+      "id": "build",
+      "title": "Production build",
+      "kind": "build",
+      "command": ["npm", "run", "build"]
+    },
+    {
+      "id": "visual",
+      "title": "Inspect actual rendered token styles and layout",
+      "kind": "visual",
+      "context": {
+        "pages": ["/"],
+        "viewports": ["desktop", "narrow"]
+      }
+    }
+  ]
+}

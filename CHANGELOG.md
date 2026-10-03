@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Added opt-in task plans, persisted command/manual verification evidence, risk-based minimum acceptance coverage, blocked completion and optional risk reporting.
+- Added task discovery, stale input/artifact detection, retained attempt history and safe interrupted-lock recovery.
+
+- Added opt-in managed JSON token export, including typography and alias validation, with safe output ownership checks.
+- Added external CSS token mapping, generated-output drift checks, unmapped variable candidates, and conservative runtime entry import diagnostics.
+- Added explicit component/page asset mappings with missing-source/document checks and migrated the React + Vite example to an executable JSON-to-CSS source.
+
 - Made design-system directory configuration effective across scanning, initialization, checks, and generated rules; existing single design systems are adopted instead of creating a competing default.
 - Enabled configured strict check exit behavior and rejected invalid configuration before managed file writes.
 - Used discovered component/page directories for documentation checks and avoided classifying nested components as pages.

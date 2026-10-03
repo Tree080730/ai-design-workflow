@@ -1,26 +1,29 @@
-:root {
-  --example-background: #ffffff;
-  --example-text: #111827;
-  --example-action: #2563eb;
-}
+@import './generated-tokens.css';
 
 body {
   margin: 0;
-  background: var(--example-background);
-  color: var(--example-text);
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
 }
 
 .example-shell {
   max-width: 48rem;
   margin: 0 auto;
-  padding: 4rem 1.5rem;
+  padding: var(--space-8) var(--space-6);
+}
+
+h1 {
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
 }
 
 button {
   border: 0;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--example-action);
-  color: var(--example-background);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-action-primary);
+  color: var(--color-background-default);
 }
