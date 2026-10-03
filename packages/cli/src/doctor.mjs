@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { inspectReadiness } from './readiness.mjs';
 import { pathExists, readJson } from './fs-utils.mjs';
 import { scanProject } from './scan.mjs';
 
@@ -90,6 +91,8 @@ export function doctorProject(target = process.cwd()) {
 
   return {
     root: scan.root,
+    structureReady: checks.every((check) => check.status === 'pass'),
+    readiness: inspectReadiness(scan),
     healthy: checks.every((check) => check.status !== 'error'),
     checks,
   };

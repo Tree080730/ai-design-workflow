@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node --test",
     "smoke": "node packages/cli/bin/design-workflow.mjs doctor examples/react-vite",
-    "validate": "npm run test && npm run smoke"
+    "validate": "npm run test && npm run smoke",
+    "sync:skill-scanner": "node scripts/sync-skill-scanner.mjs"
   },
   "engines": {
     "node": ">=18"

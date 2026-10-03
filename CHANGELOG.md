@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Made design-system directory configuration effective across scanning, initialization, checks, and generated rules; existing single design systems are adopted instead of creating a competing default.
+- Enabled configured strict check exit behavior and rejected invalid configuration before managed file writes.
+- Used discovered component/page directories for documentation checks and avoided classifying nested components as pages.
+- Added separate structural completeness and conservative constraint-input diagnostics to doctor while preserving existing healthy/exit semantics.
+- Unified standalone Skill scanner behavior with generated, regression-checked CLI scanner distribution copies.
+
 ## 0.1.2
 
 - Added explicit grid, alignment-anchor, equal-height, baseline, and responsive-reordering requirements to Design System layout guidance and generated project templates.

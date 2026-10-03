@@ -198,3 +198,128 @@ test('CLI init and doctor complete an end-to-end setup', () => {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('custom design system and discovered source directories work across init, scan and check', () => {
+  const root = temporaryProject();
+  try {
+    write(root, '.design-workflow/config.json', JSON.stringify({schemaVersion: 1, designSystemDirectory: 'docs/ui', strictChecks: true}));
+    write(root, 'package.json', JSON.stringify({packageManager: 'pnpm@9.0.0'}));
+    write(root, 'components/Card.tsx', 'export const Card = () => <div />;');
+    write(root, 'pages/Home.tsx', 'export const Home = () => <main />;');
+    write(root, 'docs/ui/components/card.md', '# Existing Card');
+    const result = initProject(root);
+    assert.ok(result.written.includes('docs/ui/layout.md'));
+    assert.equal(fs.existsSync(path.join(root, 'design-system')), false);
+    assert.equal(fs.readFileSync(path.join(root, 'docs/ui/components/card.md'), 'utf8'), '# Existing Card');
+    assert.match(fs.readFileSync(path.join(root, 'RULES.md'), 'utf8'), /docs\/ui\//);
+    assert.deepEqual(scanProject(root).conventions.designSystem, ['docs/ui']);
+    assert.equal(scanProject(root).packageManager, 'pnpm');
+    const issues = checkProject(root).issues;
+    assert.equal(issues.length, 1);
+    assert.equal(issues[0].expected, 'docs/ui/pages/home.md');
+    assert.equal(doctorProject(root).structureReady, true);
+    const cli = path.resolve('packages/cli/bin/design-workflow.mjs');
+    assert.equal(spawnSync(process.execPath, [cli, 'check', root]).status, 2);
+    write(root, 'docs/ui/pages/home.md', '# Home');
+    assert.equal(spawnSync(process.execPath, [cli, 'check', root]).status, 0);
+  } finally { fs.rmSync(root, {recursive: true, force: true}); }
+});
+
+test('init adopts an existing design system without creating a competing default', () => {
+  const root = temporaryProject();
+  try {
+    write(root, 'docs/design-system/README.md', '# Existing');
+    initProject(root);
+    assert.equal(scanProject(root).config.designSystemDirectory, 'docs/design-system');
+    assert.equal(fs.existsSync(path.join(root, 'design-system')), false);
+  } finally { fs.rmSync(root, {recursive: true, force: true}); }
+});
+
+test('invalid config is rejected before init writes managed files', () => {
+  for (const config of [{strictChecks:'yes'}, {schemaVersion:2}, {designSystemDirectory:'../outside'}, {designSystemDirectory:'/tmp/ui'}, {designSystemDirectory:'.'}, []]) {
+    const root = temporaryProject();
+    try {
+      write(root, '.design-workflow/config.json', JSON.stringify(config));
+      assert.throws(() => initProject(root));
+      assert.equal(fs.existsSync(path.join(root, 'RULES.md')), false);
+    } finally { fs.rmSync(root, {recursive:true, force:true}); }
+  }
+});
+
+test('structural health never certifies starter constraints or page quality', () => {
+  const root = temporaryProject();
+  try {
+    initProject(root);
+    const result = doctorProject(root);
+    assert.equal(result.healthy, true);
+    assert.equal(result.structureReady, true);
+    assert.equal(result.readiness.status, 'needs-review');
+    assert.ok(result.readiness.findings.some(x => x.type === 'starter-token'));
+    assert.ok(result.readiness.findings.some(x => x.type === 'unresolved-constraint'));
+    fs.rmSync(path.join(root, 'design-system/tokens'), {recursive:true});
+    for (const name of ['README.md','layout.md','interaction.md']) write(root, `design-system/${name}`, '# Project-specific constraint');
+    assert.equal(doctorProject(root).readiness.status, 'unverified');
+    fs.rmSync(path.join(root, 'design-system/layout.md'));
+    assert.ok(doctorProject(root).readiness.findings.some(x=>x.type==='missing-constraint'));
+  } finally { fs.rmSync(root, {recursive:true, force:true}); }
+});
+
+test('standalone Skill scanner stays synchronized and reports the same facts', () => {
+  for (const name of ['scan.mjs','config.mjs','fs-utils.mjs']) {
+    assert.equal(fs.readFileSync(`skills/designer-dev-workflow/scripts/lib/${name}`, 'utf8'), fs.readFileSync(`packages/cli/src/${name}`, 'utf8'), `Run npm run sync:skill-scanner after changing ${name}`);
+  }
+  const root = temporaryProject();
+  try {
+    write(root, 'package.json', JSON.stringify({packageManager:'pnpm@9',dependencies:{react:'*',vite:'*'}}));
+    fs.mkdirSync(path.join(root, 'src'), {recursive:true});
+    write(root, '.design-workflow/config.json', JSON.stringify({designSystemDirectory:'docs/ui'}));
+    const fallback = spawnSync(process.execPath, [path.resolve('skills/designer-dev-workflow/scripts/scan-project.mjs'), root], {encoding:'utf8'});
+    assert.equal(fallback.status, 0);
+    const actual = JSON.parse(fallback.stdout);
+    const expected = scanProject(root);
+    delete actual.scannedAt;
+    delete expected.scannedAt;
+    assert.deepEqual(actual, expected);
+    assert.equal(actual.mode, 'zero-to-one');
+  } finally { fs.rmSync(root, {recursive:true, force:true}); }
+});
+
+test('app components are not also checked as pages', () => {
+  const root = temporaryProject();
+  try {
+    write(root, 'app/components/Button.tsx', 'export const Button = () => <button />;');
+    write(root, 'app/Home.tsx', 'export const Home = () => <main />;');
+    const issues = checkProject(root).issues;
+    assert.deepEqual(issues.map(x=>x.expected).sort(), ['design-system/components/button.md','design-system/pages/home.md']);
+  } finally { fs.rmSync(root, {recursive:true, force:true}); }
+});
+
+test('ambiguous design systems require explicit selection before initialization', () => {
+  const root = temporaryProject();
+  try {
+    write(root, 'design-system/README.md', '# One');
+    write(root, 'docs/design-system/README.md', '# Two');
+    assert.ok(doctorProject(root).readiness.findings.some(x=>x.type==='ambiguous-design-system'));
+    assert.throws(()=>initProject(root), /Multiple design systems/);
+    assert.equal(fs.existsSync(path.join(root, 'RULES.md')), false);
+    write(root, '.design-workflow/config.json', JSON.stringify({designSystemDirectory:'docs/design-system'}));
+    initProject(root);
+    assert.deepEqual(scanProject(root).conventions.designSystem, ['docs/design-system']);
+  } finally { fs.rmSync(root, {recursive:true, force:true}); }
+});
+
+test('forced init preserves configuration and adopts the configured directory', () => {
+  const root = temporaryProject();
+  try {
+    write(root, '.design-workflow/config.json', JSON.stringify({schemaVersion:1,strictChecks:true,designSystemDirectory:'docs/ui',extension:{enabled:true}}));
+    write(root, 'docs/ui/layout.md', '# Existing layout');
+    initProject(root, {force:true});
+    const config = JSON.parse(fs.readFileSync(path.join(root,'.design-workflow/config.json'),'utf8'));
+    assert.equal(config.strictChecks, true);
+    assert.equal(config.designSystemDirectory, 'docs/ui');
+    assert.deepEqual(config.extension, {enabled:true});
+    assert.match(fs.readFileSync(path.join(root,'docs/ui/layout.md'),'utf8'), /Geometry and alignment contract/);
+    assert.equal(fs.existsSync(path.join(root,'design-system')), false);
+    assert.equal(doctorProject(root).structureReady, true);
+  } finally { fs.rmSync(root, {recursive:true, force:true}); }
+});

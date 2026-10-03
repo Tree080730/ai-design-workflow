@@ -33,12 +33,20 @@ export function initProject(target = process.cwd(), options = {}) {
   const root = path.resolve(target);
   fs.mkdirSync(root, { recursive: true });
   const initialScan = scanProject(root);
+  if (initialScan.conventions.designSystem.length > 1) {
+    throw new Error('Multiple design systems found. Set designSystemDirectory in .design-workflow/config.json before init.');
+  }
   const written = [];
   const updated = [];
   const skipped = [];
 
-  for (const [source, destination] of TEMPLATE_FILES) {
+  for (const [source, originalDestination] of TEMPLATE_FILES) {
+    const destination = originalDestination.replace(/^design-system(?=\/)/, initialScan.config.designSystemDirectory);
     const status = copyTemplate(source, path.join(root, destination), options.force);
+    if (status === 'written' && ['RULES.md', 'DEV-WORKFLOW.md'].includes(destination)) {
+      const targetPath = path.join(root, destination);
+      fs.writeFileSync(targetPath, fs.readFileSync(targetPath, 'utf8').replaceAll('design-system/', `${initialScan.config.designSystemDirectory}/`));
+    }
     (status === 'written' ? written : skipped).push(destination);
   }
 
@@ -47,10 +55,11 @@ export function initProject(target = process.cwd(), options = {}) {
   const configPath = path.join(stateDirectory, 'config.json');
   if (!pathExists(configPath) || options.force) {
     writeJson(configPath, {
+      ...initialScan.config,
       schemaVersion: 1,
       adapter: initialScan.adapter,
-      strictChecks: false,
-      designSystemDirectory: 'design-system',
+      strictChecks: initialScan.config.strictChecks,
+      designSystemDirectory: initialScan.config.designSystemDirectory,
     });
     written.push('.design-workflow/config.json');
   } else {

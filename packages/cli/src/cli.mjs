@@ -61,6 +61,9 @@ function printCheck(result) {
 }
 
 function printDoctor(result) {
+  console.log(`Structure: ${result.structureReady ? 'complete' : 'incomplete'}; constraints: ${result.readiness.status}`);
+  console.log(result.readiness.scope);
+  for (const finding of result.readiness.findings) console.log(`- ${finding.file}: ${finding.message}`);
   for (const check of result.checks) {
     console.log(`${check.status.toUpperCase().padEnd(5)} ${check.name}: ${check.message}`);
   }
@@ -92,6 +95,6 @@ export async function runCli(args) {
   else if (command === 'check') printCheck(result);
   else printDoctor(result);
 
-  if (command === 'check' && options.strict && result.summary.issues > 0) process.exitCode = 2;
+  if (command === 'check' && (options.strict || result.strictChecks) && result.summary.issues > 0) process.exitCode = 2;
   if (command === 'doctor' && !result.healthy) process.exitCode = 2;
 }

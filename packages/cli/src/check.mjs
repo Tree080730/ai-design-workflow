@@ -38,11 +38,15 @@ function scanHardcodedColors(root, sourceRoots) {
   return issues;
 }
 
-function documentationCoverage(root, sourceDirectory, documentationDirectory, type) {
+function documentationCoverage(root, sourceDirectory, documentationDirectory, type, excludedSources = []) {
   const absoluteSource = path.join(root, sourceDirectory);
   if (!pathExists(absoluteSource)) return [];
   const issues = [];
   for (const file of listFiles(absoluteSource, { excluded: EXCLUDED_DIRECTORIES })) {
+    if (excludedSources.some((directory) => {
+      const relative = path.relative(path.join(root, directory), file);
+      return relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
+    })) continue;
     const extension = path.extname(file);
     if (!COMPONENT_EXTENSIONS.has(extension)) continue;
     const base = path.basename(file, extension);
@@ -67,12 +71,13 @@ export function checkProject(target = process.cwd()) {
   const root = scan.root;
   const issues = [
     ...scanHardcodedColors(root, scan.sourceRoots),
-    ...documentationCoverage(root, 'src/components', 'design-system/components', 'component'),
-    ...documentationCoverage(root, 'src/pages', 'design-system/pages', 'page'),
+    ...scan.conventions.components.flatMap((directory) => documentationCoverage(root, directory, `${scan.config.designSystemDirectory}/components`, 'component')),
+    ...scan.conventions.pages.flatMap((directory) => documentationCoverage(root, directory, `${scan.config.designSystemDirectory}/pages`, 'page', scan.conventions.components)),
   ];
   return {
     root,
     adapter: scan.adapter,
+    strictChecks: scan.config.strictChecks,
     summary: {
       filesScanned: scan.fileCount,
       issues: issues.length,
