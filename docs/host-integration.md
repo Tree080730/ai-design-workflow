@@ -1,6 +1,6 @@
 # Host-first Design Harness
 
-The product is a design-development foundation used inside an existing coding agent. The host supplies the model, agent execution loop, permissions, file/shell/browser tools and sessions. The Harness supplies Skills, project constraints, reuse decisions and verification guidance. A standalone agent runtime and GUI are outside the current scope.
+The product focuses on 0→1 design-system construction and business-page development inside an existing coding agent. The default sequence confirms evidence and constraints, implements design-system source and a Gallery, then builds business pages using those assets. Existing-project support is supplementary. The host supplies the model, agent execution loop, permissions, file/shell/browser tools and sessions. The Harness supplies Skills, project constraints, reuse decisions and verification guidance. A standalone agent runtime and GUI are outside the current scope.
 
 ## Install from this checkout
 

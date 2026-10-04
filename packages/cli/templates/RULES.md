@@ -15,10 +15,14 @@
 5. Keep loading, empty, error, disabled, and boundary states explicit when they apply.
 6. Synchronize design-system documents and indexes after changing shared design assets.
 
+## Source delivery
+
+Page, component and design-system implementation requests require editable source in the target project, connected to real entries/consumers. Deliver necessary styles/token integration, current components, Gallery and runtime configuration within the confirmed scope. Documentation, screenshots, token JSON, dist output and temporary previews alone are not implementation. Missing required source or disconnected entries mean incomplete; unexecuted runtime checks remain unverified.
+
 ## Temporary work
 
 - Proposal previews must not call production APIs or create business side effects.
-- Temporary routes and preview files must be removed before delivery.
+- Temporary proposal routes and preview files must be removed before delivery; retain the persistent Gallery and formal implementation.
 
 ## Verification
 

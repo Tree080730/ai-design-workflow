@@ -2,6 +2,8 @@
 
 [English](quick-start.md)
 
+主线是从 0 到 1 构建设计系统源码与 Gallery，再复用它们搭建业务页面。
+
 ## 1. 安装到目标项目
 
 准备可用的 Codex 或 Claude Code、Git、Node.js 18+ 和已存在的目标项目目录。0→1 项目先创建空目录；已有项目使用真实项目根目录。
@@ -26,15 +28,19 @@ Claude Code 使用 `--host claude`，两者都使用则选 `--host both`。可�
 
 确认 Agent 实际找到了 Skill 文件。需要时显式调用：Codex 使用 `$designer-dev-workflow`，Claude Code 使用 `/designer-dev-workflow`。仅文件安装成功不等于会话已经加载。
 
-## 3. 选择需求并开始对话
+## 3. 提出完整 0→1 需求
 
-README 提供四种可复制示例：[新项目](../README.zh-CN.md#新项目从-0-到-1)、[已有项目](../README.zh-CN.md#已有项目复用并扩展)、[参考网页提取](../README.zh-CN.md#参考网页提取设计系统)、[Gallery](../README.zh-CN.md#design-system-gallery展示与维护)。替换实际业务、参考 URL 和验收要求即可。
+使用 README 中的[完整需求示例](../README.zh-CN.md#一个完整的-01-请求)，替换业务页面、参考资料和验收要求。
 
-Agent 读取项目上下文、说明约束和复用判断并形成方案；你确认后进入实现。没有依据的产品规则标记待确认。已有项目保留现有技术栈、组件和 token 管线。
+| 阶段 | 你会收到什么 |
+|---|---|
+| 设计依据与约束确认 | 有来源的核心规则、技术方案与确认范围 |
+| 设计系统构建 | 实际运行样式与必要组件源码、可运行 Gallery、规范索引 |
+| 业务页面搭建 | 复用真实资产的页面与交互源码、同步 Gallery、运行方式及验证结果 |
 
-参考网页需要宿主浏览器能力与可访问页面；无法访问时使用截图、结构化设计数据或源码。单个页面不能证明未观察到的全部断点或组件状态。
+确认范围后 Agent 持续执行三个阶段，不在同一范围内重复确认，也不在 Gallery 完成后提前结束业务页面需求。源码必须写入目标项目并接入实际入口；未实现与未验证内容分别记录。
 
-Gallery 引用真实 tokens 和组件，复用已有 Storybook/文档站或创建开发入口。交付应包含启动命令和实际地址，详见 [Gallery 实施契约](../skills/design-system-builder/references/gallery.md)。
+只要求设计系统时完成前两阶段。参考网页访问依赖宿主能力，可用截图或结构化数据替代，但未知值不当作事实。独立参考提取、Gallery 和[已有项目接入](../README.zh-CN.md#已有项目复用并扩展)仍可按需求使用；不预先生成用不到的组件库。Gallery 细则见[实施契约](../skills/design-system-builder/references/gallery.md)。
 
 ## 4. 查看结果并继续迭代
 

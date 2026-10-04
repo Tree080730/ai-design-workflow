@@ -1,5 +1,7 @@
 # Concepts
 
+The primary product path is 0→1 design-system construction and business-page development: confirm design evidence and constraints, implement real design assets and a Gallery, then consume them in business pages. Design-system-only requests finish the first two stages; a complete page request cannot stop at documentation or the Gallery.
+
 The design workflow and Skills are the core. The existing coding-agent host owns execution, models, permissions and sessions. CLI commands are optional helpers; managed token export and task evidence tracking are opt-in enhancements. See [Host integration](host-integration.md).
 
 ## Harness versus Skill

@@ -2,7 +2,7 @@
 
 [中文](README.zh-CN.md)
 
-A Design Harness for consistent, specification-aware page development inside existing coding agents. Its Skills guide the host to establish or read design constraints, reuse components, implement pages and verify applicable visual and business states.
+A Design Harness inside existing coding agents, focused on **0→1 design-system construction and business-page development**. Its Skills turn design evidence into executable constraints, implement design-system source and a Gallery, then reuse real assets to build business pages.
 
 The host owns models, conversation, tools, permissions and sessions. This project provides the design-development foundation. It does not require a standalone agent runtime or GUI.
 
@@ -24,9 +24,13 @@ Open the **target project** in the host, start a new session and ask:
 
 Once the Skill is located, choose a request below. See [Quick Start](docs/quick-start.md) for details and [Host integration](docs/host-integration.md) for discovery and updates.
 
+## One complete 0→1 request
+
+> Use the Design Harness to build a user-management page from zero, including a list, filters and editing. Read my product requirements and references, confirm the platform, technology and core design constraints, and propose the scope of the design system, Gallery and business page. After I confirm, proceed through that scope: implement real tokens/styles, necessary shared components and a runnable Gallery, then reuse them for the business page and applicable states. Deliver editable source in the target project, runtime entries and commands, specifications/indexes, actual verification results and unfinished items. Do not stop after documentation, placeholder scaffolding or the Gallery alone.
+
 ## Four ways to use it
 
-Replace the example pages, business requirements and references with your own. The agent reads context and describes a proposal; confirm it in conversation before implementation.
+Complete 0→1 construction is the primary path; existing projects, reference extraction and standalone Gallery work are supplementary entry points. Replace the example pages, business requirements and references with your own. The agent reads context and describes a proposal; confirm it in conversation before implementation.
 
 ### New project: build from zero
 
@@ -48,101 +52,44 @@ Website inspection depends on the host's browser tools and page accessibility. I
 
 For an existing Gallery, ask: “Add the new component and its states to the Gallery using the real implementation; update specifications and indexes.” See [Design System Gallery](#design-system-gallery) below for the runnable example and integration contract.
 
-## Complete usage flow
+## Default 0→1 workflow
 
-Users describe requests, confirm proposals and inspect results in their coding agent. The agent reads constraints, implements changes, verifies them and maintains design assets. Per-request manual CLI setup is not required after installation.
+Deliver design-system source, a runnable Gallery and business-page source. Users describe requirements, confirm scope and inspect results in the host; the agent implements, verifies and maintains project assets.
 
 ```mermaid
 flowchart LR
-    A[Prepare host and project] --> B[Install Harness]
-    B --> C[Confirm Skill discovery]
-    C --> D[Describe a page request]
-    D --> E[Read or establish constraints and confirm scope]
-    E --> F[Reuse assets and implement]
-    F --> G[Verify and correct]
-    G --> H[Deliver and synchronize assets]
-    H --> D
+    A[Product needs and design evidence] --> B[Confirm core constraints and scope]
+    B --> C[Design-system source and Gallery]
+    C --> D[Build business pages using real assets]
+    D --> E[Verify and deliver source]
+    E --> F[Reuse assets for subsequent pages]
 ```
 
-### 1. Prepare the host and project
-
-Use an available Codex or Claude Code installation, with your model or account configured in that host. The Harness uses the host's model and tools.
-
-For 0→1 work, prepare an empty target directory. For existing projects, use the actual project root. Repository and installation commands are in the quick start above.
-
-### 2. Install into the target project
-
-The installer requires Node.js 18+. Installing the example application's dependencies is not a prerequisite.
-
-```bash
-node scripts/install-host.mjs "/path/to/project" --host codex
-# For Claude Code:
-node scripts/install-host.mjs "/path/to/project" --host claude
-```
-
-Use `--host both` for both integrations or `--dry-run` to preview changes. The same Skills are copied, with a short project instruction entry:
-
-| Host | Skills directory | Instruction entry |
+| Stage | Input | Output and completion conditions |
 |---|---|---|
-| Codex | `.agents/skills/` | Existing `AGENTS.override.md`, otherwise `AGENTS.md` |
-| Claude Code | `.claude/skills/` | Existing root `CLAUDE.md`, otherwise existing `.claude/CLAUDE.md`, otherwise a new root `CLAUDE.md` |
+| 1: Confirm evidence and constraints | Product needs, user flows, platform and references | Source-grounded core tokens/layout/interaction rules, implementation proposal and confirmed scope; unknowns remain explicit |
+| 2: Build the design system | Confirmed constraints and assets needed by initial pages | Real styles and necessary component source, a runnable integrated Gallery, matching specifications and indexes; required even on the minimum path |
+| 3: Build business pages and deliver | Real design assets and confirmed business scope | Page/route and applicable state/interaction source, Gallery patterns, runtime instructions and actual verification results |
 
-Existing instructions are preserved; conflicting or locally modified managed content stops installation. Installation does not initialize product tokens or migrate existing toolchains.
+A complete request cannot end after documentation, scaffolding or the Gallery alone. Design-system-only requests stop after the first two stages; do not invent business pages. Add components and patterns needed by current pages instead of building a speculative universal library.
 
-### 3. Confirm discovery in the host
+Use clear references directly. Proposal previews apply only when visual direction is unresolved and multiple reasonable implementations exist. Continue within confirmed scope without repeating the same approval at every stage; confirm high-impact scope changes. Starter values are not confirmed product rules.
 
-Open the **target project** and start a new session. For first use, ask:
+Delivery lists actual project source, entries/consumers, install/start commands, results, missing implementation and unverified behavior. Remove temporary proposal previews; retain the Gallery and formal pages. Subsequent pages reuse these assets, and fresh sessions reread project constraints and code.
 
-> Locate the available designer-dev-workflow Skill and identify the project constraints you would use for page development. Do not modify files yet.
+Existing-project support remains a supplementary path that preserves the existing stack and assets. CLI, token export, manifests and task evidence are optional; per-request manual setup is not required.
 
-Confirm that the agent actually located the Skill file. If discovery fails, explicitly invoke `$designer-dev-workflow` in Codex or `/designer-dev-workflow` in Claude Code, then check working directory, loading paths and host configuration. See [Host integration](docs/host-integration.md) for troubleshooting and updates.
+## Required delivery: implementation source
 
-### 4. Describe the request through conversation
+Page, component and design-system construction must deliver editable source in the target project. Within confirmed scope, include page/component implementation, runtime styles/token integration, Gallery code and necessary entries, dependencies and configuration. This also applies to minimum 0→1 startup; existing projects reuse actual implementations.
 
-Provide the page's purpose, content, business behavior and acceptance requirements, plus existing designs, screenshots or specifications when available. You do not need to select every supporting Skill manually.
-
-Use the prompts in [Four ways to use it](#four-ways-to-use-it) above. Reference extraction and Gallery construction also run through the host conversation.
-
-### 5. Establish context and confirm the proposal
-
-The agent selects a path from actual project state:
-
-| Scenario | Agent responsibility |
-|---|---|
-| 0→1 | Confirm platform and technology, establish the application skeleton, minimum tokens/layout/interaction rules, and component/page registration |
-| Existing project | Read relevant code and specifications, verify project indexes, identify reuse and necessary extensions, and retain the existing token pipeline |
-
-Use `design-system-builder` when constraints are missing. Use `proposal-with-preview` only when design input is unclear and multiple reasonable implementations exist: summarize directions, expand the selected one, then preview it. Clear references and small changes can skip proposal previews.
-
-The main workflow creates a specification covering scope, reuse, risks and acceptance conditions. The user confirms it in conversation before implementation. Unresolved choices remain explicit; starter values are not confirmed product rules.
-
-### 6. Implement, verify and correct
-
-The agent uses host tools to develop the page, reuses tokens/components/page patterns, and covers applicable loading, empty, error, disabled and boundary states. High-impact changes beyond confirmed scope return to proposal confirmation.
-
-Run existing project builds/checks and verify actual pages, interactions and shared impact. Inspect alignment, overflow, wrapping and responsive reordering at representative desktop and narrow widths. Routing, async, persistence and reversal changes also need applicable success, failure recovery, refresh, reversal and final-state verification. Correct failures and rerun relevant checks.
-
-Static styling changes do not automatically require E2E. Record unavailable or unexecuted verification explicitly; successful builds or zero CLI issues do not replace page verification.
-
-### 7. Deliver and continue iterating
-
-Deliver changes, decisions, verification results and remaining risks. Synchronize affected design rules, component/page indexes and necessary project mappings. The user inspects the page and continues through conversation.
-
-For example:
-
-> Add a role-management page next. Reuse the user-management list, filter and feedback components, preserve the design constraints, and verify effects on the original page when shared components change.
-
-This loop makes initial assets the foundation for later development. A fresh session rereads relevant project constraints and implementation. Task evidence resumption applies only when the project has deliberately adopted task tracking.
-
-### What is optional?
-
-Installation and host discovery establish the integration. CLI scan/init/check/doctor are helpers the agent can use when useful. Managed token export, explicit asset manifests and persisted task evidence are opt-in enhancements. Users do not need a new task plan, token conversion or manual tool invocation for every request. Commands are listed below.
+Report source paths, runtime entries/consumers, install/start commands and actual verification. Documentation, screenshots, token JSON, indexes and temporary previews alone are not implementation. Missing required source or disconnected entries mean incomplete; execution unavailable in the current environment remains explicitly unverified.
 
 ## Core Skills
 
 | Skill | Responsibility |
 |---|---|
-| `designer-dev-workflow` | Project understanding, change routing, specification, implementation, verification and delivery |
+| `designer-dev-workflow` | Coordinate the 0→1 stages: constraints, design system, business pages and source delivery |
 | `design-system-builder` | Executable design constraints, tokens, layouts, states and reusable assets |
 | `proposal-with-preview` | Resolve ambiguous page/component implementation choices through progressive previews |
 | `rules-governance` | Requested consistency audits and rule-drift review |
@@ -153,7 +100,7 @@ High-risk flows need relevant success, recovery, persistence, reversal and bound
 
 ## Design System Gallery
 
-Design-system construction includes a persistent Gallery of real tokens, shared component variants/states and page patterns, with source/spec references. The host reuses an existing Storybook/docs site or creates a development entry using the project framework. Gallery imports real assets and remains after temporary proposal previews are removed.
+The minimum 0→1 path also requires a runnable Gallery: start with real tokens, then add components and patterns as they are implemented. Design-system construction includes a persistent Gallery of real tokens, shared component variants/states and page patterns, with source/spec references. The host reuses an existing Storybook/docs site or creates a development entry using the project framework. Gallery imports real assets and remains after temporary proposal previews are removed.
 
 Ask the host to build a Gallery using existing tokens/components, register relevant states and patterns, and verify desktop, narrow-screen and keyboard behavior. See the [implementation contract and React starter](skills/design-system-builder/references/gallery.md). Run the example:
 

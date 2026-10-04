@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Focused the default product flow on 0→1: confirmed design evidence/constraints, executable design-system source and Gallery, then business-page implementation and delivery; preserved existing-project and task-evidence support as on-demand references.
+
+- Made editable implementation source and real runtime integration mandatory delivery criteria for page/component/design-system work, distinguishing incomplete implementation from unavailable runtime verification.
+
+- Required a runnable Gallery on the minimum 0→1 path, with real token previews, incremental component/pattern registration and explicit incomplete-delivery handling across Workflow and starter templates.
+
 - Added concise bilingual installation entry points, four conversational usage scenarios, a Chinese quick start and practical update/troubleshooting guidance.
 
 - Added persistent Design System Gallery guidance, a framework-neutral implementation contract, adaptable React renderer/styles and a runnable source-bound token/component/pattern example.

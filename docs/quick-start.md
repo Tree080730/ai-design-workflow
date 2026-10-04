@@ -2,6 +2,8 @@
 
 [中文](quick-start.zh-CN.md)
 
+The primary path builds design-system source and a Gallery from zero, then reuses them for business pages.
+
 ## 1. Install into a project
 
 Requires an available Codex or Claude Code installation, Node.js 18+, Git and an existing target directory. New projects can start with an empty directory. Replace `/path/to/project` with its actual path; quote paths containing spaces. From a terminal:
@@ -23,13 +25,19 @@ Open the project and start a new host session. Ask the host to locate `designer-
 
 Explicit invocation is available when needed: `$designer-dev-workflow` in Codex, `/designer-dev-workflow` in Claude Code. File installation alone is not proof of model-session activation.
 
-## 3. Describe the page request
+## 3. Describe the complete 0→1 request
 
-Choose a prompt from the README: [new project](../README.md#new-project-build-from-zero), [existing project](../README.md#existing-project-reuse-and-extend), [reference website](../README.md#reference-website-extract-design-rules), or [Gallery](../README.md#design-system-gallery-display-and-maintain). Replace example requirements with your own. Confirm the proposed scope before implementation.
+Start with the README's [complete request](../README.md#one-complete-01-request), replacing the business page, references and acceptance requirements.
 
-Use normal conversation. The Workflow Skill organizes project understanding, specification, reuse, implementation, verification and design-asset maintenance. The host uses its own tools and existing project capabilities. New projects establish minimum usable constraints; existing projects retain their design system and token pipeline.
+| Stage | Delivery |
+|---|---|
+| Confirm evidence and constraints | Source-grounded core rules, technology proposal and confirmed scope |
+| Build the design system | Actual runtime styles and needed component source, runnable Gallery and matching specifications |
+| Build business pages | Pages/interactions consuming real assets, synchronized Gallery, runtime instructions and results |
 
-No per-request CLI setup, token migration or parallel task-record system is required.
+Once scope is confirmed, the host continues through all three stages without repeating the same approval or stopping at the Gallery. Source must be written into the target project and connected to real entries. Missing implementation and unverified execution are reported separately.
+
+Design-system-only requests finish the first two stages. References require host access; screenshots or structured data can substitute without turning unknowns into facts. Existing-project support, reference extraction and standalone Gallery work remain supplementary paths; do not create unused components. See the [Gallery contract](../skills/design-system-builder/references/gallery.md).
 
 ## 4. Use optional tools where useful
 
