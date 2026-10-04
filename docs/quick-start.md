@@ -1,13 +1,19 @@
 # Quick Start
 
+[中文](quick-start.zh-CN.md)
+
 ## 1. Install into a project
 
-From the repository checkout:
+Requires an available Codex or Claude Code installation, Node.js 18+, Git and an existing target directory. New projects can start with an empty directory. Replace `/path/to/project` with its actual path; quote paths containing spaces. From a terminal:
 
 ```bash
-node scripts/install-host.mjs /path/to/project --host codex
+git clone https://github.com/Tree080730/ai-design-workflow.git
+cd ai-design-workflow
+node scripts/install-host.mjs "/path/to/project" --host codex
 # Or use --host claude; --host both supports both.
 ```
+
+Harness installation requires no `npm install`; dependencies under `examples/react-vite` are only needed to run that demonstration.
 
 For 0→1, create an empty target directory first. For existing projects, use the actual project root. Preview with `--dry-run`; existing project instructions are preserved. See [Host integration](host-integration.md).
 
@@ -18,6 +24,8 @@ Open the project and start a new host session. Ask the host to locate `designer-
 Explicit invocation is available when needed: `$designer-dev-workflow` in Codex, `/designer-dev-workflow` in Claude Code. File installation alone is not proof of model-session activation.
 
 ## 3. Describe the page request
+
+Choose a prompt from the README: [new project](../README.md#new-project-build-from-zero), [existing project](../README.md#existing-project-reuse-and-extend), [reference website](../README.md#reference-website-extract-design-rules), or [Gallery](../README.md#design-system-gallery-display-and-maintain). Replace example requirements with your own. Confirm the proposed scope before implementation.
 
 Use normal conversation. The Workflow Skill organizes project understanding, specification, reuse, implementation, verification and design-asset maintenance. The host uses its own tools and existing project capabilities. New projects establish minimum usable constraints; existing projects retain their design system and token pipeline.
 
@@ -41,3 +49,19 @@ Token export and task evidence are independent opt-in enhancements: [Token integ
 Use the project build/static checks, browser previews and applicable interaction tests. High-risk changes require the relevant full state loop; static styling does not automatically require E2E. Keep actual tests and browser runtime preparation in the project/host workflow.
 
 Synchronize meaningful token/component/page changes with the design system and relevant indexes. Report what was verified and what remains unverified. The next page reuses those assets rather than starting a fresh style.
+
+## Update an existing installation
+
+From a clean Harness checkout, run `git pull --ff-only`, then rerun the installer for the same target and host. Start a new session in the target project and repeat the discovery check. The installer updates copied Skills, not your product's tokens or generated Gallery implementation. Ask the host to apply relevant changes to project assets deliberately.
+
+Keep `.design-workflow/host-installation.json`. If managed Skill content was edited locally, installation stops: inspect and reconcile the difference instead of overwriting it. See [Host integration](host-integration.md) for conflict behavior.
+
+## Common first-use problems
+
+| Symptom | Next action |
+|---|---|
+| Target does not exist | Create an empty directory or choose an existing project root |
+| Host does not find the Skill | Confirm the target project is open, start a fresh session and explicitly invoke the Workflow Skill |
+| Reference website is inaccessible | Supply screenshots, structured design data or source; leave unsupported values unresolved |
+| Gallery is not present after installation | Ask the host to construct it; installation copies Skills, not a finished Gallery into your product |
+| Local Skill changes block an update | Reconcile the conflicting content and retain the installation receipt |

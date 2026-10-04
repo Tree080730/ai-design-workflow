@@ -6,6 +6,48 @@
 
 宿主负责模型、对话、工具、权限和会话，本项目负责设计开发底座。当前不建设独立 Agent 框架或 GUI。
 
+## 快速开始
+
+准备好 Codex 或 Claude Code、Node.js 18+ 和目标项目目录。新项目先创建空目录；已有项目直接使用项目根目录。将下面的 `/你的项目路径` 替换为实际路径，保留引号以支持含空格的目录。
+
+```bash
+git clone https://github.com/Tree080730/ai-design-workflow.git
+cd ai-design-workflow
+node scripts/install-host.mjs "/你的项目路径" --host codex
+```
+
+Claude Code 将 `codex` 换成 `claude`；同时接入两者用 `both`。安装 Harness 无需运行 `npm install`，也无需安装示例项目依赖。
+
+然后在宿主中打开**目标项目**，启动新会话，发送：
+
+> 请定位当前可用的 designer-dev-workflow Skill，说明本项目开发页面会读取哪些设计约束。先不要修改文件。
+
+确认找到 Skill 后，从下面四种场景中选择一个需求。详细说明见[中文快速上手](docs/quick-start.zh-CN.md)，加载与更新问题见[宿主接入说明](docs/host-integration.md)。
+
+## 四种使用场景
+
+将示例中的页面、业务和参考资料替换为你的实际需求。Agent 先读取上下文并说明方案，你在对话中确认后进入实现。
+
+### 新项目：从 0 到 1
+
+> 使用 Design Harness，为这个新项目实现用户管理页面，包含列表、筛选和编辑。先确认平台与技术方案，结合我提供的参考建立最小设计约束；没有依据的内容标记待确认。确认方案后实现页面、沉淀可复用组件和 Gallery，并验证适用的状态与桌面、窄屏布局。
+
+### 已有项目：复用并扩展
+
+> 使用 Design Harness，为当前项目新增设置页面。先读取现有源码、设计规范和组件，复用已有布局、表单与反馈模式，保留当前技术栈和 token 工具链。说明必要扩展，确认后实现、检查共享影响，并同步规范和已有 Gallery。
+
+### 参考网页：提取设计系统
+
+> 使用 design-system-builder，以［参考网页 URL］及我提供的截图为依据，为当前项目提取颜色、字体、间距、圆角、布局及可观察的组件规则。区分实测值与推断，记录来源；未观察到的状态和断点标记待确认。先让我确认核心约束，再将其落到项目真实样式、组件和 Gallery 中。
+
+网页读取依赖宿主浏览器能力与页面可访问性；无法访问时改用截图、结构化设计数据或源码。该流程用于提炼可复用规则，单个 URL 或截图不等于获取了网站完整的内部设计系统。
+
+### Design System Gallery：展示与维护
+
+> 使用 design-system-builder，为当前项目建立 Design System Gallery。优先复用已有 Storybook 或文档站，否则建立项目开发入口。引用真实 tokens 和组件，展示适用的变体、状态与页面模式，登记源码和规范位置，并提供启动命令、访问地址与验证结果。
+
+已有 Gallery 时可以继续说：“将刚新增的组件及其状态同步到 Gallery，复用真实实现，并更新规范与索引。”运行示例与接入规则见下方 [Design System Gallery](#design-system-gallery)。
+
 ## 完整使用流程
 
 用户在宿主中对话提出需求、确认方案并查看结果；Agent 负责读取约束、执行开发、验证和维护设计资产。安装完成后，每次需求不需要手动重复执行 CLI。
@@ -26,21 +68,16 @@ flowchart LR
 
 先准备可用的 Codex 或 Claude Code，并在宿主中配置自己的模型或账号。Harness 沿用宿主提供的模型和工具。
 
-准备目标项目目录：0→1 可以是空目录，已有项目使用实际项目根目录。获取本仓库后，在仓库根目录执行安装命令：
-
-```bash
-git clone https://github.com/Tree080730/ai-design-workflow.git
-cd ai-design-workflow
-```
+准备目标项目目录：0→1 可以是空目录，已有项目使用实际项目根目录。仓库获取与安装命令见上方快速开始。
 
 ### 2. 安装到目标项目
 
 安装脚本需要 Node.js 18+；无需先安装示例项目依赖。
 
 ```bash
-node scripts/install-host.mjs /你的项目路径 --host codex
+node scripts/install-host.mjs "/你的项目路径" --host codex
 # 使用 Claude Code 时：
-node scripts/install-host.mjs /你的项目路径 --host claude
+node scripts/install-host.mjs "/你的项目路径" --host claude
 ```
 
 两种宿主都使用时可选 `--host both`；`--dry-run` 只预览变化。安装复制同一套 Skills，并向项目宿主指令文件添加简短入口：
@@ -64,13 +101,7 @@ node scripts/install-host.mjs /你的项目路径 --host claude
 
 描述页面用途、内容、业务行为和验收要求；有现成设计稿、截图或规范时一并提供。无需手动选择每个子 Skill。
 
-0→1 请求示例：
-
-> 使用 Design Harness，为这个新项目实现用户管理页面，包含列表、筛选和编辑。参考我提供的设计依据，先形成最小设计约束与实现方案；确认后开发，并验证适用的状态和桌面、窄屏布局。
-
-已有项目请求示例：
-
-> 使用 Design Harness，在现有项目中新增设置页面。先读取相关设计规范和组件，复用已有布局、表单与反馈模式，说明需要扩展的部分，并按现有流程实现和验证。
+可直接使用上方[四种使用场景](#四种使用场景)中的对话示例；参考网页提取和 Gallery 建设也通过宿主对话执行。
 
 ### 5. 建立上下文并确认方案
 
@@ -171,7 +202,7 @@ node packages/cli/bin/design-workflow.mjs scan /你的项目路径 --json
 npm run validate
 ```
 
-进一步阅读：[快速上手](docs/quick-start.md)、[架构](docs/architecture.md)、[贡献指南](CONTRIBUTING.md)。
+进一步阅读：[快速上手](docs/quick-start.zh-CN.md)、[架构](docs/architecture.md)、[贡献指南](CONTRIBUTING.md)。
 
 ## License
 

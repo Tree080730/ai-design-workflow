@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added concise bilingual installation entry points, four conversational usage scenarios, a Chinese quick start and practical update/troubleshooting guidance.
+
 - Added persistent Design System Gallery guidance, a framework-neutral implementation contract, adaptable React renderer/styles and a runnable source-bound token/component/pattern example.
 
 - Established host-first product boundaries and a project-scoped installer for Codex and Claude Code Skills with preserved instruction entries, conflict checks and update receipts.

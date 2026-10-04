@@ -6,6 +6,48 @@ A Design Harness for consistent, specification-aware page development inside exi
 
 The host owns models, conversation, tools, permissions and sessions. This project provides the design-development foundation. It does not require a standalone agent runtime or GUI.
 
+## Quick start
+
+Have Codex or Claude Code, Node.js 18+ and a target project directory ready. Create an empty directory for a new project, or use the actual root of an existing project. Replace `/path/to/project` below; keep the quotes for paths containing spaces.
+
+```bash
+git clone https://github.com/Tree080730/ai-design-workflow.git
+cd ai-design-workflow
+node scripts/install-host.mjs "/path/to/project" --host codex
+```
+
+For Claude Code, replace `codex` with `claude`; use `both` for both hosts. Harness installation needs neither `npm install` nor the example application's dependencies.
+
+Open the **target project** in the host, start a new session and ask:
+
+> Locate the available designer-dev-workflow Skill and identify this project's design constraints for page development. Do not modify files yet.
+
+Once the Skill is located, choose a request below. See [Quick Start](docs/quick-start.md) for details and [Host integration](docs/host-integration.md) for discovery and updates.
+
+## Four ways to use it
+
+Replace the example pages, business requirements and references with your own. The agent reads context and describes a proposal; confirm it in conversation before implementation.
+
+### New project: build from zero
+
+> Use the Design Harness to build a user-management page with a list, filters and editing. Confirm the platform and technology, then establish minimum design constraints from my references. Mark unsupported decisions for confirmation. After I confirm the proposal, implement the page, reusable components and a Gallery, and verify applicable states plus desktop and narrow layouts.
+
+### Existing project: reuse and extend
+
+> Use the Design Harness to add a settings page. Read the actual code, design specifications and components first. Reuse existing layout, form and feedback patterns, preserving the technology stack and token pipeline. Explain necessary extensions, implement after confirmation, check shared impact, and synchronize specifications and the existing Gallery.
+
+### Reference website: extract design rules
+
+> Use design-system-builder to derive colors, typography, spacing, radius, layout and observable component rules from [reference URL] and my screenshots for this project. Distinguish measured values from inferences and record sources. Mark unseen states and breakpoints for confirmation. Let me confirm the core constraints before integrating them into real project styles, components and the Gallery.
+
+Website inspection depends on the host's browser tools and page accessibility. If access fails, use screenshots, structured design data or source code. A URL or screenshot alone does not reveal a website's complete internal design system.
+
+### Design System Gallery: display and maintain
+
+> Use design-system-builder to build a Design System Gallery for this project. Reuse an existing Storybook/docs site or create a project development entry. Import real tokens and components, show applicable variants, states and page patterns, register source/spec references, and provide startup commands, the URL and verification results.
+
+For an existing Gallery, ask: “Add the new component and its states to the Gallery using the real implementation; update specifications and indexes.” See [Design System Gallery](#design-system-gallery) below for the runnable example and integration contract.
+
 ## Complete usage flow
 
 Users describe requests, confirm proposals and inspect results in their coding agent. The agent reads constraints, implements changes, verifies them and maintains design assets. Per-request manual CLI setup is not required after installation.
@@ -26,21 +68,16 @@ flowchart LR
 
 Use an available Codex or Claude Code installation, with your model or account configured in that host. The Harness uses the host's model and tools.
 
-For 0→1 work, prepare an empty target directory. For existing projects, use the actual project root. Obtain this repository and run the installer from its root:
-
-```bash
-git clone https://github.com/Tree080730/ai-design-workflow.git
-cd ai-design-workflow
-```
+For 0→1 work, prepare an empty target directory. For existing projects, use the actual project root. Repository and installation commands are in the quick start above.
 
 ### 2. Install into the target project
 
 The installer requires Node.js 18+. Installing the example application's dependencies is not a prerequisite.
 
 ```bash
-node scripts/install-host.mjs /path/to/project --host codex
+node scripts/install-host.mjs "/path/to/project" --host codex
 # For Claude Code:
-node scripts/install-host.mjs /path/to/project --host claude
+node scripts/install-host.mjs "/path/to/project" --host claude
 ```
 
 Use `--host both` for both integrations or `--dry-run` to preview changes. The same Skills are copied, with a short project instruction entry:
@@ -64,13 +101,7 @@ Confirm that the agent actually located the Skill file. If discovery fails, expl
 
 Provide the page's purpose, content, business behavior and acceptance requirements, plus existing designs, screenshots or specifications when available. You do not need to select every supporting Skill manually.
 
-Example for a new project:
-
-> Use the Design Harness to implement a user-management page with a list, filters and editing. Use my design references to establish minimum constraints and an implementation proposal first. After confirmation, implement it and verify applicable states plus desktop and narrow layouts.
-
-Example for an existing project:
-
-> Use the Design Harness to add a settings page. Read relevant design rules and components, reuse existing layout, form and feedback patterns, explain necessary extensions, then implement and verify through the existing workflow.
+Use the prompts in [Four ways to use it](#four-ways-to-use-it) above. Reference extraction and Gallery construction also run through the host conversation.
 
 ### 5. Establish context and confirm the proposal
 
