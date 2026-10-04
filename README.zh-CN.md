@@ -120,6 +120,24 @@ Agent 交付变更、关键决策、验证结果和未验证风险，并同步�
 
 高风险流程验证适用的成功、恢复、刷新、撤销和边界状态，优先使用项目已有测试和宿主浏览器能力。普通静态样式修改不默认要求 E2E。
 
+## Design System Gallery
+
+设计系统建设包含持续维护的 Gallery：展示真实 tokens、组件变体与状态、页面模式，并登记源码和规范位置。宿主 Agent 优先复用已有 Storybook/文档站；没有时在目标项目中搭建开发入口，沿用现有框架。Gallery 引用真实组件与样式，不复制一套展示专用实现，也不会随临时方案预览清理。
+
+可通过对话请求：
+
+> 为这个项目建立 Design System Gallery，复用已有 tokens 和组件，展示适用的变体、状态与页面模式，登记源码与规范，并验证桌面、窄屏和键盘操作。
+
+[实施契约](skills/design-system-builder/references/gallery.md)提供框架无关的接入与验收规则，以及 React 起步模板。运行仓库示例：
+
+```bash
+cd examples/react-vite
+npm ci
+npm run dev
+```
+
+打开 Vite 输出的地址即可查看 Gallery。示例资产为 candidate；Gallery 展示和构建通过不等于所有业务页面已验证。
+
 ## 可选工程工具
 
 CLI 用于减少重复的确定性操作，不是使用 Skills 的前置条件。

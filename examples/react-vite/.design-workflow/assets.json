@@ -3,9 +3,27 @@
   "assets": [
     {
       "type": "page",
-      "name": "AdapterExample",
+      "name": "DesignSystemGallery",
       "source": "src/App.tsx",
       "document": "design-system/pages/adapter-example.md"
+    },
+    {
+      "type": "component",
+      "name": "Button",
+      "source": "src/components/Button.tsx",
+      "document": "design-system/components/button.md"
+    },
+    {
+      "type": "component",
+      "name": "TextField",
+      "source": "src/components/TextField.tsx",
+      "document": "design-system/components/text-field.md"
+    },
+    {
+      "type": "page",
+      "name": "SettingsPattern",
+      "source": "src/patterns/SettingsPanel.tsx",
+      "document": "design-system/pages/settings-pattern.md"
     }
   ]
 }

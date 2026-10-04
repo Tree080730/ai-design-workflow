@@ -61,7 +61,7 @@ React + Vite 项目可读取 [Adapter 示例](references/react-vite-adapter-exam
 - 组件层保持通用，业务层承载场景逻辑。
 - 每个小步完成后运行对应检查。
 - 发现 spec 未覆盖的高影响变化时，追加到 spec 并暂停确认。
-- 更新设计系统资产后，同步其预览与索引。
+- 更新设计系统资产后，同步其 Gallery 展示条目、状态、源码/规范映射与索引；沿用已有 Storybook 或文档站。Gallery 持续保留，临时 proposal 预览按原流程清理。
 
 ## Phase 5：质量检查
 

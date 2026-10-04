@@ -120,6 +120,20 @@ For 0→1 projects, establish minimum usable constraints and assets. For existin
 
 High-risk flows need relevant success, recovery, persistence, reversal and boundary verification. Reuse existing project tests and the host's browser capabilities. Static styling changes do not automatically require E2E.
 
+## Design System Gallery
+
+Design-system construction includes a persistent Gallery of real tokens, shared component variants/states and page patterns, with source/spec references. The host reuses an existing Storybook/docs site or creates a development entry using the project framework. Gallery imports real assets and remains after temporary proposal previews are removed.
+
+Ask the host to build a Gallery using existing tokens/components, register relevant states and patterns, and verify desktop, narrow-screen and keyboard behavior. See the [implementation contract and React starter](skills/design-system-builder/references/gallery.md). Run the example:
+
+```bash
+cd examples/react-vite
+npm ci
+npm run dev
+```
+
+Open the URL printed by Vite. Example assets are candidate; a Gallery or successful build does not certify all business pages.
+
 ## Optional engineering helpers
 
 The CLI reduces repeated deterministic work; it is not a prerequisite for the Skills.

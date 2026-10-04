@@ -1,29 +1,19 @@
 @import './generated-tokens.css';
 
-body {
-  margin: 0;
-  background: var(--color-background-default);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-body);
-  line-height: var(--line-height-body);
-}
-
-.example-shell {
-  max-width: 48rem;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
-}
-
-h1 {
-  font-size: var(--font-size-title);
-  line-height: var(--line-height-title);
-}
-
-button {
-  border: 0;
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-action-primary);
-  color: var(--color-background-default);
-}
+body { margin: 0; background: var(--color-background-subtle); color: var(--color-text-primary); font-family: var(--font-family-sans); font-size: var(--font-size-body); line-height: var(--line-height-body); }
+* { box-sizing: border-box; }
+h1 { font-size: var(--font-size-title); line-height: var(--line-height-title); }
+.button { border: 1px solid var(--color-action-primary); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font: inherit; cursor: pointer; }
+.button-primary { background: var(--color-action-primary); color: var(--color-background-default); }
+.button-secondary { background: var(--color-background-default); color: var(--color-action-primary); }
+.button:disabled { cursor: not-allowed; background: var(--color-background-subtle); color: var(--color-text-secondary); border-color: var(--color-text-secondary); }
+.button:focus-visible, .text-field input:focus-visible { outline: 2px solid var(--color-action-primary); outline-offset: 4px; }
+.specimen-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.field-specimens, .settings-panel { display: grid; gap: var(--space-4); }
+.text-field { display: grid; gap: var(--space-2); min-width: 0; }
+.text-field input { width: 100%; min-width: 0; font: inherit; padding: var(--space-3); border: 1px solid var(--color-text-secondary); border-radius: var(--radius-md); color: var(--color-text-primary); background: var(--color-background-default); }
+.text-field input:disabled { background: var(--color-background-subtle); }
+.text-field input[aria-invalid="true"] { border-style: dashed; }
+.field-error { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-caption); }
+.settings-panel { max-width: 40rem; }
+.settings-panel h3 { margin-top: 0; }
