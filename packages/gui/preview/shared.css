@@ -8,4 +8,3 @@
 .overview-sheet{min-height:1000px}.overview-sheet section:last-child{grid-column:1/-1;min-height:110px}
 
 .status-samples>.overview-progress{width:100%;flex-basis:100%}
-

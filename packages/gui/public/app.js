@@ -43,7 +43,7 @@ async function choose(p,button) {
 function showConversation(push=true) {
   if(!project.selection)return showGallery(push);
   activeId=project.selection.preset?.id??'custom';const p=presets.find(item=>item.id===activeId);document.documentElement.style.setProperty('--accent',p?.color??'#171717');
-  setView('conversation');$('#conversation-basis').innerHTML=p?mark(p)+`<span>${escape(p.name)}<small>${project.selection.mode==='components'?'组件与规范基础':'仅作为设计参考'}</small></span><span>调整 ↗</span>`:'<span>不使用预设<small>根据你的需求构建设计系统</small></span><span>调整 ↗</span>'; 
+  setView('conversation');$('#conversation-basis').innerHTML=p?mark(p)+`<span>${escape(p.name)}<small>${project.selection.mode==='components'?'组件与规范基础':'仅作为设计参考'}</small></span><span>调整 ↗</span>`:'<span>不使用预设<small>根据你的需求构建设计系统</small></span><span>调整 ↗</span>';
   $('#request-input').value=project.selection.intent;$('#request-message').textContent=project.selection.intent;$('#request-message').hidden=!project.selection.intent;
   $('#copy-request').disabled=!project.selection.intent;$('#request-error').hidden=true;
   if(push)history.pushState(null,'',`/#conversation/${encodeURIComponent(activeId)}`);window.scrollTo(0,0);

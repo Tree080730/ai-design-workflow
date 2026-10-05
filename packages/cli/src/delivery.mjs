@@ -203,4 +203,3 @@ export function deliveryExitCode(action, result) {
   if (result.operation) return result.operation.status === 'passed' ? 0 : 2;
   return result.canFinish ? 0 : 2;
 }
-

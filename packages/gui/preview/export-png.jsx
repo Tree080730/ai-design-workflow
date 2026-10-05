@@ -21,7 +21,7 @@ export default function ExportPNG({system}){
    let svgURL;
    try{
     paints.forEach(({el,name,value})=>el.setAttribute(name,value));
-    svgStyles.forEach(({el,values})=>values.forEach(([name,value])=>el.style.setProperty(name,value))); 
+    svgStyles.forEach(({el,values})=>values.forEach(([name,value])=>el.style.setProperty(name,value)));
     svgURL=await toSvg(node,{width:1920,height:946,backgroundColor:'#ffffff',includeStyleProperties});
    }finally{svgStyles.forEach(({el,previous})=>previous===null?el.removeAttribute('style'):el.setAttribute('style',previous));paints.forEach(({el,name,previous})=>previous===null?el.removeAttribute(name):el.setAttribute(name,previous));}
    const svgDocument=new DOMParser().parseFromString(decodeURIComponent(svgURL.split(',')[1]),'image/svg+xml');
