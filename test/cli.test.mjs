@@ -265,7 +265,7 @@ test('structural health never certifies starter constraints or page quality', ()
 });
 
 test('standalone Skill scanner stays synchronized and reports the same facts', () => {
-  for (const name of ['scan.mjs','config.mjs','fs-utils.mjs']) {
+  for (const name of ['scan.mjs','config.mjs','fs-utils.mjs','tasks.mjs','delivery.mjs']) {
     assert.equal(fs.readFileSync(`skills/designer-dev-workflow/scripts/lib/${name}`, 'utf8'), fs.readFileSync(`packages/cli/src/${name}`, 'utf8'), `Run npm run sync:skill-scanner after changing ${name}`);
   }
   const root = temporaryProject();

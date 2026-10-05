@@ -4,7 +4,7 @@
 
 A Design Harness inside existing coding agents, focused on **0→1 design-system construction and business-page development**. Its Skills turn design evidence into executable constraints, implement design-system source and a Gallery, then reuse real assets to build business pages.
 
-The host owns models, conversation, tools, permissions and sessions. This project provides the design-development foundation. It does not require a standalone agent runtime or GUI.
+The host owns models, conversation, tools, permissions and sessions. This project provides the design-development foundation. A local design-selection GUI uses the host’s existing model and execution capabilities; no separate agent runtime or model API is required.
 
 ## Quick start
 
@@ -23,6 +23,20 @@ Open the **target project** in the host, start a new session and ask:
 > Locate the available designer-dev-workflow Skill and identify this project's design constraints for page development. Do not modify files yet.
 
 Once the Skill is located, choose a request below. See [Quick Start](docs/quick-start.md) for details and [Host integration](docs/host-integration.md) for discovery and updates.
+
+## GUI: choose a design foundation
+
+From this repository (Node.js 18+, no extra dependencies):
+
+```bash
+npm run gui -- --project "/path/to/project"
+```
+
+Open `http://127.0.0.1:4173/` in the host browser; add `--port 4174` if occupied. Browse/search Ant Design, TDesign, Material, Cloudscape, Carbon, Fluent and Spectrum, plus Apple HIG as a reference-only option. Click a logo card for details, then confirm to enter the natural-language project page. Adjust reference/component mode and add your business needs and visual reference.
+
+The selection is saved to `.design-workflow/design-basis.json` in the target project. Copy the generated handoff into the host conversation; Skills read the selection, confirm compatibility and versions, then implement real design-system source, a Gallery and business pages. Direct GUI-to-agent dispatch is not connected yet. Selecting a preset does not install components or deliver implementation.
+
+See [GUI guide and official sources](docs/design-builder.md).
 
 ## One complete 0→1 request
 
@@ -77,13 +91,27 @@ Use clear references directly. Proposal previews apply only when visual directio
 
 Delivery lists actual project source, entries/consumers, install/start commands, results, missing implementation and unverified behavior. Remove temporary proposal previews; retain the Gallery and formal pages. Subsequent pages reuse these assets, and fresh sessions reread project constraints and code.
 
-Existing-project support remains a supplementary path that preserves the existing stack and assets. CLI, token export, manifests and task evidence are optional; per-request manual setup is not required.
+Existing-project support remains a supplementary path that preserves the existing stack and assets. The bundled delivery gate is the default for 0→1; CLI installation, token export, manifests and standalone task management remain optional. Per-request manual setup is not required.
 
 ## Required delivery: implementation source
 
 Page, component and design-system construction must deliver editable source in the target project. Within confirmed scope, include page/component implementation, runtime styles/token integration, Gallery code and necessary entries, dependencies and configuration. This also applies to minimum 0→1 startup; existing projects reuse actual implementations.
 
 Report source paths, runtime entries/consumers, install/start commands and actual verification. Documentation, screenshots, token JSON, indexes and temporary previews alone are not implementation. Missing required source or disconnected entries mean incomplete; execution unavailable in the current environment remains explicitly unverified.
+
+## Default delivery gate
+
+For 0→1 work, the host writes confirmed scope, rules, editable source/entries, Gallery/page URLs and mandatory checks to `.design-workflow/delivery.json`. A verifier installed with the Skill reuses the task evidence engine and blocks missing artifacts, disconnected static imports, missing/failed checks and stale evidence. No separate CLI installation is needed.
+
+Run in the installed target project:
+
+```bash
+node .agents/skills/designer-dev-workflow/scripts/verify-project.mjs status .
+```
+
+Use `.claude` for Claude Code. The JSON includes stage status, blockers and `canFinish`; exit 2 means blocked and exit 0 means all declared mandatory acceptance passed. A design-system-only scope still requires Gallery and does not require business pages.
+
+Add the same gate to CI for enforcement. Skills cannot force an arbitrary host to run it, and recorded visual/behavioral observations are not independently authenticated. See [contract, evidence, CI integration and limits](docs/delivery-contract.md).
 
 ## Core Skills
 
@@ -124,6 +152,7 @@ The CLI reduces repeated deterministic work; it is not a prerequisite for the Sk
 | `doctor` | Structural diagnostics and known constraint-input gaps |
 | `tokens` | Opt-in JSON-to-CSS export |
 | `task` | Opt-in verification evidence and recovery |
+| `delivery` | CLI equivalent of the bundled default delivery gate |
 
 Run from source, for example:
 

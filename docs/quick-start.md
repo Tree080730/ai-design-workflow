@@ -73,3 +73,5 @@ Keep `.design-workflow/host-installation.json`. If managed Skill content was edi
 | Reference website is inaccessible | Supply screenshots, structured design data or source; leave unsupported values unresolved |
 | Gallery is not present after installation | Ask the host to construct it; installation copies Skills, not a finished Gallery into your product |
 | Local Skill changes block an update | Reconcile the conflicting content and retain the installation receipt |
+
+For 0→1 work, the host uses the bundled [delivery gate](delivery-contract.md) by default; standalone task management remains optional. CI must invoke the same gate to enforce its verdict.

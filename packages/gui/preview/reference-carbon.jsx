@@ -1,0 +1,24 @@
+import React from 'react';
+import {Button,Dropdown,DatePicker,DatePickerInput,RadioButton,Checkbox,Toggle,ModalHeader,ModalBody,ModalFooter,Popover,PopoverContent,Tooltip,InlineNotification,ToastNotification,ProgressIndicator,ProgressStep,Tag,StructuredListWrapper,StructuredListBody,StructuredListRow,StructuredListCell,ProgressBar,Tabs,TabList,Tab,Pagination,Slider,Tile,Link,IconButton} from '@carbon/react';
+import {Help,Document,ArrowUp,Chat,Close} from '@carbon/icons-react';
+import '@carbon/styles/css/styles.css';
+import {RingExamples} from './reference-fallbacks.jsx';
+import {ReferenceCanvas,listItems} from './reference-layout.jsx';
+import {labels,modalText,TourContent,TourPreview} from './reference-content.jsx';
+const list=<StructuredListWrapper><StructuredListBody>{listItems.map(x=><StructuredListRow key={x.id}><StructuredListCell><div className="reference-list-title">{x.title}</div><div className="reference-list-description">{x.description}</div></StructuredListCell><StructuredListCell><Tag type="blue">Step 2</Tag></StructuredListCell></StructuredListRow>)}</StructuredListBody></StructuredListWrapper>;
+const tour=(accent=false)=><Tile><TourContent accent={accent} preview={<TourPreview rows={list}/>} link={<Link>Help info ↗</Link>} button={<><Button size="sm" kind="tertiary">Previous</Button><Button size="sm">Next</Button></>}/></Tile>;
+const date=(id,inline=false)=><DatePicker datePickerType="single" dateFormat="Y-m-d" value={inline?"2022-12-19":"2022-11-18"} inline={inline}><DatePickerInput id={id} labelText="" placeholder="2022-11-18"/></DatePicker>;
+export default function Overview(){return <ReferenceCanvas system="carbon" slots={{
+ buttons:<><Button size="sm">Primary Button</Button><Button size="sm" kind="tertiary">Default Button</Button><Button size="sm" kind="danger--tertiary">Danger Button</Button></>,select:<Dropdown id="option" titleText="" label="Option A" items={['Option A','Option B']} initialSelectedItem="Option A"/>,date:date('date'),
+ radios:labels.map((x,i)=><RadioButton key={x} id={`radio-${i}`} name={`radio-${i}`} value={x} labelText={x} checked={i===2||i===4} disabled={i>2}/>),checkboxes:labels.map((x,i)=><Checkbox key={x} id={`check-${i}`} labelText={x} checked={i===2||i===4} disabled={i>2}/>),
+ switches:<div className="ref-stack">{[0,1].map(row=><div className="ref-row" key={row}>{[true,false,true,false].map((x,i)=><Toggle key={i} id={`toggle-${row}-${i}`} toggled={x} disabled={i>1} hideLabel size="sm" labelA="" labelB=""/>)}</div>)}</div>,
+ modal:<div className="cds--modal-container"><ModalHeader title="Basic Modal"/><ModalBody>{modalText}</ModalBody><ModalFooter><Button kind="secondary">Cancel</Button><Button>OK</Button></ModalFooter></div>,
+ popover:<Tile style={{padding:16}}><strong>Popover Title</strong><p>The floating card popped by clicking.</p></Tile>,popconfirm:<Tile style={{padding:12}}><strong>Popconfirm</strong><div className="ref-row"><Button size="sm" kind="tertiary">Cancel</Button><Button size="sm">OK</Button></div></Tile>,
+ message:<ToastNotification kind="success" title="This is a normal message" hideCloseButton lowContrast/>,steps:<ProgressIndicator currentIndex={1}><ProgressStep label="Finished" complete/><ProgressStep label="In Progress" current/><ProgressStep label="Waiting"/></ProgressIndicator>,
+ tags:<>{['gray','gray','green','blue','yellow','red'].map((type,i)=><Tag key={i} type={type}>{['Tag','+ Tag','Green','Blue','Gold','Red'][i]}</Tag>)}</>,alert:<InlineNotification kind="success" title="Success Text" lowContrast/>,list,
+ progress:<div className="ref-stack"><ProgressBar label="" value={50} helperText="50%"/><ProgressBar label="" value={100} status="finished"/><ProgressBar label="" value={70} status="error"/><RingExamples/><div className="ref-row"><Tag type="blue">In Progress</Tag><Tag type="green">Success</Tag><Tag type="red">Failed</Tag></div></div>,
+ tour:tour(),tourAccent:tour(true),calendar:date('calendar',true),
+ tabs:<div className="ref-row">{[0,1].map(i=><Tabs key={i}><TabList aria-label="Tabs"><Tab>Tab1</Tab><Tab>Tab2</Tab><Tab disabled>Tab3</Tab></TabList></Tabs>)}<Button size="sm">Dropdown ⌄</Button></div>,pagination:<Pagination totalItems={50} pageSize={10} page={2} pageSizes={[10]} size="sm"/>,
+ timeline:<ProgressIndicator vertical currentIndex={1}>{[1,2,3,4].map(i=><ProgressStep key={i} label="Create a services site" secondaryLabel="2015-09-01" complete={i===1}/>)}</ProgressIndicator>,sliders:<div className="ref-row"><Slider id="s1" min={0} max={100} value={40} hideTextInput labelText=""/><Slider id="s2" min={0} max={100} value={70} hideTextInput labelText=""/></div>,
+ badges:<><Tag type="green">Success</Tag><Tag type="red">Error</Tag><Tag type="red">5</Tag></>,floating:<div className="ref-grid">{[Help,Document,Document,Document,ArrowUp,Chat,ArrowUp,Document,Close].map((Icon,i)=><IconButton key={i} label="Action" kind={i===8?'primary':'ghost'} size="sm"><Icon/></IconButton>)}</div>
+}}/>}

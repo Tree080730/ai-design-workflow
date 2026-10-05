@@ -1,0 +1,7 @@
+import React from 'react';
+// Shared editorial content and positions, never shared imitation widget styling.
+export const labels=['Option A','Option B','Option C','Option D','Option E'];
+export const modalText='You can use Modal to create a new floating layer over the current page to get user feedback.';
+export function TourContent({button,link,preview,accent=false}){return <div className={`reference-tour-content ${accent?'reference-tour-accent':''}`}><div className="reference-tour-close">×</div><div className="reference-tour-thumbnail">{preview}</div><strong>Tour Title</strong><p>Here is the content, here is the content, here is the content…</p>{link}<footer><span>● ○ ○ ○</span><div className="ref-row">{button}</div></footer></div>}
+export function TourPreview({rows}){return <div className="reference-tour-table">{rows}</div>}
+export function ReferenceIcon({index=0}){const type=[0,1,1,1,2,3,2,1,4][index];return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{type===0?<><circle cx="12" cy="12" r="9"/><path d="M9.5 8a2.7 2.7 0 0 1 5 .9c0 2-2.5 2.3-2.5 4M12 17h.01"/></>:type===1?<><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></>:type===2?<><path d="M12 20V4M6 10l6-6 6 6M5 21h14"/></>:type===3?<path d="M4 4h16v13H9l-5 4z"/>:<path d="m6 6 12 12M18 6 6 18"/>}</svg>}

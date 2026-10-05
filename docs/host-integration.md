@@ -46,7 +46,7 @@ If discovery fails, explicitly invoke the Skill: `$designer-dev-workflow` in Cod
 - Optional engineering helpers: CLI scan/init/check/doctor when useful to the current project.
 - Optional enhancements: managed token export, explicit asset mapping and persisted task evidence when deliberately adopted.
 
-A user need not create a task plan, switch token formats or run manual CLI steps for each request. The host executes suitable tools behind the conversation. Missing optional configurations are not evidence that the Harness failed to load.
+For 0→1 delivery, the host uses the bundled [delivery contract and gate](delivery-contract.md) by default. A user need not create a task plan, switch token formats or run manual CLI steps for each request. The host executes suitable tools behind the conversation. Missing optional configurations are not evidence that the Harness failed to load.
 
 The installer does not initialize starter design assets. In 0→1 work, the host establishes the minimum usable constraints as part of development; in existing projects, it adopts actual code, components and the existing token pipeline.
 

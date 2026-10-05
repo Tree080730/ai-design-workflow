@@ -1,0 +1,310 @@
+{
+  "ant-design": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "按钮、表单校验、数据表格、筛选与分页、日期选择、弹窗及状态反馈。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://ant.design/components/overview/"
+      }
+    },
+    "customization": {
+      "text": "可统一调整颜色、字体、圆角和组件外观，支持深色与紧凑模式。不同组件的可调项目以各自主题文档为准。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://ant.design/docs/react/customize-theme/"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://ant.design/docs/react/getting-started/"
+      }
+    },
+    "maintenance": {
+      "text": "官方仓库有版本发布记录，最近一次正式发布记录日期为 2026-09-20。这是仓库级记录，不代表项目已验证该版本或承诺后续维护。",
+      "source": {
+        "label": "官方发布记录",
+        "url": "https://github.com/ant-design/ant-design/releases/tag/6.6.5"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "ant-design/ant-design",
+      "archived": false,
+      "release": "6.6.5",
+      "publishedAt": "2026-09-20T09:04:11Z",
+      "url": "https://github.com/ant-design/ant-design/releases/tag/6.6.5"
+    },
+    "introduction": "面向企业级网页产品，提供统一的界面规范与可复用组件。"
+  },
+  "tdesign": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "按钮、输入与选择、表单、数据表格、日期选择、对话框和导航标签。不同开发框架的组件实现需分别核对。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://tdesign.tencent.com/react/overview"
+      }
+    },
+    "customization": {
+      "text": "支持主题定制和深色模式，可沿用原有组件并调整主题外观；具体可调整项以所选实现的主题说明为准。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://github.com/Tencent/tdesign-react"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://github.com/Tencent/tdesign-react"
+      }
+    },
+    "maintenance": {
+      "text": "官方仓库有版本发布记录，最近一次正式发布记录日期为 2026-09-26。这是仓库级记录，不代表项目已验证该版本或承诺后续维护。",
+      "source": {
+        "label": "官方发布记录",
+        "url": "https://github.com/Tencent/tdesign-react/releases/tag/tdesign-react%401.18.4"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "Tencent/tdesign-react",
+      "archived": false,
+      "release": "tdesign-react@1.18.4",
+      "publishedAt": "2026-09-26T15:06:26Z",
+      "url": "https://github.com/Tencent/tdesign-react/releases/tag/tdesign-react%401.18.4"
+    },
+    "introduction": "面向企业应用，帮助不同平台的产品保持一致的设计与组件体验。"
+  },
+  "material": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "按钮、输入框、单选与复选、开关、菜单、标签页和对话框。当前官方目录未提供数据表格与日期选择器，需要另行实现或选用其他适配方案。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://github.com/material-components/material-web/blob/main/all.ts"
+      }
+    },
+    "customization": {
+      "text": "可配置配色、排版和形状等主题外观。配色需同时设置背景与文字的对应颜色，不能只替换一个品牌主色。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://github.com/material-components/material-web/tree/main/docs/theming"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://github.com/material-components/material-web/blob/main/docs/quick-start.md"
+      }
+    },
+    "maintenance": {
+      "text": "官方仓库标注为维护模式，等待新的维护者。仍有已发布版本可用，但不能按持续新增功能的组件库来预期。",
+      "source": {
+        "label": "官方维护说明",
+        "url": "https://github.com/material-components/material-web"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "material-components/material-web",
+      "archived": false,
+      "release": "v2.5.0",
+      "publishedAt": "2026-07-15T14:38:06Z",
+      "url": "https://github.com/material-components/material-web/releases/tag/v2.5.0"
+    },
+    "notice": "官方网页组件处于维护模式；数据表格和日期选择器需要另行补充。",
+    "introduction": "Google 的 Material 3 设计体系，此处提供对应的官方网页组件。"
+  },
+  "cloudscape": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "应用导航与布局、数据表格、资源列表、筛选、表单、日期选择、弹窗和通知。页面模式与组件需要按具体业务组合。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://cloudscape.design/components/"
+      }
+    },
+    "customization": {
+      "text": "官方主题接口支持修改颜色、字体和圆角；不支持通过该接口任意修改间距、动效、图标或网格，也不支持只改某个组件实例。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://cloudscape.design/foundation/visual-foundation/theming/"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://cloudscape.design/get-started/for-developers/using-cloudscape-components/"
+      }
+    },
+    "maintenance": {
+      "text": "官方仓库有版本发布记录，最近一次正式发布记录日期为 2026-10-05。这是仓库级记录，不代表项目已验证该版本或承诺后续维护。",
+      "source": {
+        "label": "官方发布记录",
+        "url": "https://github.com/cloudscape-design/components/releases/tag/3.0.1392"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "cloudscape-design/components",
+      "archived": false,
+      "release": "3.0.1392",
+      "publishedAt": "2026-10-05T09:49:38Z",
+      "url": "https://github.com/cloudscape-design/components/releases/tag/3.0.1392"
+    },
+    "introduction": "用于构建网页应用，源自 AWS 产品与服务，提供设计指南和组件。"
+  },
+  "carbon": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "按钮、表单输入、数据表格、日期选择、导航、弹窗和通知。组件是界面基础，业务流程仍需项目自行实现。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://github.com/carbon-design-system/carbon/tree/main/packages/react/src/components"
+      }
+    },
+    "customization": {
+      "text": "提供浅色与深色主题，可按页面或区域应用主题。进一步定制需要配套的样式和设计变量，不等同于任意改变组件结构。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://github.com/carbon-design-system/carbon/blob/main/packages/react/src/components/Theme/index.tsx"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://www.carbondesignsystem.com/getting-started/developing/carbon-core/react"
+      }
+    },
+    "maintenance": {
+      "text": "官方仓库有版本发布记录，最近一次正式发布记录日期为 2026-09-23。这是仓库级记录，不代表项目已验证该版本或承诺后续维护。",
+      "source": {
+        "label": "官方发布记录",
+        "url": "https://github.com/carbon-design-system/carbon/releases/tag/v11.117.0"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "carbon-design-system/carbon",
+      "archived": false,
+      "release": "v11.117.0",
+      "publishedAt": "2026-09-23T14:51:09Z",
+      "url": "https://github.com/carbon-design-system/carbon/releases/tag/v11.117.0"
+    },
+    "introduction": "IBM 面向企业产品的开源设计系统，以 IBM Design Language 为基础。"
+  },
+  "fluent": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "按钮、输入、选择、菜单、标签页、对话框和表格。此处采用网页 React 实现，其他平台的实现不能直接替代它。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://react.fluentui.dev/"
+      }
+    },
+    "customization": {
+      "text": "通过统一主题配置组件外观，支持浅色和深色主题；品牌定制以这套实现提供的主题变量为依据。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://github.com/microsoft/fluentui/blob/master/packages/react-components/react-theme/README.md"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://github.com/microsoft/fluentui/blob/master/packages/react-components/react-components/README.md"
+      }
+    },
+    "maintenance": {
+      "text": "官方仓库有版本发布记录，最近一次正式发布记录日期为 2026-10-01。这是仓库级记录，不代表项目已验证该版本或承诺后续维护。",
+      "source": {
+        "label": "官方发布记录",
+        "url": "https://github.com/microsoft/fluentui/releases/tag/%40fluentui/utilities_v8.17.3"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "microsoft/fluentui",
+      "archived": false,
+      "release": "@fluentui/utilities_v8.17.3",
+      "publishedAt": "2026-10-01T07:12:27Z",
+      "url": "https://github.com/microsoft/fluentui/releases/tag/%40fluentui/utilities_v8.17.3"
+    },
+    "introduction": "支持网页、手机和桌面应用，提供对应平台的设计资源与组件。"
+  },
+  "spectrum": {
+    "checkedAt": "2026-10-05",
+    "components": {
+      "text": "表单输入、列表与表格、日期选择、弹窗、进度及拖放能力，并提供键盘与辅助技术支持；业务组合仍需实际验证。",
+      "source": {
+        "label": "官方组件目录",
+        "url": "https://react-spectrum.adobe.com/v3/index.html"
+      }
+    },
+    "customization": {
+      "text": "支持自定义主题、深浅模式和鼠标／触屏的组件尺寸适配。主题配置需要同时考虑颜色、尺寸和间距的对应关系。",
+      "source": {
+        "label": "官方主题说明",
+        "url": "https://react-spectrum.adobe.com/v3/theming.html"
+      }
+    },
+    "web": {
+      "text": "提供可用于网页应用的组件。已有项目能否直接接入，需要由 Agent 检查项目使用的开发框架、依赖版本与构建方式；新项目由 Agent 选择兼容的实现。",
+      "source": {
+        "label": "官方接入说明",
+        "url": "https://react-spectrum.adobe.com/v3/getting-started.html"
+      }
+    },
+    "maintenance": {
+      "text": "官方已推出 Spectrum 2；当前展示使用 v3。新项目应由 Agent 核对采用哪一代实现，避免混用安装包和组件接口。",
+      "source": {
+        "label": "官方版本说明",
+        "url": "https://react-spectrum.adobe.com/v3/getting-started.html"
+      }
+    },
+    "releaseEvidence": {
+      "repo": "adobe/react-spectrum",
+      "archived": false,
+      "release": "react-aria-components@1.21.0",
+      "publishedAt": "2026-09-04T19:44:19Z",
+      "url": "https://github.com/adobe/react-spectrum/releases/tag/react-aria-components%401.21.0"
+    },
+    "notice": "当前展示使用 Spectrum v3；官方另有 Spectrum 2，接入前需确认采用版本。",
+    "introduction": "Adobe 产品体验的设计体系，提供基础规范、组件与交互模式。"
+  },
+  "apple-hig": {
+    "checkedAt": "2026-10-05",
+    "notice": "这是 Apple 平台设计参考，不提供可直接安装的官方网页组件。",
+    "components": {
+      "text": "提供导航、控件、弹窗和反馈等平台设计指导，而非可直接用于网页的组件代码。",
+      "source": {
+        "label": "官方平台规范",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/"
+      }
+    },
+    "customization": {
+      "text": "可参考平台颜色与交互规范。网页项目需要建立自己的样式与组件实现，不能把平台设计资源视为通用网页主题包。",
+      "source": {
+        "label": "官方设计资源",
+        "url": "https://developer.apple.com/design/resources/"
+      }
+    },
+    "web": {
+      "text": "可作为网页的设计参考；若需要做出对应效果，由 Agent 实现网页组件，并说明哪些是参考改造。",
+      "source": {
+        "label": "官方平台定位",
+        "url": "https://developer.apple.com/design/"
+      }
+    },
+    "maintenance": {
+      "text": "按 Apple 官方规范与资源版本查阅。设计资源适用各自许可，不按开源网页组件库的发布状态评价。",
+      "source": {
+        "label": "官方资源与许可",
+        "url": "https://developer.apple.com/design/resources/"
+      }
+    },
+    "introduction": "面向 Apple 各平台的应用体验，提供设计指导与最佳实践。"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "apple-site": {
+    "file": "apple-site.jpg",
+    "source": "https://www.apple.com/v/homepage/images/iphone-18-pro/a/hero_iphone_18_pro__fqe1motd0ymy_large.jpg",
+    "page": "https://www.apple.com/",
+    "caption": "官网产品主视觉素材 · 图片不包含页面文字与导航",
+    "reviewedAt": "2026-10-05",
+    "sha256": "892f440a8ecc4d5172f0c1f410ef32cf62d5f86b84a35ac5034ae7770c21eaca"
+  },
+  "stripe-site": {
+    "file": "stripe-site.webp",
+    "source": "https://b.stripecdn.com/mkt-ssr-statics/assets/_next/static/media/wave-fallback-desktop-1x.fba6fa88.webp",
+    "page": "https://stripe.com/",
+    "caption": "官网首屏渐变视觉素材 · 图片不包含完整页面布局",
+    "reviewedAt": "2026-10-05",
+    "sha256": "2daf8ce7404a849937a47041584d5d1818ce7fd3e8712b5bfb1d6961f0e3f679"
+  },
+  "linear-site": {
+    "file": "linear-site.png",
+    "source": "https://webassets.linear.app/images/ornj730p/production/696c7f2b0921b5e3163710ea1b310dfb8e4e377c-3600x2080.png?w=1800&fm=png",
+    "page": "https://linear.app/changelog/2026-03-12-ui-refresh",
+    "caption": "官网 UI refresh 发布素材 · 展示产品界面局部",
+    "reviewedAt": "2026-10-05",
+    "sha256": "74755cbcc32e7793afabdcb254187c7c4ebd264088b9eb91b7928a16b133c6f9"
+  },
+  "notion-site": {
+    "file": "notion-site.jpg",
+    "source": "https://images.ctfassets.net/spoqsaf9291f/5s8E0EU3tXEvGrFrRwgxhb/c44fce43494ccd6f098746c64b679aab/capture_desktop.jpg",
+    "page": "https://www.notion.com/",
+    "caption": "官网产品展示素材 · 来自官网的 Capture knowledge 区域",
+    "reviewedAt": "2026-10-05",
+    "sha256": "400eeb74f056f21433745fe13a1aa0f6e68c92371fab7b165db3639b86ccdb81"
+  }
+}

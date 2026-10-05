@@ -16,7 +16,7 @@ function block(host) {
   return [START,'## Design Harness','',
     'For page, component, styling and interaction work, use the `designer-dev-workflow` skill at `'+hostRoots[host]+'/designer-dev-workflow/SKILL.md`. It coordinates the design-system and proposal skills when needed; use rules-governance for requested audits.',
     'Read relevant project rules, existing design assets and implementation before changes. Preserve the existing token toolchain and reusable components.',
-    'Use the host for file edits, shell commands, browser verification and session management. Harness CLI, token export and task tracking are optional helpers, not prerequisites.',
+    'Use the host for file edits, shell commands, browser verification and session management. For 0-to-1 design-system/page delivery, follow the Skill delivery contract and run its bundled verify-project.mjs status gate before claiming completion. Add that same gate to CI for enforcement. The CLI and token export remain optional.',
     'For unrelated tasks, follow normal project instructions. This entry does not change host permissions or require a new agent runtime.',END].join('\n');
 }
 function instructionFile(root,host) {

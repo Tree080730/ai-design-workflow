@@ -6,6 +6,7 @@ import { doctorProject } from './doctor.mjs';
 import { initProject } from './init.mjs';
 import { scanProject } from './scan.mjs';
 import { buildTokens } from './tokens.mjs';
+import { executeDelivery, deliveryExitCode } from './delivery.mjs';
 import { VERSION } from './version.mjs';
 
 const HELP = `AI Design Workflow v${VERSION}
@@ -18,8 +19,16 @@ Commands:
   scan     Print a read-only project snapshot
   check    Check token usage and design documentation coverage
   tokens   Export configured JSON tokens to runtime CSS
+  delivery Verify required scope, source, Gallery and delivery evidence
   task     Track acceptance checks, evidence, completion and recovery
   doctor   Diagnose the harness and project setup
+
+Delivery usage:
+  design-workflow delivery prepare [project]
+  design-workflow delivery run [project] --check criterion-id
+  design-workflow delivery record [project] --file evidence.json
+  design-workflow delivery status [project] --json
+  design-workflow delivery recover [project]
 
 Task usage:
   design-workflow task list [project]
@@ -52,8 +61,8 @@ function parseArguments(args) {
     else positional.push(argument);
   }
   const command=positional[0];
-  if (positional.length > (command==='task'?3:2)) throw new Error('Too many positional arguments.');
-  return {command,action:command==='task'?positional[1]:undefined,target:positional[command==='task'?2:1] || '.',options};
+  if (positional.length > (['task','delivery'].includes(command)?3:2)) throw new Error('Too many positional arguments.');
+  return {command,action:['task','delivery'].includes(command)?positional[1]:undefined,target:positional[['task','delivery'].includes(command)?2:1] || '.',options};
 }
 function printTask(result) {
   if (result.tasks) {
@@ -121,7 +130,8 @@ export async function runCli(args) {
   const resolved = path.resolve(target);
   let result;
 
-  if (command === 'task') {
+  if (command === 'delivery') result = executeDelivery(resolved, action, options);
+  else if (command === 'task') {
     if (['create','record'].includes(action) && !options.file) throw new Error('--file is required.');
     if (!['create','list'].includes(action) && !options.task) throw new Error('--task is required.');
     if (action === 'list') result = listTasks(resolved);
@@ -141,6 +151,11 @@ export async function runCli(args) {
   else throw new Error(`Unknown command: ${command}. Run with --help.`);
 
   if (options.json) console.log(JSON.stringify(result, null, 2));
+  else if (command === 'delivery') {
+    console.log(`Delivery: ${result.status}; can finish: ${result.canFinish}`);
+    for (const item of result.blockers) console.log(`- ${item.file}: ${item.message}`);
+    for (const item of result.warnings) console.log(`Warning: ${item.file}: ${item.message}`);
+  }
   else if (command === 'task') printTask(result);
   else if (command === 'tokens') {
     console.log(`Exported ${result.tokenCount} tokens to ${result.outputFile}`);
@@ -151,6 +166,7 @@ export async function runCli(args) {
   else if (command === 'check') printCheck(result);
   else printDoctor(result);
 
+  if (command === 'delivery') process.exitCode = deliveryExitCode(action, result);
   if (command === 'check' && (options.strict || result.strictChecks) && result.summary.issues > 0) process.exitCode = 2;
   if (command === 'task' && ((action === 'finish' && result.finishBlocked) || (action === 'run' && result.criteria.find(item=>item.id===options.check)?.status !== 'passed'))) process.exitCode = 2;
   if (command === 'doctor' && !result.healthy) process.exitCode = 2;

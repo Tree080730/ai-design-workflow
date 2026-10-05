@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": 1,
+  "status": "selected",
+  "selectedAt": "2026-10-05T15:44:48.124Z",
+  "preset": {
+    "id": "apple-site",
+    "name": "Apple",
+    "publisher": "Apple",
+    "category": "reference",
+    "license": "品牌网站与素材保留各自权利",
+    "docs": "https://www.apple.com/",
+    "repository": null,
+    "theme": "https://www.apple.com/",
+    "resources": "https://www.apple.com/",
+    "packages": [],
+    "sourceCheckedAt": "2026-10-05",
+    "reference": {
+      "kind": "website",
+      "url": "https://www.apple.com/",
+      "reviewedAt": "2026-10-05",
+      "focus": "产品主视觉、标题与行动按钮的层级，以及各内容区块之间的节奏。"
+    }
+  },
+  "mode": "reference",
+  "intent": "",
+  "referenceUrl": "",
+  "selectionGuide": {
+    "checkedAt": "2026-10-05",
+    "introduction": "以品牌官网的视觉与页面表达作为项目设计参考。",
+    "components": {
+      "text": "产品主视觉、标题与行动按钮的层级，以及各内容区块之间的节奏。",
+      "source": {
+        "label": "品牌官网",
+        "url": "https://www.apple.com/"
+      }
+    },
+    "customization": {
+      "text": "提炼参考页面的视觉关系，再结合你的品牌、内容与业务建立项目规则。",
+      "source": {
+        "label": "品牌官网",
+        "url": "https://www.apple.com/"
+      }
+    },
+    "web": {
+      "text": "仅作为网页设计参考，由宿主实现项目自己的设计系统和页面；不安装该品牌产品的 SDK。",
+      "source": {
+        "label": "品牌官网",
+        "url": "https://www.apple.com/"
+      }
+    },
+    "maintenance": {
+      "text": "官网会持续变化；保存的是参考入口与核对日期，不是冻结的官方规范。",
+      "source": {
+        "label": "品牌官网",
+        "url": "https://www.apple.com/"
+      }
+    }
+  },
+  "implementationStatus": "not-started",
+  "versionPolicy": "Resolve and pin compatible versions during project implementation."
+}

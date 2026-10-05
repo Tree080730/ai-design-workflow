@@ -8,3 +8,5 @@ dist/
 .design-workflow/deliveries/*
 !.design-workflow/deliveries/.gitkeep
 **/.design-workflow/tasks/
+
+packages/gui/public/preview/

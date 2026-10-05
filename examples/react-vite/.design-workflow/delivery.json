@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "title": "Candidate Gallery demonstration",
+  "scope": "design-system",
+  "confirmation": {
+    "status": "pending",
+    "record": "design-system/gallery-verification.md"
+  },
+  "rules": [
+    "design-system/README.md"
+  ],
+  "sourceRoots": [
+    "src",
+    "design-system"
+  ],
+  "inputs": [
+    "package.json",
+    ".design-workflow/config.json"
+  ],
+  "changeTypes": [
+    "component",
+    "token",
+    "layout"
+  ],
+  "artifacts": [
+    {
+      "id": "styles",
+      "kind": "styles",
+      "source": "src/styles/tokens.css",
+      "entry": "index.html"
+    },
+    {
+      "id": "button",
+      "kind": "component",
+      "source": "src/components/Button.tsx",
+      "entry": "index.html"
+    },
+    {
+      "id": "text-field",
+      "kind": "component",
+      "source": "src/components/TextField.tsx",
+      "entry": "index.html"
+    },
+    {
+      "id": "gallery",
+      "kind": "gallery",
+      "source": "src/gallery/DesignSystemGallery.tsx",
+      "entry": "index.html",
+      "url": "/"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "static",
+      "kind": "static",
+      "title": "Type and lint checks",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ]
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "title": "Production build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "title": "Review real page and Gallery layouts",
+      "context": {
+        "pages": [
+          "/"
+        ],
+        "viewports": [
+          "desktop",
+          "narrow"
+        ]
+      }
+    },
+    {
+      "id": "integration",
+      "kind": "interaction",
+      "title": "Verify real entry, asset reuse and core states",
+      "context": {
+        "pages": [
+          "/"
+        ],
+        "states": [
+          "success"
+        ]
+      }
+    },
+    {
+      "id": "rules",
+      "kind": "documentation",
+      "title": "Compare confirmed rules, source and previews"
+    }
+  ]
+}

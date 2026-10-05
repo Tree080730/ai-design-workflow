@@ -5,7 +5,7 @@ description: 优先用于从 0 到 1 构建可执行设计系统、Gallery 和�
 
 # Designer Dev Workflow
 
-默认主线：**确认设计依据与约束 → 构建设计系统源码与 Gallery → 复用设计系统搭建业务页面并交付**。本 Skill 由宿主 Agent 执行，宿主负责模型、工具、权限与会话；CLI、token 导出和任务证据是可选辅助，不能成为正常使用的前置要求。接入见 [宿主说明](references/host-integration.md)。
+默认主线：**确认设计依据与约束 → 构建设计系统源码与 Gallery → 复用设计系统搭建业务页面并交付**。本 Skill 由宿主 Agent 执行，宿主负责模型、工具、权限与会话；CLI 安装和 token 导出可选；0→1 交付默认使用随 Skill 安装的契约与检查器，不依赖独立 CLI。接入见 [宿主说明](references/host-integration.md)。
 
 ## 交付边界
 
@@ -17,7 +17,7 @@ description: 优先用于从 0 到 1 构建可执行设计系统、Gallery 和�
 
 ## 接入：读取项目事实
 
-检查目标目录真实代码、技术栈、包管理器、运行/构建命令，以及已有 tokens、组件、设计规范与展示入口。空项目先确认平台和技术方案；已有骨架优先复用。项目骨架在阶段二建成后，仍继续完成原先确认的业务页面目标，不重新分诊为局部任务并提前结束。
+检查目标目录真实代码、技术栈、包管理器、运行/构建命令，以及已有 tokens、组件、设计规范与展示入口。存在 `.design-workflow/design-basis.json` 时先读取 GUI 保存的设计基础、使用模式、风格参考与需求；按 [GUI 设计基础说明](references/design-basis.md) 核验官方来源与适配，不把选择状态当作源码已实现或范围已确认。空项目先确认平台和技术方案；已有骨架优先复用。项目骨架在阶段二建成后，仍继续完成原先确认的业务页面目标，不重新分诊为局部任务并提前结束。
 
 Project Adapter 只索引实际路径与命令，以源码和配置为事实。需要时读取 [Adapter 模板](references/project-adapter-template.md)；React + Vite 可参考 [项目示例](references/react-vite-adapter-example.md)。CLI 已可用时按需扫描或初始化；缺少 CLI 直接使用宿主工具，不强制安装。
 
@@ -29,7 +29,7 @@ Project Adapter 只索引实际路径与命令，以源码和配置为事实。�
 
 按 [Spec 模板](references/solution-spec-template.md) 写明三阶段范围、所需源码、复用判断、Gallery 与页面入口、数据边界、验收条件和待确认项。没有明确视觉依据且存在多种合理实现时才调用 `proposal-with-preview`；明确设计输入可以跳过提案预览。
 
-**产出**：带来源与确认状态的核心约束、实现 Spec 与范围确认记录。用户确认当前范围后进入实现；已有明确授权沿用，不重复索取相同确认。待确认方案不是代码交付完成。
+**产出**：带来源与确认状态的核心约束、实现 Spec 与范围确认记录。将范围落实为 `.design-workflow/delivery.json`，按 [交付检查说明](references/delivery-gate.md) 登记真实规则、源码/入口与必需验收；确认记录关联 Spec 中实际对话依据，不能替用户确认。用户确认当前范围后进入实现；已有明确授权沿用，不重复索取相同确认。待确认方案不是代码交付完成。
 
 ## 阶段二：构建设计系统源码与 Gallery
 
@@ -39,7 +39,7 @@ Project Adapter 只索引实际路径与命令，以源码和配置为事实。�
 
 最小启动也必须包含源码和 Gallery。子 Skill 不可用时按 [最小设计系统](references/minimal-design-system.md) 直接实现；`init` 只创建模板和索引，不代表本阶段完成。按项目规模维护 [项目规则](references/rules-template.md)、[开发流程](references/dev-workflow-template.md)、规范与资产索引，记录 Gallery 启动命令、真实地址、源码入口及生产构建策略。
 
-**产出与完成条件**：可编辑样式与组件源码、真实接入、可运行 Gallery 和与实现一致的最小规范。检查入口与实际展示；环境无法验证的内容单独记录。完整需求仍需进入阶段三，不能只交付设计系统文档或 Gallery 后结束。
+**产出与完成条件**：可编辑样式与组件源码、真实接入、可运行 Gallery 和与实现一致的最小规范。仅设计系统交付同样执行 [默认交付检查](references/delivery-gate.md)，不能因跳过业务页面阶段而免除验收。检查入口与实际展示；环境无法验证的内容单独记录。完整需求仍需进入阶段三，不能只交付设计系统文档或 Gallery 后结束。
 
 ## 阶段三：复用设计系统搭建业务页面并交付
 
@@ -53,6 +53,8 @@ Project Adapter 只索引实际路径与命令，以源码和配置为事实。�
 
 清理临时 proposal 预览，保留正式页面与长期 Gallery。按 [交付模板](references/delivery-template.md) 提供源码路径、入口/引用关系、安装与运行命令、实现范围、各阶段状态和验证结果。必需代码缺失标为未完成；不可执行的环境验证标为未验证，不把整个目标宣称已完成。
 
+交付前必须运行本 Skill 的 `node scripts/verify-project.mjs status <目标项目>`。检查失败时根据 JSON `blockers` 修正实现或补充真实证据，然后复查；不降低验收范围、把必需项改为可选或伪造通过以消除阻塞。默认追踪规则、源码和命令证据，见 [交付检查说明](references/delivery-gate.md)。只有 `canFinish: true` 才可宣称已通过已登记验收；缺少 Node 或执行能力时标记未验证。把同一命令接入项目 CI 后，非零退出状态阻止流程通过；Skill 本身无法强制宿主调用检查器。
+
 **产出**：可运行业务页面源码、适用状态与交互、补齐的 Gallery 页面模式、同步规范与交付记录。后续页面沿用项目资产；新会话重新读取真实约束与实现。
 
 ## 按需增强
@@ -63,6 +65,9 @@ Project Adapter 只索引实际路径与命令，以源码和配置为事实。�
 | `rules-governance` | 用户要求巡检，或高影响变更确实需要完整审查 |
 | CLI scan/init/check/doctor | 当前项目中有用且已可用的确定性辅助 |
 | token 导出、资产映射 | 项目主动采用，沿用现有管线 |
-| task 证据与恢复 | 用户要求或项目已采用；读取 [证据说明](references/task-evidence.md) |
+| 独立 task 管理与恢复 | 单独任务按需使用；默认 0→1 验收已复用证据引擎，读取 [证据说明](references/task-evidence.md) |
 
 已有项目支持与上述增强保留，当前主要迭代聚焦 0→1 的设计系统和业务页面建设。
+
+## 无预设输入的兼容
+`design-basis.json` 中 `mode: custom`、`preset: null` 表示用户明确不采用预设，读取需求和风格输入后继续原工作流；不沿用旧预设、不自动安装候选依赖或迁移已有源码。无文件时原行为不变。

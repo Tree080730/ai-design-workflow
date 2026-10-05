@@ -1,0 +1,11 @@
+*{box-sizing:border-box}body{margin:0;background:white;color:#242424;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}.interactive-sheet{padding:24px}.interactive-sheet>header{margin-bottom:24px}.interactive-sheet>header h1{font-size:18px;font-weight:600;margin:0 0 6px}.interactive-sheet>header p{font-size:12px;color:#666;margin:0}.interactive-sheet>section{padding:18px 0;border-top:1px solid #eee}.interactive-sheet>section h2{font-size:12px;line-height:1.5;font-weight:500;color:#666;margin:0 0 16px}.samples{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.fields{display:flex;flex-direction:column;align-items:flex-start;gap:16px}.fields>div{max-width:100%;width:100%}.preview-field-label{display:block;font-size:13px;margin-bottom:8px}input{max-width:100%}@media(max-width:400px){.interactive-sheet{padding:20px}}
+
+.preview-loading{padding:24px;font-size:14px;color:#666}
+
+@media(min-width:720px){.interactive-sheet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.interactive-sheet>header{grid-column:1/-1;margin-bottom:0}.interactive-sheet>section{min-width:0;padding-top:20px}.samples{align-items:flex-start}.fields{gap:16px}}
+
+.overview-sheet{width:1440px;min-height:900px;padding:40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;align-content:start}.overview-sheet header{margin:0;grid-column:1/-1}.overview-sheet header h1{font-size:24px}.overview-sheet section{padding:24px;border:1px solid #eaeaea;border-radius:8px;min-height:180px}.overview-sheet section h2{margin-bottom:22px}.status-samples{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.status-samples>*{max-width:100%}.status-samples>div[role="progressbar"],.status-samples>md-linear-progress{width:100%}.availability-note{font-size:12px;color:#666;line-height:1.6;margin:0 0 16px}
+.overview-sheet{min-height:1000px}.overview-sheet section:last-child{grid-column:1/-1;min-height:110px}
+
+.status-samples>.overview-progress{width:100%;flex-basis:100%}
+

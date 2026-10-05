@@ -1,0 +1,78 @@
+{
+  "ant-design": {
+    "file": "ant-design.svg",
+    "source": "https://gw.alipayobjects.com/zos/bmw-prod/bb9478cb-76f2-41b1-863a-a35322f9e85d.svg",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners.",
+    "extraction": "Official Ant Group mark; QR-code background rectangles removed and viewBox tightened. Brand paths and gradients unchanged."
+  },
+  "tdesign": {
+    "file": "tdesign.png",
+    "source": "https://www.tencent.com/wp-content/uploads/2022/12/03_Tencent_English-logo.png",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "material": {
+    "file": "material.svg",
+    "source": "https://www.gstatic.com/marketing-cms/assets/images/f5/d3/a7f9db7045429cb6dc6be56bdcbe/google-logo-about.svg",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "apple-hig": {
+    "file": "apple-hig.svg",
+    "source": "https://developer.apple.com/apple-logo.svg",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "cloudscape": {
+    "file": "cloudscape.svg",
+    "source": "https://www.aboutamazon.com/",
+    "extraction": "Official website footer SVG; light lettering adapted to dark lettering for light backgrounds, orange smile and paths retained.",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "carbon": {
+    "file": "carbon.svg",
+    "source": "https://www.ibm.com/design/language/ibm-logos/8-bar/",
+    "extraction": "Official website footer SVG, unchanged.",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "fluent": {
+    "file": "fluent.svg",
+    "source": "https://fluent2websitecdn.azureedge.net/cdn/microsoft-logo.ffN6LNcJ.svg",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners.",
+    "extraction": "Official Microsoft symbol; viewBox tightened to remove empty margins. Brand paths and colors unchanged."
+  },
+  "spectrum": {
+    "file": "spectrum.svg",
+    "source": "https://raw.githubusercontent.com/adobe/react-spectrum/HEAD/packages/dev/s2-docs/assets/rsp-favicon.svg",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "stripe-site": {
+    "file": "stripe-site.svg",
+    "source": "https://images.stripeassets.com/fzn2n1nzq965/1hgcBNd12BfT9VLgbId7By/01d91920114b124fb4cf6d448f9f06eb/favicon.svg",
+    "retrievedAt": "2026-10-05",
+    "purpose": "Official brand identifier for website reference; rights remain with owner."
+  },
+  "linear-site": {
+    "file": "linear-site.svg",
+    "source": "https://linear.app/static/favicon.svg?v=2",
+    "retrievedAt": "2026-10-05",
+    "purpose": "Official brand identifier for website reference; rights remain with owner."
+  },
+  "notion-site": {
+    "file": "notion-site.ico",
+    "source": "https://www.notion.so/images/favicon.ico",
+    "retrievedAt": "2026-10-05",
+    "purpose": "Official brand identifier for website reference; rights remain with owner."
+  },
+  "apple-site": {
+    "file": "apple-site.svg",
+    "source": "https://developer.apple.com/apple-logo.svg",
+    "retrievedAt": "2026-10-04",
+    "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  }
+}

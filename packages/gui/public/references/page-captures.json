@@ -1,0 +1,242 @@
+[
+  {
+    "id": "linear-site",
+    "file": "linear-site-1.png",
+    "source": "https://linear.app/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "8253fe12b58dbfafa0f56cb665937e53d2c1559fbfb781cf80f71bc6d14dffee",
+    "caption": "官网首页"
+  },
+  {
+    "id": "linear-site",
+    "file": "linear-site-2.png",
+    "source": "https://linear.app/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "ea51fdf9d904a099bcd0e8756f5b0c3ac4f5350f4b1236b4f086a28bd0c50da9",
+    "caption": "产品理念分组"
+  },
+  {
+    "id": "linear-site",
+    "file": "linear-site-3.png",
+    "source": "https://linear.app/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "6c9bac0e6669c531923b9d12f9d5e6fdab70c56f569e82ad856ebd65f2204bb7",
+    "caption": "工作流与集成展示"
+  },
+  {
+    "id": "notion-site",
+    "file": "notion-site-1.png",
+    "source": "https://www.notion.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "a20fda41589558eeb044c65c5426e4df2375a45d888446e21961ba2fbaefcb9f",
+    "caption": "官网首页"
+  },
+  {
+    "id": "notion-site",
+    "file": "notion-site-2.png",
+    "source": "https://www.notion.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "5a1e30050913bc39985902fe8541fa9cc82906b628d2d638af94707b0cddd0fc",
+    "caption": "产品能力与示例"
+  },
+  {
+    "id": "notion-site",
+    "file": "notion-site-3.png",
+    "source": "https://www.notion.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "40a81c8ebfdbafdff74a296bdd1ba13b795fa85679a5f1dc6fd1bbc035c81659",
+    "caption": "客户故事与品牌展示"
+  },
+  {
+    "id": "apple-site",
+    "file": "apple-site-1.png",
+    "source": "https://www.apple.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "23ea464939189f6f64a528c52f3b12a41f359d24c6e1332fe18abfc294b56494",
+    "caption": "官网首页"
+  },
+  {
+    "id": "apple-site",
+    "file": "apple-site-2.png",
+    "source": "https://www.apple.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "2ca41af82074521dbda0a105dfa0c96bf5f915c74b7cab53797b98cb2f9e48dc",
+    "caption": "产品主视觉"
+  },
+  {
+    "id": "apple-site",
+    "file": "apple-site-3.png",
+    "source": "https://www.apple.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "de975e9b3f6556cbbdfbeaf80c320b79ad0529f92aca88586df7c301829ce8b8",
+    "caption": "产品卡片布局"
+  },
+  {
+    "id": "duolingo-site",
+    "file": "duolingo-site-1.png",
+    "source": "https://www.duolingo.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "c730af99728d561cccb0c486a6d98b7a5d7f4d6e74611cbf270b360c150c3d18",
+    "caption": "官网首页"
+  },
+  {
+    "id": "duolingo-site",
+    "file": "duolingo-site-2.png",
+    "source": "https://www.duolingo.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "d7d928383481527bd13a18a798da1d63ab0ce157d6fea39b8f3a96717aeabad5",
+    "caption": "课程介绍与插画"
+  },
+  {
+    "id": "duolingo-site",
+    "file": "duolingo-site-3.png",
+    "source": "https://www.duolingo.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "5154406484b89fa8cb0ee4b0aa9d0216b89152c3486c9121ec34bf099c072361",
+    "caption": "学习体验展示"
+  },
+  {
+    "id": "adidas-site",
+    "file": "adidas-site-1.png",
+    "source": "https://www.adidas.jp/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "d9e8f54f13c4058c4c43f27ccbddebe2217ce73b44f1d5c96f8cc05b2c7347ef",
+    "caption": "官网首页（日文）"
+  },
+  {
+    "id": "adidas-site",
+    "file": "adidas-site-2.png",
+    "source": "https://www.adidas.jp/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "de1b233d997e5e2734585a29389582a55a107ddeb64ed011eab1ceccef6d325c",
+    "caption": "商品卡片与内容分组"
+  },
+  {
+    "id": "adidas-site",
+    "file": "adidas-site-3.png",
+    "source": "https://www.adidas.jp/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "439e83cc294e39213791391f766d02ec345a230b1ec0aa884fbe40109686af9a",
+    "caption": "系列与商品展示"
+  },
+  {
+    "id": "lvmh-site",
+    "file": "lvmh-site-1.png",
+    "source": "https://www.lvmh.com/en",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "f90242aeccf2903cdc17f3c87259cea36cf0e5c69892a593432e8c98a905be93",
+    "caption": "官网首页"
+  },
+  {
+    "id": "lvmh-site",
+    "file": "lvmh-site-2.png",
+    "source": "https://www.lvmh.com/en/press",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "cb0162697039c637c261d98e86538a3374e99e198c8cc538a66b91941bf522a2",
+    "caption": "新闻发布页面"
+  },
+  {
+    "id": "lvmh-site",
+    "file": "lvmh-site-3.png",
+    "source": "https://www.lvmh.com/en/news-lvmh",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "dd1d3f0ce92a67d202fde165890b2e46881f57dbe72f5e89d556730ef38c2365",
+    "caption": "品牌新闻列表"
+  },
+  {
+    "id": "nike-site",
+    "file": "nike-site-1.png",
+    "source": "https://www.nike.com/jp/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "b5293560182297e1177825b3c5d9736a267b96d0e6a423e4ac7635b6746e8318",
+    "caption": "官网首页（日文）"
+  },
+  {
+    "id": "nike-site",
+    "file": "nike-site-2.png",
+    "source": "https://www.nike.com/jp/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "e44629fbfcc78dd8de3f6662f413bfa352c52e32d732918d78526230d5933978",
+    "caption": "服装系列主视觉"
+  },
+  {
+    "id": "nike-site",
+    "file": "nike-site-3.png",
+    "source": "https://www.nike.com/jp/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "6087203d7d1c83b4e13f47d7e0904c9fd145596b695452c0622e006550bd5f16",
+    "caption": "品牌内容与系列展示"
+  },
+  {
+    "id": "airbnb-site",
+    "file": "airbnb-site-1.png",
+    "source": "https://zh.airbnb.com/",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "4e87e3948790fe1e7f10b5e5012496777d37304d134a3d9c17bd31a54e06e4f9",
+    "caption": "官网首页"
+  },
+  {
+    "id": "airbnb-site",
+    "file": "airbnb-site-2.png",
+    "source": "https://zh.airbnb.com/homes",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "5e57fc4f7aa03534458209e1ce136616c77c24bb9876c38d36f2ee7325c656c6",
+    "caption": "房源搜索与卡片展示"
+  },
+  {
+    "id": "airbnb-site",
+    "file": "airbnb-site-3.png",
+    "source": "https://zh.airbnb.com/services",
+    "capturedAt": "2026-10-05",
+    "width": 3024,
+    "height": 1600,
+    "sha256": "a772282bb9f6eb6216ceb4cf8be0f890e5794035e614fc98e216afbdcaf7f1ca",
+    "caption": "服务分类与内容展示"
+  }
+]

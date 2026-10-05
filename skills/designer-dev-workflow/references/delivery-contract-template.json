@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "title": "Confirmed design system and business page",
+  "scope": "full",
+  "confirmation": {
+    "status": "pending",
+    "record": ".design-workflow/specs/initial.md"
+  },
+  "rules": [
+    "design-system/README.md",
+    "RULES.md"
+  ],
+  "sourceRoots": [
+    "src",
+    "design-system"
+  ],
+  "inputs": [
+    ".design-workflow/specs/initial.md",
+    "package.json"
+  ],
+  "changeTypes": [
+    "page",
+    "component",
+    "token"
+  ],
+  "artifacts": [
+    {
+      "id": "styles",
+      "kind": "styles",
+      "source": "src/styles/tokens.css",
+      "entry": "src/main.tsx"
+    },
+    {
+      "id": "gallery",
+      "kind": "gallery",
+      "source": "src/gallery/Gallery.tsx",
+      "entry": "src/main.tsx",
+      "url": "/gallery"
+    },
+    {
+      "id": "page",
+      "kind": "page",
+      "source": "src/pages/Home.tsx",
+      "entry": "src/main.tsx",
+      "url": "/"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "static",
+      "kind": "static",
+      "title": "Type and lint checks",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ]
+    },
+    {
+      "id": "build",
+      "kind": "build",
+      "title": "Production build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ]
+    },
+    {
+      "id": "visual",
+      "kind": "visual",
+      "title": "Review real page and Gallery layouts",
+      "context": {
+        "pages": [
+          "/gallery",
+          "/"
+        ],
+        "viewports": [
+          "desktop",
+          "narrow"
+        ]
+      }
+    },
+    {
+      "id": "integration",
+      "kind": "interaction",
+      "title": "Verify real entry, asset reuse and core states",
+      "context": {
+        "pages": [
+          "/gallery",
+          "/"
+        ],
+        "states": [
+          "success"
+        ]
+      }
+    },
+    {
+      "id": "rules",
+      "kind": "documentation",
+      "title": "Compare confirmed rules, source and previews"
+    }
+  ]
+}

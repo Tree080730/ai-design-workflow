@@ -1,0 +1,32 @@
+[
+  {
+    "id": "adidas-site",
+    "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/adidas.svg",
+    "sha256": "914191458c0f416cfb1e5ad5750c55e87bd9a6cdc38259cfba70932b30a9237b",
+    "retrievedAt": "2026-10-05"
+  },
+  {
+    "id": "lvmh-site",
+    "source": "https://images.prismic.io/lvmh-com/ZkRy1iol0Zci9JGD_MicrosoftTeams-image-3-.png?w=640",
+    "sha256": "ff8bd7e220c04f3f3b0cc603d685dd3815fa5ea7b86760322cccceb2e66e62b8",
+    "retrievedAt": "2026-10-05"
+  },
+  {
+    "id": "nike-site",
+    "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/nike.svg",
+    "sha256": "1792451e1b6393bd1d7153830f8aa55a0a49eddd1c3b65ed6fa13c68d7d5a547",
+    "retrievedAt": "2026-10-05"
+  },
+  {
+    "id": "airbnb-site",
+    "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/airbnb.svg",
+    "sha256": "e8236240c13f5a8b36ca2cfe6a6a5a57abda3ea1698006c09e330128a710c9fa",
+    "retrievedAt": "2026-10-05"
+  },
+  {
+    "id": "duolingo-site",
+    "source": "https://d35aaqx5ub95lt.cloudfront.net/favicon.ico",
+    "sha256": "587ed3e3a94f04264f02bf6e21798c8ca32de7b7f22d30cfc667224741c4a3c2",
+    "retrievedAt": "2026-10-05"
+  }
+]

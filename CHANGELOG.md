@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Reworked GUI onboarding into a minimal logo directory, left-to-right theme-color interaction, dedicated system details and a persisted natural-language project entry, retaining explicit host-handoff status. Added locally served official logo assets and provenance.
+
+- Added a dependency-free local Design Builder GUI with eight curated design references, searchable directory, official resources, project-scoped persisted selection and portable Skill handoff; separated Apple HIG from open-source component libraries.
+
+- Added a versioned default 0→1 delivery contract and portable gate, with required design-system/Gallery/page artifacts, conservative entry reachability, mandatory command/browser/rule-review evidence and fail-closed completion.
+- Reused task logs and stale-input/artifact detection; tracked source inventories, reachable imports and project build definitions, and shipped the verifier with both host Skill installations.
+- Documented CI enforcement, manual-evidence trust boundaries and explicit runtime verification for alias/framework integration; kept the example contract pending.
+
 - Focused the default product flow on 0→1: confirmed design evidence/constraints, executable design-system source and Gallery, then business-page implementation and delivery; preserved existing-project and task-evidence support as on-demand references.
 
 - Made editable implementation source and real runtime integration mandatory delivery criteria for page/component/design-system work, distinguishing incomplete implementation from unavailable runtime verification.
