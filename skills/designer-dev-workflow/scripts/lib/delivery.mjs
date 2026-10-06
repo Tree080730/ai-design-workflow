@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import {readJson, toPosix} from './fs-utils.mjs';
 import {projectRelativePath} from './config.mjs';
 import {validateTaskPlan, createTask, taskStatus, runTaskCheck, recordTaskEvidence, recoverTask} from './tasks.mjs';
+import {workflowStatus,workflowFiles} from './workflow.mjs';
 
 export const CONTRACT_FILE = '.design-workflow/delivery.json';
 const excluded = new Set(['node_modules','.git','dist','build','.next','coverage','.agents','.claude','tasks']);
@@ -74,7 +75,8 @@ export function validateDeliveryContract(value) {
     for (const viewport of ['desktop','narrow']) if (!required('visual').some(item => item.context.pages?.includes(url) && item.context.viewports?.includes(viewport))) throw new Error(`Visual coverage missing: ${url} ${viewport}`);
     if (!plan.criteria.some(item => ['interaction','e2e'].includes(item.kind) && item.required && !item.allowNotApplicable && item.context.pages?.includes(url) && item.context.states?.includes('success'))) throw new Error(`Runtime integration verification missing: ${url}`);
   }
-  return {schemaVersion:1,title:plan.title,scope:value.scope,confirmation,rules,sourceRoots,inputs,artifacts,changeTypes:plan.changeTypes,criteria:plan.criteria};
+  if(value.workflow !== undefined && value.workflow !== true) throw new Error('workflow may only enable stage checks, not disable them.');
+  return {schemaVersion:1,title:plan.title,scope:value.scope,confirmation,rules,sourceRoots,inputs,artifacts,changeTypes:plan.changeTypes,criteria:plan.criteria,...(value.workflow?{workflow:true}:{})};
 }
 // Conservative reachability, not a language parser. Non-relative/implicit framework
 // wiring must use explicit runtime mode and the required browser evidence.
@@ -119,6 +121,12 @@ function prepare(root) {
   const blockers = [];
   const warnings = [];
   const add = (code,file,message) => blockers.push({code,file,message});
+  const guarded=contract.workflow===true||Object.values(workflowFiles).some(file=>fs.existsSync(safePath(root,file)));
+  if(guarded) {
+    const upstream=workflowStatus(root,{stage:'delivery'});
+    for(const item of upstream.blockers)add(item.code,workflowFiles.analysis,item.message);
+    for(const file of upstream.trackedInputs)inputs.add(file);
+  }else warnings.push({code:'legacy-workflow',message:'Legacy contract without GUI input; stage checks are not enabled. New projects must set workflow: true.'});
   if (contract.confirmation.status !== 'confirmed') add('scope-unconfirmed',CONTRACT_FILE,'Record the user-confirmed scope before implementation verification.');
   for (const file of [...inputs]) {
     if (file.startsWith('.design-workflow/tasks/')) throw new Error('Delivery inputs must stay outside evidence state.');
@@ -175,6 +183,10 @@ export function executeDelivery(target, action, options = {}) {
   if (action === 'record' && !options.file) throw new Error('--file is required.');
   if (action === 'status') return deliveryStatus(target);
   const current = prepare(target);
+  if(action==='run'&&(current.contract.workflow===true||Object.values(workflowFiles).some(file=>fs.existsSync(safePath(current.root,file))))) {
+    const upstream=workflowStatus(current.root,{stage:'implementation'});
+    if(!upstream.canProceed)throw new Error(upstream.blockers.map(item=>item.message).join('; '));
+  }
   if (current.contract.confirmation.status !== 'confirmed') throw new Error('Delivery scope is not confirmed.');
   const state = path.join(current.root,'.design-workflow/tasks',current.plan.id,'task.json');
   if (!fs.existsSync(state)) {

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "catalogVersion": 1,
   "status": "selected",
-  "selectedAt": "2026-10-05T15:44:48.124Z",
+  "selectedAt": "2026-10-06T08:39:17.681Z",
   "preset": {
     "id": "apple-site",
     "name": "Apple",
@@ -23,7 +23,7 @@
     }
   },
   "mode": "reference",
-  "intent": "",
+  "intent": "搭建一个团队文档管理的页面",
   "referenceUrl": "",
   "selectionGuide": {
     "checkedAt": "2026-10-05",

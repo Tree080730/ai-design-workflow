@@ -4,6 +4,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {catalog, catalogVersion, checkedAt, findPreset} from './catalog.mjs';
+import {hostReturn} from './host-return.mjs';
+import {hostReadStatus} from '../../cli/src/workflow.mjs';
 
 const publicRoot = fileURLToPath(new URL('../public/',import.meta.url));
 const selectionFile = '.design-workflow/design-basis.json';
@@ -20,7 +22,7 @@ function state(root) {
   const content = fs.existsSync(file)?fs.readFileSync(file,'utf8'):null;
   const selection = content?JSON.parse(content):null;
   if (selection && (selection.schemaVersion !== 1 || (selection.mode === 'custom' ? selection.preset !== null : !findPreset(selection.preset?.id)))) throw new Error('Existing design basis is not a supported selection. Preserve it and resolve it before saving.');
-  return {projectName:path.basename(root),projectPath:root,selection,revision:crypto.createHash('sha256').update(content ?? '').digest('hex')};
+  return {projectName:path.basename(root),projectPath:root,selection,handoff:hostReadStatus(root),revision:crypto.createHash('sha256').update(content ?? '').digest('hex')};
 }
 function save(root, input) {
   const preset = findPreset(input?.presetId);
@@ -37,7 +39,8 @@ function save(root, input) {
   if (input.revision !== current.revision) return null;
   const value = {schemaVersion:1,catalogVersion,status:'selected',selectedAt:new Date().toISOString(),
     preset:custom?null:{id:preset.id,name:preset.name,publisher:preset.publisher,category:preset.category,license:preset.license,docs:preset.docs,repository:preset.repository,theme:preset.theme,resources:preset.resources,packages:input.mode === 'components'?preset.packages:[],sourceCheckedAt:preset.reference?.reviewedAt??checkedAt,...(preset.reference?{reference:preset.reference}:{} )},
-    mode:input.mode,intent:input.intent.trim(),referenceUrl:input.referenceUrl.trim(),
+    mode:input.mode,intent:input.selectionOnly===true?'':input.intent.trim(),referenceUrl:input.referenceUrl.trim(),
+    ...(input.selectionOnly===true?{requirementSource:'host',projectPath:root}:{}),
     selectionGuide:custom?null:preset.selectionGuide,
     implementationStatus:'not-started',versionPolicy:'Resolve and pin compatible versions during project implementation.'};
   const file = fileInProject(root);
@@ -47,8 +50,10 @@ function save(root, input) {
   finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
   return state(root);
 }
-export function createGuiServer({project}) {
+export function createGuiServer({project,hostThread=null}) {
   const root = fs.realpathSync(path.resolve(project));
+  const host = hostReturn(hostThread);
+  const projectState=()=>({...state(root),host});
   if (!fs.statSync(root).isDirectory()) throw new Error('Project must be an existing directory.');
   return http.createServer(async (request,response) => {
     const send = (status,value) => {response.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});response.end(JSON.stringify(value));};
@@ -58,13 +63,13 @@ export function createGuiServer({project}) {
       if (!validHosts.includes(host)) return send(403,{error:'Localhost access only.'});
       const url = new URL(request.url,`http://${host}`);
       if (url.pathname === '/api/catalog' && request.method === 'GET') return send(200,{schemaVersion:1,catalogVersion,checkedAt,presets:catalog});
-      if (url.pathname === '/api/project' && request.method === 'GET') return send(200,state(root));
+      if (url.pathname === '/api/project' && request.method === 'GET') return send(200,projectState());
       if (url.pathname === '/api/basis' && request.method === 'POST') {
         if (request.headers.origin !== `http://${host}` || !request.headers['content-type']?.startsWith('application/json')) return send(403,{error:'Same-origin JSON requests only.'});
         let body = '';
         for await (const chunk of request) {body += chunk;if (Buffer.byteLength(body)>32*1024) return send(413,{error:'Request is too large.'});}
         const result = save(root,JSON.parse(body));
-        return result?send(200,result):send(409,{error:'Project selection changed. Reload before saving.'});
+        return result?send(200,{...result,host:hostReturn(hostThread)}):send(409,{error:'Project selection changed. Reload before saving.'});
       }
       if (url.pathname.startsWith('/api/')) return send(404,{error:'Unknown operation.'});
       if (!['GET','HEAD'].includes(request.method)) return send(405,{error:'Method not allowed.'});
@@ -90,14 +95,15 @@ export function createGuiServer({project}) {
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const args = process.argv.slice(2);let project=process.cwd(),port=4173;
+    const args = process.argv.slice(2);let project=process.cwd(),port=4173,hostThread=process.env.CODEX_THREAD_ID??null;
     for (let index=0;index<args.length;index++) {
       if (args[index] === '--project' && args[index+1]) project=args[++index];
       else if (args[index] === '--port' && args[index+1]) port=Number(args[++index]);
-      else throw new Error('Usage: npm run gui -- --project /project/path [--port 4173]');
+      else if (args[index] === '--host-thread' && args[index+1]) hostThread=args[++index];
+      else throw new Error('Usage: npm run gui -- --project /project/path [--port 4173] [--host-thread SESSION_UUID]');
     }
     if (!Number.isInteger(port) || port<1 || port>65535) throw new Error('Invalid port.');
-    const server = createGuiServer({project});
+    const server = createGuiServer({project,hostThread});
     server.on('error',error => {console.error(error.message);process.exitCode=1;});
     server.listen(port,'127.0.0.1',() => console.log(`Design Builder: http://127.0.0.1:${port}\nProject: ${path.resolve(project)}`));
   } catch (error) {console.error(error.message);process.exitCode=1;}

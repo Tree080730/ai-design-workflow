@@ -177,3 +177,34 @@ test('website references preserve official sources and never become component de
   const legacy=await post({presetId:'apple-hig',mode:'reference',intent:'之前的项目',referenceUrl:'',revision:current.revision});
   assert.equal(legacy.status,200);assert.equal(legacy.value.selection.preset.id,'apple-hig');
 }));
+
+test('selection-only save clears stale requirements and records the target project',()=>fixture(async({root,api,post})=>{
+  let current=(await api('/api/project')).value;
+  current=(await post({presetId:'ant-design',mode:'components',intent:'old task',referenceUrl:'',revision:current.revision})).value;
+  const result=await post({presetId:'apple-site',mode:'reference',intent:'old task',selectionOnly:true,referenceUrl:'',revision:current.revision});
+  assert.equal(result.status,200);assert.equal(result.value.selection.intent,'');
+  assert.equal(result.value.selection.requirementSource,'host');assert.equal(result.value.selection.projectPath,fs.realpathSync(root));
+  assert.equal(result.value.host.returnUrl,null);assert.equal(result.value.host.canDispatch,false);
+  assert.deepEqual((await api('/api/project')).value.selection,result.value.selection);
+  const conflict=await post({presetId:null,mode:'custom',intent:'',selectionOnly:true,referenceUrl:'',revision:current.revision});
+  assert.equal(conflict.status,409);assert.equal((await api('/api/project')).value.selection.preset.id,'apple-site');
+}));
+test('host return binds only an explicit UUID, never a new chat or auto-send',async()=>{
+  const {hostReturn}=await import('../packages/gui/src/host-return.mjs');
+  const id='01a10053-af1d-7b23-8e58-6aab9a9170be';
+  assert.equal(hostReturn(id).returnUrl,`codex://threads/${id}`);assert.equal(hostReturn(id).canDispatch,false);
+  assert.throws(()=>hostReturn('new?prompt=execute'));assert.equal(hostReturn(null).returnUrl,null);
+  const {handoff}=await import('../packages/gui/public/handoff.js');
+  const value=handoff({mode:'custom',preset:null,requirementSource:'host',intent:'STALE',referenceUrl:''},'/target/project');
+  assert.ok(value.includes('/target/project'));assert.ok(!value.includes('STALE'));
+});
+
+test('GUI distinguishes saved selection, actual host acknowledgement and stale input',()=>fixture(async({root,api,post})=>{
+ const {acknowledgeInput}=await import('../packages/cli/src/workflow.mjs');
+ const initial=(await api('/api/project')).value;
+ const saved=await post({presetId:'apple-site',mode:'reference',intent:'',referenceUrl:'',selectionOnly:true,revision:initial.revision});
+ assert.equal(saved.value.handoff.status,'waiting');
+ fs.mkdirSync(path.join(root,'spec'),{recursive:true});fs.writeFileSync(path.join(root,'spec/request.md'),'Current user document-page requirement.');
+ acknowledgeInput(root,'spec/request.md');assert.equal((await api('/api/project')).value.handoff.status,'read');
+ fs.writeFileSync(path.join(root,'spec/request.md'),'Changed user requirement.');assert.equal((await api('/api/project')).value.handoff.status,'stale');
+}));

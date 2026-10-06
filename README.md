@@ -34,7 +34,7 @@ npm run gui -- --project "/path/to/project"
 
 Open `http://127.0.0.1:4173/` in the host browser; add `--port 4174` if occupied. Browse/search Ant Design, TDesign, Material, Cloudscape, Carbon, Fluent and Spectrum, plus Apple HIG as a reference-only option. Click a logo card for details, then confirm to enter the natural-language project page. Adjust reference/component mode and add your business needs and visual reference.
 
-The selection is saved to `.design-workflow/design-basis.json` in the target project. Copy the generated handoff into the host conversation; Skills read the selection, confirm compatibility and versions, then implement real design-system source, a Gallery and business pages. Direct GUI-to-agent dispatch is not connected yet. Selecting a preset does not install components or deliver implementation.
+The selection is saved to `.design-workflow/design-basis.json` in the target project. After selection, return to the bound host conversation and describe your requirements there. Skills read the latest selection, confirm compatibility and versions, then implement real design-system source, a Gallery and business pages. Launch inside Codex to inherit CODEX_THREAD_ID, or pass --host-thread SESSION_UUID. An optional copyable handoff includes the target project path when the host needs help locating it. Direct GUI-to-agent dispatch is not connected yet. Selecting a preset does not install components or deliver implementation.
 
 See [GUI guide and official sources](docs/design-builder.md).
 

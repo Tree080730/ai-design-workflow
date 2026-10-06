@@ -219,4 +219,7 @@
 .reference-image-error a{color:var(--ink);font-size:13px}
 @media(max-width:600px){.website-reference-visual{margin-top:24px}.website-reference-focus{font-size:14px}.website-reference-visual figcaption{font-size:12px}}
 
-@media(min-width:1151px){body:is([data-view="gallery"],[data-view="detail"]) main{max-width:none;padding-left:120px;padding-right:120px}}
+@media(min-width:1151px){body:is([data-view="gallery"],[data-view="detail"],[data-view="conversation"]) main{max-width:none;padding-left:120px;padding-right:120px}.conversation-content{max-width:none;margin-left:0;margin-right:0}}
+
+/* Selection completion uses the existing content spacing and project styles. */
+#return-host{display:inline-flex;align-items:center;text-decoration:none;margin-bottom:12px}#return-host[hidden]{display:none}.return-fallback{margin-top:28px;border-top:1px solid var(--line);padding-top:20px}.return-fallback summary{cursor:pointer;font-size:13px}.return-fallback p{color:#888;font-size:12px;line-height:1.8}#return-project-path{overflow-wrap:anywhere}#return-instructions{font-size:12px;line-height:1.8;margin:12px 0}

@@ -71,3 +71,13 @@ Project Adapter 只索引实际路径与命令，以源码和配置为事实。�
 
 ## 无预设输入的兼容
 `design-basis.json` 中 `mode: custom`、`preset: null` 表示用户明确不采用预设，读取需求和风格输入后继续原工作流；不沿用旧预设、不自动安装候选依赖或迁移已有源码。无文件时原行为不变。
+
+## 严格输入、分析与阶段衔接
+
+新建完整项目的交付契约必须设置 `workflow: true`；已有 GUI 选择文件时检查器自动要求阶段证据，不能用旧契约跳过。先按主流程的 [阶段与参考分析契约](../designer-dev-workflow/references/reference-analysis.md) 执行。
+
+宿主每次设计任务实际读取最新选择与本次用户需求，写入需求记录，再通过主流程 `scripts/workflow.mjs read PROJECT --prompt-file RELATIVE_PATH` 生成读取回执。没有用户构建需求时不自动构建。按使用模式完成全部适用分析，将观察、推断和项目适配分开；来源不可访问或核心证据缺失时暂停依赖步骤，请用户确认替换来源或调整要求，不能自行编造候选风格继续实现。
+
+分析结果、适配约束及范围合并向用户确认一次，保存真实答复并绑定当前输入/分析摘要。已授权范围持续实施；高影响变更或证据不足再次确认。实施前必须执行 `workflow.mjs status PROJECT --stage implementation`，业务页面实施前执行 `--stage page`，交付前执行原有 `verify-project.mjs status PROJECT`。检查非零时处理阻塞；不得降级必需项、伪造证据或把文字说明当作程序通过。
+
+阶段检查是宿主调用时的确定性检查，不是文件写权限限制，也不保证模型已调用 Skill。真实宿主激活与自动返回需单独验收；GUI 保存不是任务启动。

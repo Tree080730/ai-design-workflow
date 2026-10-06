@@ -34,22 +34,31 @@ function select(id,push=true) {
 async function persist(p,values={}) {
   const current=project.selection;
   const sameBasis=p?current?.preset?.id===p.id:current?.mode==='custom';
-  project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({presetId:p?.id??null,mode:p?(sameBasis?current.mode:(p.category==='reference'?'reference':'components')):'custom',intent:current?.intent??'',referenceUrl:current?.referenceUrl??'',...values,revision:project.revision})});
+  project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({presetId:p?.id??null,mode:p?(sameBasis?current.mode:(p.category==='reference'?'reference':'components')):'custom',intent:'',selectionOnly:true,referenceUrl:sameBasis?(current?.referenceUrl??''):'',...values,revision:project.revision})});
 }
 async function choose(p,button) {
   button.disabled=true;$('#detail-error').hidden=true;
-  try {await persist(p);showConversation();}catch(error){$('#detail-error').textContent=error.message;$('#detail-error').hidden=false;}finally{button.disabled=false;}
+  try {await persist(p);finishSelection();}catch(error){$('#detail-error').textContent=error.message;$('#detail-error').hidden=false;}finally{button.disabled=false;}
 }
-function showConversation(push=true) {
+function showReturn(push=true) {
   if(!project.selection)return showGallery(push);
-  activeId=project.selection.preset?.id??'custom';const p=presets.find(item=>item.id===activeId);document.documentElement.style.setProperty('--accent',p?.color??'#171717');
+  activeId=project.selection.preset?.id??'custom';const p=presets.find(item=>item.id===activeId);
   setView('conversation');$('#conversation-basis').innerHTML=p?mark(p)+`<span>${escape(p.name)}<small>${project.selection.mode==='components'?'组件与规范基础':'仅作为设计参考'}</small></span><span>调整 ↗</span>`:'<span>不使用预设<small>根据你的需求构建设计系统</small></span><span>调整 ↗</span>';
-  $('#request-input').value=project.selection.intent;$('#request-message').textContent=project.selection.intent;$('#request-message').hidden=!project.selection.intent;
-  $('#copy-request').disabled=!project.selection.intent;$('#request-error').hidden=true;
-  if(push)history.pushState(null,'',`/#conversation/${encodeURIComponent(activeId)}`);window.scrollTo(0,0);
+  $('#return-project-path').textContent=project.projectPath;
+  $('#return-host').hidden=!project.host?.returnUrl;
+  $('#return-host').href=project.host?.returnUrl??'#';
+  const readNote=project.handoff?.status==='read'?'宿主已记录读取当前选择与需求。':project.handoff?.status==='stale'?'选择或需求已变化，等待宿主重新读取。':project.handoff?.status==='blocked'?'交接记录无法核验，请在宿主中检查项目与需求。':'选择已保存，等待宿主读取；保存不代表已开始构建。';
+  $('#return-note').textContent=readNote+(project.host?.returnUrl?' 返回原会话后输入需求；返回不会自动发送消息。':' 请返回打开这个项目的原会话输入需求，或复制下方交接说明。');
+  $('#return-instructions').value=handoff(project.selection,project.projectPath);
+  if(push)history.pushState(null,'',`/#selected/${encodeURIComponent(activeId)}`);window.scrollTo(0,0);
 }
+function finishSelection(){
+  showReturn();
+  if(project.host?.returnUrl){try{location.assign(project.host.returnUrl);}catch{toast('选择已保存，请点击返回原宿主会话。');}}
+}
+
 function route() {
-  const hash=location.hash.slice(1);if(hash==='main')return;if(hash.startsWith('conversation/'))return showConversation(false);
+  const hash=location.hash.slice(1);if(hash==='main')return;if(hash.startsWith('conversation/')||hash.startsWith('selected/'))return showReturn(false);
   const p=presets.find(p=>p.id===hash);if(p)select(p.id,false);else showGallery(false);
 }
 function renderDetail(p) {
@@ -62,7 +71,7 @@ function renderDetail(p) {
   $('#detail').hidden=false;$('#loading').hidden=true;
   $('#detail').innerHTML=`<button id="detail-back" class="back-button">← 所有设计系统</button>
     <div class="detail-hero">
-    <section class="detail-hero-info" aria-labelledby="detail-title"><div class="detail-title-row">${mark(p)}<h1 id="detail-title">${escape(p.name)}</h1></div><p class="detail-summary">${escape(guide.introduction)}</p><p class="detail-positioning-source">${officialLink(sample.positioningSource,'官方介绍')}</p></section><section class="detail-decision" aria-label="选择设计系统"><button class="primary-button" id="use-preset">${selected?'沿用':'选择'} ${escape(p.name)} 并继续</button><p id="detail-error" class="form-error" role="alert" hidden></p></section></div>
+    <section class="detail-hero-info" aria-labelledby="detail-title"><div class="detail-title-row">${mark(p)}<h1 id="detail-title">${escape(p.name)}</h1></div><p class="detail-summary">${escape(guide.introduction)}</p><p class="detail-positioning-source">${officialLink(sample.positioningSource,'官方介绍')}</p></section><section class="detail-decision" aria-label="选择设计系统"><button class="primary-button" id="use-preset">以 ${escape(p.name)} 为起点，返回对话</button><p id="detail-error" class="form-error" role="alert" hidden></p></section></div>
 
     <section class="system-components" aria-label="设计系统展示"><div class="system-live-preview">${p.category==='reference'?`<div class="platform-reference"><h2>平台设计规范</h2><img src="${escape(sample.image)}" alt="${escape(sample.caption)}" referrerpolicy="no-referrer"><span>${escape(sample.caption)}</span></div>`:`<figure class="component-overview"><button id="open-overview" aria-label="放大 ${escape(p.name)} 组件总览"><img src="${escape(overviewImage)}" alt="${escape(p.name)} 组件总览：操作、输入、选择、导航、数据、状态与反馈" width="${p.overview.width}" height="${p.overview.height}"><span>放大查看 ↗</span></button><figcaption>${escape(p.overview.caption)}${p.overview.kind==='generated-from-official-components'?'<span class="overview-composition-note">部分展示为本项目补充组合，不代表官方原生组件。</span>':''}${p.overview.imageSource?officialLink(p.overview.source,'查看图片来源'):''}</figcaption></figure>`}</div></section>
     <section class="system-selection-guide" aria-labelledby="selection-guide-title"><div class="system-section-heading"><h2 id="selection-guide-title">选择前了解</h2></div><dl>${[['components','提供哪些能力'],['customization','外观可以怎么调整']].map(([key,label])=>`<div class="selection-guide-row"><dt>${label}</dt><dd><p>${escape(key==='components'&&p.id==='material'?guide[key].text.split('。')[0]+'。':guide[key].text)}</p>${officialLink(guide[key].source.url,guide[key].source.label)}</dd></div>`).join('')}${guide.notice?`<div class="selection-guide-row"><dt>需要注意</dt><dd><p>${escape(guide.notice)}</p>${officialLink(guide[p.category==='reference'?'web':'maintenance'].source.url,guide[p.category==='reference'?'web':'maintenance'].source.label)}</dd></div>`:''}</dl><p class="selection-guide-footnote">控件列举为示例；完整能力见官方目录。核对日期：${escape(guide.checkedAt)}。</p></section>
@@ -155,7 +164,7 @@ function renderWebsiteReference(p) {
   $('#detail').innerHTML=`<button id="detail-back" class="back-button">← 所有设计系统</button>
     <div class="detail-hero">
       <section class="detail-hero-info" aria-labelledby="detail-title"><div class="detail-title-row">${mark(p)}<h1 id="detail-title">${escape(p.name)}</h1></div><p class="detail-summary">品牌官网 · 视觉与页面表达参考</p><p class="detail-positioning-source"><a href="${url}" target="_blank" rel="noopener noreferrer">查看品牌官网 ↗</a></p></section>
-      <section class="detail-decision" aria-label="选择设计参考"><button class="primary-button" id="use-preset">${selected?'沿用':'参考'} ${escape(p.name)} 并继续</button><p id="detail-error" class="form-error" role="alert" hidden></p></section>
+      <section class="detail-decision" aria-label="选择设计参考"><button class="primary-button" id="use-preset">参考 ${escape(p.name)}，返回对话</button><p id="detail-error" class="form-error" role="alert" hidden></p></section>
     </div>
     <section class="website-reference-visual" aria-label="官网页面画廊"><div class="reference-gallery-toolbar"><span>官网页面视觉</span><button id="reference-motion" class="text-button" aria-pressed="false">暂停滚动</button></div><div class="reference-gallery"><div class="reference-track">${[false,true,true].map(copy=>`<div class="reference-group" ${copy?'aria-hidden="true"':''}>${p.showcase.gallery.map(item=>`<figure class="reference-slide"><a href="${escape(item.source)}" target="_blank" rel="noopener noreferrer" ${copy?'tabindex="-1"':''}><img src="${escape(item.image)}" alt="${escape(item.caption)}" width="${item.width}" height="${item.height}"><span class="reference-slide-error" hidden>图片暂时无法加载 · 查看官网 ↗</span></a><figcaption>${escape(item.caption)} ↗</figcaption></figure>`).join('')}</div>`).join('')}</div></div><p class="reference-capture-note">官网实际页面截图 · ${escape(p.reference.reviewedAt)} · 页面可能随地区和时间变化</p></section>
     <section class="system-selection-guide" aria-labelledby="reference-focus-title"><div class="system-section-heading"><h2 id="reference-focus-title">参考哪些部分</h2></div><p class="website-reference-focus">${escape(p.reference.focus)}</p><p class="selection-guide-footnote">以上为本项目整理的观察方向，不是品牌官方设计规范或适用场景推荐。完整视觉与交互请查看官网。</p></section>
@@ -169,7 +178,7 @@ function renderWebsiteReference(p) {
 }
 
 function showSaved(selection) {
-  $('#basis-form').hidden=true;$('#saved-project').hidden=false;$('#handoff').value=handoff(selection);
+  $('#basis-form').hidden=true;$('#saved-project').hidden=false;$('#handoff').value=handoff(selection,project.projectPath);
 }
 function openProject(p=presets.find(item=>item.id===(project.selection?.preset?.id??activeId)),saved=true) {
   document.body.dataset.guide='false';$('#dialog-title').textContent='项目的设计起点';
@@ -178,7 +187,7 @@ function openProject(p=presets.find(item=>item.id===(project.selection?.preset?.
   const current=(p?project.selection?.preset?.id===p.id:project.selection?.mode==='custom')?project.selection:null;
   const componentRadio=$('input[name="mode"][value="components"]');componentRadio.disabled=!p||p.category==='reference';componentRadio.closest('label').classList.toggle('disabled',componentRadio.disabled);
   if(p)$(`input[name="mode"][value="${current?.mode??(p.category==='reference'?'reference':'components')}"]`).checked=true;
-  $('#reference-url').value=current?.referenceUrl??'';$('#intent').value=current?.intent??'';
+  $('#reference-url').value=current?.referenceUrl??'';
   $('#basis-form').dataset.preset=p?.id??'';$('#basis-form').hidden=false;$('#saved-project').hidden=true;$('#form-error').hidden=true;
   if(saved&&current)showSaved(current);
   $('#project-dialog').showModal();
@@ -189,18 +198,18 @@ $('#edit-basis').addEventListener('click',()=>{$('#basis-form').hidden=false;$('
 $('#basis-form').addEventListener('submit',async event=>{
   event.preventDefault();$('#save-basis').disabled=true;$('#form-error').hidden=true;
   try {
-    project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({presetId:event.target.dataset.preset||null,mode:event.target.dataset.preset?$('input[name="mode"]:checked').value:'custom',intent:$('#intent').value,referenceUrl:$('#reference-url').value,revision:project.revision})});
-    $('#project-dialog').close();showConversation();toast('设计基础已保存到项目');
+    project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({presetId:event.target.dataset.preset||null,mode:event.target.dataset.preset?$('input[name="mode"]:checked').value:'custom',intent:'',selectionOnly:true,referenceUrl:$('#reference-url').value,revision:project.revision})});
+    $('#project-dialog').close();finishSelection();toast('设计基础已保存到项目');
   } catch(error){$('#form-error').textContent=error.message;$('#form-error').hidden=false;}
   finally{$('#save-basis').disabled=false;}
 });
 $('#copy-handoff').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#handoff').value);toast('已复制，交给宿主 Agent 继续构建');}catch{$('#handoff').focus();$('#handoff').select();toast('请复制已选中的构建需求');}});
-async function skipPreset(event){const button=event.currentTarget;button.disabled=true;$('#gallery-error').hidden=true;try{await persist(null);showConversation();}catch(error){$('#gallery-error').textContent=error.message;$('#gallery-error').hidden=false;}finally{button.disabled=false;}}
+async function skipPreset(event){const button=event.currentTarget;button.disabled=true;$('#gallery-error').hidden=true;try{await persist(null);finishSelection();}catch(error){$('#gallery-error').textContent=error.message;$('#gallery-error').hidden=false;}finally{button.disabled=false;}}
 $('#search').addEventListener('input',renderList);
 for(const button of document.querySelectorAll('[data-filter]'))button.addEventListener('click',()=>{filter=button.dataset.filter;for(const item of document.querySelectorAll('[data-filter]')){item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button));}renderList();});
-$('#project-nav').addEventListener('click',()=>project.selection?showConversation():showGallery());$('#project-pill').addEventListener('click',()=>project.selection?showConversation():showGallery());
+$('#project-nav').addEventListener('click',()=>project.selection?showReturn():showGallery());$('#project-pill').addEventListener('click',()=>project.selection?showReturn():showGallery());
 $('#library-nav').addEventListener('click',()=>{$('#project-dialog').close();showGallery();});
-$('#guide-nav').addEventListener('click',()=>{document.body.dataset.guide='true';$('#dialog-title').textContent='从参考到真实页面';$('#dialog-selection').innerHTML='<div class="guide-body"><ol><li><strong>选择设计基础。</strong> 浏览官方规范与组件实现，找到适合业务和技术栈的起点。</li><li><strong>加入你的方向。</strong> 提供风格参考与业务需求，保存到当前项目。</li><li><strong>交给宿主构建。</strong> 复制构建需求，在宿主对话中继续；无需额外配置模型 API。</li><li><strong>查看并迭代。</strong> 宿主建立项目自己的源码与 Gallery，并验证页面和交互。</li></ol><p class="guide-hint">当前 GUI 完成参考选择与项目保存。自动向当前宿主会话派发任务的连接尚未接入。</p></div>';$('#project-dialog').showModal();});
+$('#guide-nav').addEventListener('click',()=>{document.body.dataset.guide='true';$('#dialog-title').textContent='从参考到真实页面';$('#dialog-selection').innerHTML='<div class="guide-body"><ol><li><strong>选择设计基础。</strong> 浏览官方规范与组件实现，找到适合业务和技术栈的起点。</li><li><strong>加入你的方向。</strong> 提供风格参考与业务需求，在宿主中描述业务需求。</li><li><strong>交给宿主构建。</strong> 保存选择后返回原宿主会话，在对话中继续；无需额外配置模型 API。</li><li><strong>查看并迭代。</strong> 宿主建立项目自己的源码与 Gallery，并验证页面和交互。</li></ol><p class="guide-hint">当前 GUI 完成参考选择与项目保存。自动向当前宿主会话派发任务的连接尚未接入。</p></div>';$('#project-dialog').showModal();});
 document.addEventListener('keydown',event=>{if(view==='gallery'&&event.key==='/'&&!['INPUT','TEXTAREA'].includes(event.target.tagName)&&!$('#project-dialog').open){event.preventDefault();$('#search').focus();}});
 try {
   const [catalog,state]=await Promise.all([api('/api/catalog'),api('/api/project')]);presets=catalog.presets;project=state;
@@ -210,11 +219,14 @@ try {
 
 $('#conversation-back').addEventListener('click',()=>showGallery());
 $('#conversation-basis').addEventListener('click',()=>openProject(undefined,false));
-$('#request-form').addEventListener('submit',async event=>{
-  event.preventDefault();const intent=$('#request-input').value.trim();if(!intent){$('#request-error').textContent='先描述你想构建的项目。';$('#request-error').hidden=false;return;}
-  $('#save-request').disabled=true;try {await persist(presets.find(p=>p.id===activeId),{intent});showConversation(false);toast('需求已保存，可以复制到宿主继续');}catch(error){$('#request-error').textContent=error.message;$('#request-error').hidden=false;}finally{$('#save-request').disabled=false;}
+$('#copy-return').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText($('#return-instructions').value);toast('已复制交接说明，可在原宿主会话粘贴');}
+  catch{$('#return-instructions').focus();$('#return-instructions').select();toast('请手动复制已选中的说明');}
 });
-$('#request-input').addEventListener('input',()=>{$('#copy-request').disabled=$('#request-input').value.trim()!==project.selection?.intent||!project.selection?.intent;});
-$('#copy-request').addEventListener('click',async()=>{if(!project.selection)return;try{await navigator.clipboard.writeText(handoff(project.selection));toast('已复制，请在宿主会话中继续');}catch{openProject();toast('请手动复制构建需求');}});
 window.addEventListener('popstate',route);
 window.addEventListener('hashchange',route);
+window.addEventListener('focus',async()=>{
+  if(view!=='conversation')return;
+  try{project=await api('/api/project');showReturn(false);}
+  catch{toast('无法更新宿主读取状态，请刷新重试');}
+});

@@ -102,5 +102,6 @@
       "kind": "documentation",
       "title": "Compare confirmed rules, source and previews"
     }
-  ]
+  ],
+  "workflow": true
 }

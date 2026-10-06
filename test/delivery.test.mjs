@@ -127,7 +127,8 @@ test('aliases and framework wiring require explicit runtime mode and recorded ev
   write('src/main.js',"import '@/style.css'; import '@/gallery.js'; import '@/page.js';");
   assert.ok(deliveryStatus(root).blockers.some(item => item.code === 'integration-unverified'));
   const input = contract();input.artifacts.forEach(item => item.integration='runtime');write('.design-workflow/delivery.json',input);
-  assert.equal(deliveryStatus(root).warnings.length,3);
+  assert.equal(deliveryStatus(root).warnings.filter(item=>item.code==='integration-unverified').length,3);
+  assert.ok(deliveryStatus(root).warnings.some(item=>item.code==='legacy-workflow'));
   assert.equal(deliveryStatus(root).canFinish,false);
   assert.equal(verify(root,write).canFinish,true);
 }));
