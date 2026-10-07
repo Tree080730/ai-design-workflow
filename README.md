@@ -39,7 +39,7 @@ Open the printed local URL in the host browser (default `http://127.0.0.1:4173/`
 
 Launching from Codex can inherit `CODEX_THREAD_ID`; an explicit `--host-thread SESSION_UUID` is also supported. If navigation fails, return manually. Copyable handoff text is an optional project-location fallback, not a required copy/paste step. The host must actually read the latest selection, analyze the source, obtain combined confirmation of analysis and adaptation, then implement and verify design-system source, a Gallery and business pages.
 
-Opening a project directory does not automatically launch the GUI. Automatic return and all three build modes have passed isolated acceptance; formal workspace hook trust and native startup acceptance remain pending. Saving a selection does not send a message, install components or start a build.
+Opening a project directory does not automatically launch the GUI. Automatic return and all three build modes have passed isolated acceptance; formal workspace native startup and selection readback are verified; automatic return acceptance remains pending. Saving a selection does not send a message, install components or start a build.
 
 See [product flow and current capability status](docs/product-flow.md), [GUI usage](docs/design-builder.md) and [host integration](docs/host-integration.md).
 

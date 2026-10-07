@@ -18,3 +18,9 @@
 4. 再次打开已有选择的项目，确认不重复GUI、不自动构建。缺失时只排查入口，不重复业务全量验收。
 
 官方依据：[Codex Hooks](https://learn.chatgpt.com/docs/hooks)。安装完成与原生接入验收完成分别报告；当前自动启动、用户选择/返回、宿主读取和已有选择跳过在正式工作区尚未验收，不能宣称第四步全部完成。
+
+## 正式接入实测更新
+- 用户明确确认“是新对话自动弹出的”。实际Hook日志在2026-10-07 15:36:24（Asia/Shanghai）记录SessionStart/startup、正式项目cwd和completed；结合用户观察确认原生启动及GUI自动展示通过。
+- 用户提供新对话实际读取结果；本轮再只读核对真实design-basis.json一致：Duolingo/duolingo-site、reference、https://www.duolingo.com/、正式项目路径、selected/not-started。来源保存于preset.reference.url，独立referenceUrl为空不是丢失来源。没有新增构建需求，没有执行来源分析或业务构建。
+- 本轮实际调用启动器正常入口（不是模拟Hook）读取已有选择，返回status:selected/openRequired:false，验证已选项目启动器跳过GUI。没有删除或重写选择。
+- 自动回到原会话仍待用户明确确认；宿主读取成功与返回方式分开报告。远程CI继续暂缓。
