@@ -23,4 +23,6 @@
 - 用户明确确认“是新对话自动弹出的”。实际Hook日志在2026-10-07 15:36:24（Asia/Shanghai）记录SessionStart/startup、正式项目cwd和completed；结合用户观察确认原生启动及GUI自动展示通过。
 - 用户提供新对话实际读取结果；本轮再只读核对真实design-basis.json一致：Duolingo/duolingo-site、reference、https://www.duolingo.com/、正式项目路径、selected/not-started。来源保存于preset.reference.url，独立referenceUrl为空不是丢失来源。没有新增构建需求，没有执行来源分析或业务构建。
 - 本轮实际调用启动器正常入口（不是模拟Hook）读取已有选择，返回status:selected/openRequired:false，验证已选项目启动器跳过GUI。没有删除或重写选择。
-- 自动回到原会话仍待用户明确确认；宿主读取成功与返回方式分开报告。远程CI继续暂缓。
+- 用户补充：内置浏览器位于原对话右侧，可直接继续原对话，无法独立确认深链自动导航。内置浏览器模式按同一会话连续使用验收：自动展示→选择保存→原会话读取正确，已满足当前接入目标；不把深链自动导航标为通过，也不再强制另做跳转测试。远程CI继续暂缓。
+
+本轮最小正式接入验收完成：不重新构建业务，不要求用户复制选择信息作为日常输入。独立窗口/外部浏览器的自动导航不属于本次新增实测结论。
