@@ -127,3 +127,19 @@ for(const mode of ['components','reference'])test(`${mode}: local evidence needs
  a.evidence.find(x=>x.id==='source').url=undefined;confirm(a);assert.equal(workflowStatus(root,{stage:'implementation'}).canProceed,false);
  a.evidence.filter(x=>x.id!=='local').forEach(x=>x.url='https://different.example/');a.evidence.find(x=>x.id==='local').url='https://example.com/';confirm(a);assert.equal(workflowStatus(root,{stage:'implementation'}).canProceed,false);
 }));
+
+test('combined foundations require both seven-dimension analyses and every chosen source',()=>fixture('components',({root,write,receipt,analysis,confirm,sha})=>{
+ write('.design-workflow/design-basis.json',{schemaVersion:2,projectPath:root,mode:'combined',component:{id:'example',docs:'https://example.com/'},references:[{kind:'url',url:'https://example.com/'}]});
+ receipt();let a=analysis();a.mode='combined';a.findings=dimensions.combined.map(dimension=>({...a.findings[0],dimension}));confirm(a);assert.equal(workflowStatus(root).canProceed,true);
+ a.findings=a.findings.filter(item=>!item.dimension.startsWith('components.'));confirm(a);assert.match(workflowStatus(root).blockers[0].message,/components.official-source/);
+ a=analysis();a.mode='combined';a.findings=dimensions.combined.map(dimension=>({...a.findings[0],dimension}));a.evidence=a.evidence.filter(item=>item.id!=='narrow');confirm(a);assert.match(workflowStatus(root).blockers[0].message,/desktop and narrow/);
+ write('.design-workflow/design-basis.json',{schemaVersion:2,projectPath:root,mode:'combined',component:{id:'example',docs:'https://example.com/'},references:[{kind:'url',url:'https://unobserved.example/'}]});receipt();a=analysis();a.mode='combined';a.findings=dimensions.combined.map(dimension=>({...a.findings[0],dimension}));confirm(a);assert.match(workflowStatus(root).blockers[0].message,/Each selected reference/);
+}));
+test('image-only references use the actual attachment and cannot invent responsive observations',()=>fixture('reference',({root,write,receipt,analysis,confirm,sha})=>{
+ write('proof/input.png',Buffer.from('89504e470d0a1a0a00000000000000000000000100000001','hex'));
+ const digest=sha('proof/input.png'),file='.design-workflow/references/'+digest+'.png';write(file,fs.readFileSync(path.join(root,'proof/input.png')));
+ write('.design-workflow/design-basis.json',{schemaVersion:2,projectPath:root,mode:'reference',component:null,references:[{kind:'image',name:'User reference',file,sha256:digest}]});
+ receipt();let a=analysis();a.evidence=[{id:'input',kind:'user-input',file,sha256:digest,capturedAt:'2026-10-07T00:00:00Z'}];a.findings=a.findings.map(item=>({...item,status:['responsive','interaction-motion'].includes(item.dimension)?'adapted':'observed',evidence:['input']}));confirm(a);assert.equal(workflowStatus(root).canProceed,true);
+ a.findings.find(item=>item.dimension==='responsive').status='observed';confirm(a);assert.match(workflowStatus(root).blockers[0].message,/Static images/);
+ write(file,'changed input');assert.equal(hostReadStatus(root).status,'blocked');assert.equal(workflowStatus(root).canProceed,false);
+}));

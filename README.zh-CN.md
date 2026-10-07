@@ -1,5 +1,7 @@
 # AI Design Workflow
 
+GUI 按顺序选择可选的组件底座与可选的设计参考；参考支持品牌官网、自定义 URL 和原始 PNG/JPEG/WebP 图片。两类输入一起保存，宿主按 Skill 分析并合并确认后实施。
+
 [English](README.md)
 
 一套运行在成熟 coding Agent 中的 **Design Harness**，优先面向 **0→1 的设计系统构建与业务页面搭建**。通过 Skills 将设计依据转为可执行约束，落地设计系统源码与 Gallery，再复用真实资产实现业务页面。

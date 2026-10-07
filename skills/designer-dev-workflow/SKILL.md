@@ -10,7 +10,7 @@ description: 优先用于从 0 到 1 构建可执行设计系统、Gallery 和�
 ## 不可省略的要求
 
 - 先读取目标项目真实规则、资产、源码、入口和运行命令，沿用已有工具链与组件。源码必须可编辑、接入实际入口；文档、截图、JSON、dist 或临时预览不能替代源码和 Gallery。
-- 每次设计任务读取最新 GUI 选择（如有）与本次需求，保存需求记录，执行 `scripts/workflow.mjs read PROJECT --prompt-file RELATIVE_PATH`。没有构建需求时不自动构建；`mode: custom`/`preset: null` 表示不用预设，不继承旧选择。
+- 每次设计任务读取最新 GUI 选择（如有）与本次需求，保存需求记录，执行 `scripts/workflow.mjs read PROJECT --prompt-file RELATIVE_PATH`。没有构建需求时不自动构建；新版选择分别读取 `component` 与 `references`；两步都跳过才是 custom，不继承旧选择。组合选择同时执行组件与参考分析；图片只证明可见静态特征。
 - 按模式完成七项分析，区分实际观察、推断与项目适配。参考网站必须真实读取并取得桌面/窄屏及适用交互证据。来源不可访问或核心证据不足时暂停依赖步骤，请用户确认调整，不能用猜测或旧截图补成通过。
 - 分析、适配约束、实现范围合并确认一次，绑定当前输入和分析。沿用已有明确授权；高影响变化、输入变化或证据不足重新确认，不能替用户确认。
 - 新建完整项目的 `.design-workflow/delivery.json` 必须 `workflow: true`。存在 GUI 或阶段记录时不能用旧契约绕开检查。

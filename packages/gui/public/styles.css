@@ -223,3 +223,20 @@
 
 /* Selection completion uses the existing content spacing and project styles. */
 #return-host{display:inline-flex;align-items:center;text-decoration:none;margin-bottom:12px}#return-host[hidden]{display:none}.return-fallback{margin-top:28px;border-top:1px solid var(--line);padding-top:20px}.return-fallback summary{cursor:pointer;font-size:13px}.return-fallback p{color:#888;font-size:12px;line-height:1.8}#return-project-path{overflow-wrap:anywhere}#return-instructions{font-size:12px;line-height:1.8;margin:12px 0}
+/* Sequential foundation → visual-reference flow uses the existing page rhythm. */
+:root{--flow-gap:16px}
+.flow-summary{color:var(--muted);margin:0 0 24px;font-size:14px}
+.custom-references{border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:32px}
+.custom-references h2{font-size:20px;margin:0 0 24px}
+.reference-input-row{display:flex;align-items:center;gap:var(--flow-gap);width:100%;margin-bottom:24px}
+.reference-input-row .text-input{flex:1;min-width:0;width:auto;margin:0}
+.reference-input-row button{flex:none;white-space:nowrap}
+.reference-file-label{display:block;margin-bottom:12px}.reference-file-label span{color:var(--muted);font-size:13px;margin-left:12px}
+.reference-inputs{list-style:none;margin:24px 0;padding:0}.reference-inputs li{display:flex;gap:var(--flow-gap);align-items:center;border-top:1px solid var(--line);padding:16px 0}.reference-inputs li>span{flex:1;min-width:0;overflow-wrap:anywhere}.reference-inputs small{display:block;color:var(--muted);margin-top:6px}.reference-inputs button{flex:none}
+.reference-finish{display:flex;align-items:center;justify-content:space-between;gap:var(--flow-gap);border-top:1px solid var(--line);padding-top:20px}.reference-finish p{font-size:13px;color:var(--muted);line-height:1.7}.reference-finish .primary-button{flex:none}
+@media(max-width:600px){.custom-references{padding:16px}.reference-finish{align-items:stretch;flex-direction:column}.reference-file-label span{display:block;margin:8px 0 0}.gallery-footer{flex-wrap:wrap}.basis-chip{max-width:100%;white-space:normal}.reference-input-row{gap:var(--flow-gap)}}
+.reference-thumbnail{width:96px;height:64px;object-fit:contain;border:1px solid var(--line);border-radius:8px;flex:none;background:var(--soft)}
+.filters button:disabled{cursor:default}
+#reference-images{max-width:100%;color:var(--muted);font-size:13px}
+#reference-images::file-selector-button{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 16px;margin-right:var(--flow-gap);cursor:pointer}
+.conversation-basis,.conversation-lead,#return-project-path{overflow-wrap:anywhere}

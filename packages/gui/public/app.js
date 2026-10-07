@@ -4,7 +4,7 @@ const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const officialLink=(url,label)=>`<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)} ↗</a>`;
 const mark = preset => `<span class="system-logo" data-brand="${escape(preset.id)}"><img src="/logos/${escape(preset.id)}.${escape(preset.logoExtension??'svg')}" alt="" width="64" height="64"></span>`;
-let presets=[],activeId,project,filter='open-source',toastTimer,view='gallery',returnNavigation='idle';
+let presets=[],activeId,project,filter='open-source',toastTimer,view='gallery',returnNavigation='idle',componentId=null,references=[],stepOneDone=false;
 function toast(message) {$('#toast').textContent=message;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3500);}
 async function api(url,options) {
   const response=await fetch(url,options);const result=await response.json();
@@ -14,8 +14,16 @@ async function api(url,options) {
 function renderList() {
   const query=$('#search').value.trim().toLocaleLowerCase();
   const visible=presets.filter(p=>!p.hidden&&p.category===filter&&[p.name,p.publisher,...p.platforms,...p.tags].join(' ').toLocaleLowerCase().includes(query));
-  $('#gallery-lead').textContent=filter==='reference'?'从品牌官网寻找视觉参考，再形成你自己的设计。':'从一套成熟的设计系统开始，再让它成为你的设计。';
-  $('#preset-list').innerHTML=visible.map(p=>`<button class="system-card" data-brand="${escape(p.id)}" data-preset="${escape(p.id)}" aria-label="查看 ${escape(p.name)} 详情">${mark(p)}${mark(p).replace('class="system-logo"','class="card-watermark" aria-hidden="true"')}<span class="system-card-name">${escape(p.name)}</span><span class="system-card-publisher">${escape(p.publisher)}</span><span class="card-arrow" aria-hidden="true">↗</span></button>`).join('')+'<button id="skip-preset" class="system-card" data-brand="custom"><span class="system-logo" aria-hidden="true"></span><span class="system-card-name">不使用预设</span><span class="card-arrow" aria-hidden="true">↗</span></button>';
+  $('#selection-step').textContent=filter==='reference'?'第 2 步，共 2 步':'第 1 步，共 2 步';
+  $('#gallery-title').textContent=filter==='reference'?'选择你的设计参考':'选择你的组件底座';
+  $('#custom-references').hidden=filter!=='reference';
+  $('#flow-summary').hidden=filter!=='reference';
+  $('#flow-summary').textContent='组件底座：'+(presets.find(p=>p.id===componentId)?.name??'不使用预设组件');
+  $('#search').placeholder=filter==='reference'?'搜索品牌官网':'搜索开源组件';
+  $('#search').setAttribute('aria-label',$('#search').placeholder);
+  $('#gallery-lead').textContent=filter==='reference'?'从品牌官网、网页或图片寻找参考，再形成你自己的设计。':'从一套成熟的设计系统开始，再让它成为你的设计。';
+  $('#preset-list').innerHTML=visible.map(p=>`<button class="system-card" data-brand="${escape(p.id)}" data-preset="${escape(p.id)}" aria-label="查看 ${escape(p.name)} 详情">${mark(p)}${mark(p).replace('class="system-logo"','class="card-watermark" aria-hidden="true"')}<span class="system-card-name">${escape(p.name)}</span><span class="system-card-publisher">${escape(p.publisher)}</span><span class="card-arrow" aria-hidden="true">↗</span></button>`).join('')+`<button id="skip-preset" class="system-card" data-brand="custom"><span class="system-logo" aria-hidden="true"></span><span class="system-card-name">${filter==='reference'?'不使用设计参考':'不使用预设组件'}</span><span class="card-arrow" aria-hidden="true">↗</span></button>`;
+  renderReferenceInputs();
   $('#skip-preset').addEventListener('click',skipPreset);
   $('#empty-search').hidden=visible.length>0;
   for (const button of $('#preset-list').querySelectorAll('[data-preset]')) button.addEventListener('click',()=>select(button.dataset.preset));
@@ -32,19 +40,46 @@ function select(id,push=true) {
   activeId=id;document.documentElement.style.setProperty('--accent',p.color);document.documentElement.dataset.preset=id;
   renderDetail(p);setView('detail');if(push)history.pushState(null,'',`/#${encodeURIComponent(id)}`);window.scrollTo(0,0);
 }
-async function persist(p,values={}) {
-  const current=project.selection;
-  const sameBasis=p?current?.preset?.id===p.id:current?.mode==='custom';
-  project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({presetId:p?.id??null,mode:p?(sameBasis?current.mode:(p.category==='reference'?'reference':'components')):'custom',intent:'',selectionOnly:true,referenceUrl:sameBasis?(current?.referenceUrl??''):'',...values,revision:project.revision})});
+function setStep(next) {
+  filter=next;
+  for(const button of document.querySelectorAll('[data-filter]')){
+    const active=button.dataset.filter===filter;
+    button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));
+    if(button.dataset.filter==='reference')button.disabled=!stepOneDone;
+  }
+  $('#search').value='';showGallery();$('#gallery-title').setAttribute('tabindex','-1');$('#gallery-title').focus({preventScroll:true});
+}
+function selectedLabel(selection) {
+  if(selection.schemaVersion!==2)return selection.preset?.name??'不使用预设';
+  return (selection.component?.name??'不使用预设组件')+' · '+(selection.references.length?selection.references.map(ref=>ref.name).join('、'):'不使用设计参考');
+}
+async function persistFlow() {
+  project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({schemaVersion:2,componentId,references,revision:project.revision})});
 }
 async function choose(p,button) {
-  button.disabled=true;$('#detail-error').hidden=true;
-  try {await persist(p);finishSelection();}catch(error){$('#detail-error').textContent=error.message;$('#detail-error').hidden=false;}finally{button.disabled=false;}
+  $('#detail-error').hidden=true;
+  if(p.category==='open-source'){componentId=p.id;stepOneDone=true;setStep('reference');return;}
+  if(references.length>=8){$('#detail-error').textContent='最多提供 8 份参考，请先移除一项。';$('#detail-error').hidden=false;return;}
+  if(!references.some(item=>item.presetId===p.id))references.push({kind:'preset',presetId:p.id,name:p.name});
+  setStep('reference');toast('已加入 '+p.name+'，可以继续添加或保存');
+}
+function renderReferenceInputs(){
+  $('#reference-inputs').innerHTML=references.map((ref,index)=>`<li>${ref.kind==='image'?`<img class="reference-thumbnail" src="${ref.data?'data:image/'+(ref.data.startsWith('/9j/')?'jpeg':ref.data.startsWith('UklGR')?'webp':'png')+';base64,'+ref.data:'/api/reference-image?sha='+encodeURIComponent(ref.sha256)}" alt="${escape(ref.name)}">`:''}<span>${escape(ref.name??ref.url??'参考图片')}<small>${escape(ref.url??(ref.kind==='image'?'图片参考':'品牌官网'))}</small></span><button type="button" data-remove-reference="${index}" class="text-button" aria-label="移除 ${escape(ref.name??ref.url??'参考')}">移除</button></li>`).join('');
+  for(const button of $('#reference-inputs').querySelectorAll('button'))button.addEventListener('click',()=>{references.splice(Number(button.dataset.removeReference),1);renderReferenceInputs();});
+}
+async function completeFlow(button){
+  button.disabled=true;$('#reference-error').hidden=true;
+  try{
+    const pending=$('#custom-reference-url').value.trim();
+    if(pending){const parsed=new URL(pending);if(!['http:','https:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('请输入不含账号密码的 HTTP(S) 网页地址。');if(references.length>=8)throw new Error('最多提供 8 份参考。');if(!references.some(ref=>ref.url===parsed.href))references.push({kind:'url',url:parsed.href,name:parsed.hostname});$('#custom-reference-url').value='';renderReferenceInputs();}
+    await persistFlow();finishSelection();
+  }catch(error){$('#reference-error').textContent=error.message;$('#reference-error').hidden=false;}
+  finally{button.disabled=false;}
 }
 function showReturn(push=true) {
   if(!project.selection)return showGallery(push);
-  activeId=project.selection.preset?.id??'custom';const p=presets.find(item=>item.id===activeId);
-  setView('conversation');$('#conversation-basis').innerHTML=p?mark(p)+`<span>${escape(p.name)}<small>${project.selection.mode==='components'?'组件与规范基础':'仅作为设计参考'}</small></span><span>调整 ↗</span>`:'<span>不使用预设<small>根据你的需求构建设计系统</small></span><span>调整 ↗</span>';
+  activeId=project.selection.component?.id??project.selection.preset?.id??project.selection.references?.find(ref=>ref.presetId)?.presetId??(project.selection.references?.length?'reference':'custom');
+  setView('conversation');$('#conversation-basis').innerHTML=`<span>${escape(selectedLabel(project.selection))}<small>组件底座与视觉参考</small></span><span>调整 ↗</span>`;
   $('#return-project-path').textContent=project.projectPath;
   $('#return-host').hidden=!project.host?.returnUrl;
   $('#return-host').href=project.host?.returnUrl??'#';
@@ -59,11 +94,11 @@ function finishSelection(){
 
 function route() {
   const hash=location.hash.slice(1);if(hash==='main')return;if(hash.startsWith('conversation/')||hash.startsWith('selected/'))return showReturn(false);
-  const p=presets.find(p=>p.id===hash);if(p)select(p.id,false);else showGallery(false);
+  const p=presets.find(p=>p.id===hash);if(p&&p.category==='reference'&&!stepOneDone)return showGallery(false);if(p)select(p.id,false);else showGallery(false);
 }
 function renderDetail(p) {
   if(p.referenceKind==='website')return renderWebsiteReference(p);
-  const selected=project.selection?.preset?.id===p.id;
+  const selected=componentId===p.id||references.some(ref=>ref.presetId===p.id);
   const sample=p.showcase;
   const guide=p.selectionGuide;
   const overviewImage=p.overview?`${p.overview.image}?v=${p.overview.imageSha256??'official'}`:'';
@@ -71,7 +106,7 @@ function renderDetail(p) {
   $('#detail').hidden=false;$('#loading').hidden=true;
   $('#detail').innerHTML=`<button id="detail-back" class="back-button">← 所有设计系统</button>
     <div class="detail-hero">
-    <section class="detail-hero-info" aria-labelledby="detail-title"><div class="detail-title-row">${mark(p)}<h1 id="detail-title">${escape(p.name)}</h1></div><p class="detail-summary">${escape(guide.introduction)}</p><p class="detail-positioning-source">${officialLink(sample.positioningSource,'官方介绍')}</p></section><section class="detail-decision" aria-label="选择设计系统"><button class="primary-button" id="use-preset">以 ${escape(p.name)} 为起点，返回对话</button><p id="detail-error" class="form-error" role="alert" hidden></p></section></div>
+    <section class="detail-hero-info" aria-labelledby="detail-title"><div class="detail-title-row">${mark(p)}<h1 id="detail-title">${escape(p.name)}</h1></div><p class="detail-summary">${escape(guide.introduction)}</p><p class="detail-positioning-source">${officialLink(sample.positioningSource,'官方介绍')}</p></section><section class="detail-decision" aria-label="选择设计系统"><button class="primary-button" id="use-preset">以 ${escape(p.name)} 为组件底座，继续选择参考</button><p id="detail-error" class="form-error" role="alert" hidden></p></section></div>
 
     <section class="system-components" aria-label="设计系统展示"><div class="system-live-preview">${p.category==='reference'?`<div class="platform-reference"><h2>平台设计规范</h2><img src="${escape(sample.image)}" alt="${escape(sample.caption)}" referrerpolicy="no-referrer"><span>${escape(sample.caption)}</span></div>`:`<figure class="component-overview"><button id="open-overview" aria-label="放大 ${escape(p.name)} 组件总览"><img src="${escape(overviewImage)}" alt="${escape(p.name)} 组件总览：操作、输入、选择、导航、数据、状态与反馈" width="${p.overview.width}" height="${p.overview.height}"><span>放大查看 ↗</span></button><figcaption>${escape(p.overview.caption)}${p.overview.kind==='generated-from-official-components'?'<span class="overview-composition-note">部分展示为本项目补充组合，不代表官方原生组件。</span>':''}${p.overview.imageSource?officialLink(p.overview.source,'查看图片来源'):''}</figcaption></figure>`}</div></section>
     <section class="system-selection-guide" aria-labelledby="selection-guide-title"><div class="system-section-heading"><h2 id="selection-guide-title">选择前了解</h2></div><dl>${[['components','提供哪些能力'],['customization','外观可以怎么调整']].map(([key,label])=>`<div class="selection-guide-row"><dt>${label}</dt><dd><p>${escape(key==='components'&&p.id==='material'?guide[key].text.split('。')[0]+'。':guide[key].text)}</p>${officialLink(guide[key].source.url,guide[key].source.label)}</dd></div>`).join('')}${guide.notice?`<div class="selection-guide-row"><dt>需要注意</dt><dd><p>${escape(guide.notice)}</p>${officialLink(guide[p.category==='reference'?'web':'maintenance'].source.url,guide[p.category==='reference'?'web':'maintenance'].source.label)}</dd></div>`:''}</dl><p class="selection-guide-footnote">控件列举为示例；完整能力见官方目录。核对日期：${escape(guide.checkedAt)}。</p></section>
@@ -159,12 +194,12 @@ function setupReferenceCarousel(gallery,motion) {
 }
 
 function renderWebsiteReference(p) {
-  const selected=project.selection?.preset?.id===p.id;
+  const selected=componentId===p.id||references.some(ref=>ref.presetId===p.id);
   const url=escape(p.reference.url);
   $('#detail').innerHTML=`<button id="detail-back" class="back-button">← 所有设计系统</button>
     <div class="detail-hero">
       <section class="detail-hero-info" aria-labelledby="detail-title"><div class="detail-title-row">${mark(p)}<h1 id="detail-title">${escape(p.name)}</h1></div><p class="detail-summary">品牌官网 · 视觉与页面表达参考</p><p class="detail-positioning-source"><a href="${url}" target="_blank" rel="noopener noreferrer">查看品牌官网 ↗</a></p></section>
-      <section class="detail-decision" aria-label="选择设计参考"><button class="primary-button" id="use-preset">参考 ${escape(p.name)}，返回对话</button><p id="detail-error" class="form-error" role="alert" hidden></p></section>
+      <section class="detail-decision" aria-label="选择设计参考"><button class="primary-button" id="use-preset">加入 ${escape(p.name)} 参考</button><p id="detail-error" class="form-error" role="alert" hidden></p></section>
     </div>
     <section class="website-reference-visual" aria-label="官网页面画廊"><div class="reference-gallery-toolbar"><span>官网页面视觉</span><button id="reference-motion" class="text-button" aria-pressed="false">暂停滚动</button></div><div class="reference-gallery"><div class="reference-track">${[false,true,true].map(copy=>`<div class="reference-group" ${copy?'aria-hidden="true"':''}>${p.showcase.gallery.map(item=>`<figure class="reference-slide"><a href="${escape(item.source)}" target="_blank" rel="noopener noreferrer" ${copy?'tabindex="-1"':''}><img src="${escape(item.image)}" alt="${escape(item.caption)}" width="${item.width}" height="${item.height}"><span class="reference-slide-error" hidden>图片暂时无法加载 · 查看官网 ↗</span></a><figcaption>${escape(item.caption)} ↗</figcaption></figure>`).join('')}</div>`).join('')}</div></div><p class="reference-capture-note">官网实际页面截图 · ${escape(p.reference.reviewedAt)} · 页面可能随地区和时间变化</p></section>
     <section class="system-selection-guide" aria-labelledby="reference-focus-title"><div class="system-section-heading"><h2 id="reference-focus-title">参考哪些部分</h2></div><p class="website-reference-focus">${escape(p.reference.focus)}</p><p class="selection-guide-footnote">以上为本项目整理的观察方向，不是品牌官方设计规范或适用场景推荐。完整视觉与交互请查看官网。</p></section>
@@ -177,48 +212,48 @@ function renderWebsiteReference(p) {
   $('#detail-back').addEventListener('click',()=>showGallery());
 }
 
-function showSaved(selection) {
-  $('#basis-form').hidden=true;$('#saved-project').hidden=false;$('#handoff').value=handoff(selection,project.projectPath);
-}
-function openProject(p=presets.find(item=>item.id===(project.selection?.preset?.id??activeId)),saved=true) {
-  document.body.dataset.guide='false';$('#dialog-title').textContent='项目的设计起点';
-  $('#dialog-selection').innerHTML=p?`<div class="chosen-system">${mark(p)}<div><strong>${escape(p.name)}</strong><small>${escape(p.publisher)} · ${p.category==='reference'?'规范参考':escape(p.license)}</small></div></div>`:'<div class="chosen-system"><strong>不使用预设设计系统</strong></div>';
-  $('#mode-fieldset').hidden=!p;
-  const current=(p?project.selection?.preset?.id===p.id:project.selection?.mode==='custom')?project.selection:null;
-  const componentRadio=$('input[name="mode"][value="components"]');componentRadio.disabled=!p||p.category==='reference';componentRadio.closest('label').classList.toggle('disabled',componentRadio.disabled);
-  if(p)$(`input[name="mode"][value="${current?.mode??(p.category==='reference'?'reference':'components')}"]`).checked=true;
-  $('#reference-url').value=current?.referenceUrl??'';
-  $('#basis-form').dataset.preset=p?.id??'';$('#basis-form').hidden=false;$('#saved-project').hidden=true;$('#form-error').hidden=true;
-  if(saved&&current)showSaved(current);
-  $('#project-dialog').showModal();
-}
 $('#close-dialog').addEventListener('click',()=>$('#project-dialog').close());
-$('#project-dialog').addEventListener('click',event=>{if(event.target===$('#project-dialog')){const rect=event.target.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)event.target.close();}});
-$('#edit-basis').addEventListener('click',()=>{$('#basis-form').hidden=false;$('#saved-project').hidden=true;});
-$('#basis-form').addEventListener('submit',async event=>{
-  event.preventDefault();$('#save-basis').disabled=true;$('#form-error').hidden=true;
-  try {
-    project=await api('/api/basis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({presetId:event.target.dataset.preset||null,mode:event.target.dataset.preset?$('input[name="mode"]:checked').value:'custom',intent:'',selectionOnly:true,referenceUrl:$('#reference-url').value,revision:project.revision})});
-    $('#project-dialog').close();finishSelection();toast('设计基础已保存到项目');
-  } catch(error){$('#form-error').textContent=error.message;$('#form-error').hidden=false;}
-  finally{$('#save-basis').disabled=false;}
+async function skipPreset(event){
+  if(filter==='open-source'){componentId=null;stepOneDone=true;setStep('reference');}
+  else{references=[];$('#custom-reference-url').value='';renderReferenceInputs();await completeFlow(event.currentTarget);}
+}
+$('#finish-reference').addEventListener('click',event=>completeFlow(event.currentTarget));
+$('#reference-form').addEventListener('submit',event=>{
+  event.preventDefault();$('#reference-error').hidden=true;
+  try{
+    const parsed=new URL($('#custom-reference-url').value.trim());
+    if(!['http:','https:'].includes(parsed.protocol)||parsed.username||parsed.password)throw new Error('请输入不含账号密码的 HTTP(S) 网页地址。');
+    if(references.length>=8)throw new Error('最多提供 8 份参考。');
+    if(!references.some(ref=>ref.url===parsed.href))references.push({kind:'url',url:parsed.href,name:parsed.hostname});
+    $('#custom-reference-url').value='';renderReferenceInputs();
+  }catch(error){$('#reference-error').textContent=error.message;$('#reference-error').hidden=false;}
 });
-$('#copy-handoff').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#handoff').value);toast('已复制，交给宿主 Agent 继续构建');}catch{$('#handoff').focus();$('#handoff').select();toast('请复制已选中的构建需求');}});
-async function skipPreset(event){const button=event.currentTarget;button.disabled=true;$('#gallery-error').hidden=true;try{await persist(null);finishSelection();}catch(error){$('#gallery-error').textContent=error.message;$('#gallery-error').hidden=false;}finally{button.disabled=false;}}
+$('#reference-images').addEventListener('change',async event=>{
+  $('#reference-error').hidden=true;$('#finish-reference').disabled=true;
+  try{
+    const files=[...event.target.files];
+    if(files.length+references.length>8)throw new Error('最多提供 8 份参考。');
+    for(const file of files)if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024)throw new Error('仅支持 PNG、JPEG、WebP，每张不超过 5 MB。');
+    const additions=await Promise.all(files.map(file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve({kind:'image',name:file.name,data:String(reader.result).split(',')[1]});reader.onerror=()=>reject(new Error('图片读取失败，请重试。'));reader.readAsDataURL(file);})));references.push(...additions);renderReferenceInputs();
+  }catch(error){$('#reference-error').textContent=error.message;$('#reference-error').hidden=false;}
+  finally{event.target.value='';$('#finish-reference').disabled=false;}
+});
 $('#search').addEventListener('input',renderList);
-for(const button of document.querySelectorAll('[data-filter]'))button.addEventListener('click',()=>{filter=button.dataset.filter;for(const item of document.querySelectorAll('[data-filter]')){item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button));}renderList();});
+for(const button of document.querySelectorAll('[data-filter]'))button.addEventListener('click',()=>setStep(button.dataset.filter));
 $('#project-nav').addEventListener('click',()=>project.selection?showReturn():showGallery());$('#project-pill').addEventListener('click',()=>project.selection?showReturn():showGallery());
-$('#library-nav').addEventListener('click',()=>{$('#project-dialog').close();showGallery();});
-$('#guide-nav').addEventListener('click',()=>{document.body.dataset.guide='true';$('#dialog-title').textContent='从参考到真实页面';$('#dialog-selection').innerHTML='<div class="guide-body"><ol><li><strong>选择设计基础。</strong> 浏览官方规范与组件实现，找到适合业务和技术栈的起点。</li><li><strong>加入你的方向。</strong> 提供风格参考与业务需求，在宿主中描述业务需求。</li><li><strong>交给宿主构建。</strong> 保存选择后返回原宿主会话，在对话中继续；无需额外配置模型 API。</li><li><strong>查看并迭代。</strong> 宿主建立项目自己的源码与 Gallery，并验证页面和交互。</li></ol><p class="guide-hint">当前 GUI 完成参考选择与项目保存。自动向当前宿主会话派发任务的连接尚未接入。</p></div>';$('#project-dialog').showModal();});
+$('#library-nav').addEventListener('click',()=>{$('#project-dialog').close();setStep('open-source');});
+$('#guide-nav').addEventListener('click',()=>{document.body.dataset.guide='true';$('#dialog-title').textContent='从参考到真实页面';$('#dialog-selection').innerHTML='<div class="guide-body"><ol><li><strong>选择组件底座。</strong> 选择开源组件，也可以跳过。</li><li><strong>选择设计参考。</strong> 选择品牌官网、输入网页地址或添加图片，也可以跳过；之后在宿主中描述需求。</li><li><strong>交给宿主构建。</strong> 保存选择后返回原宿主会话，在对话中继续；无需额外配置模型 API。</li><li><strong>查看并迭代。</strong> 宿主建立项目自己的源码与 Gallery，并验证页面和交互。</li></ol><p class="guide-hint">当前 GUI 完成参考选择与项目保存。自动向当前宿主会话派发任务的连接尚未接入。</p></div>';$('#project-dialog').showModal();});
 document.addEventListener('keydown',event=>{if(view==='gallery'&&event.key==='/'&&!['INPUT','TEXTAREA'].includes(event.target.tagName)&&!$('#project-dialog').open){event.preventDefault();$('#search').focus();}});
 try {
   const [catalog,state]=await Promise.all([api('/api/catalog'),api('/api/project')]);presets=catalog.presets;project=state;
+  if(project.selection?.schemaVersion===2){componentId=project.selection.component?.id??null;references=project.selection.references.map(ref=>ref.presetId?{kind:'preset',presetId:ref.presetId,name:ref.name}:ref);}
+  else if(project.selection){componentId=project.selection.mode==='components'?project.selection.preset.id:null;if(project.selection.mode==='reference')references.push({kind:project.selection.preset.reference?.kind==='website'?'preset':'url',presetId:project.selection.preset.id,url:project.selection.referenceUrl||project.selection.preset.reference?.url||project.selection.preset.docs,name:project.selection.preset.name});else if(project.selection.referenceUrl)references.push({kind:'url',url:project.selection.referenceUrl,name:'用户参考'});}
   $('#project-name').textContent=project.projectName;$('#project-pill').title=project.projectPath;
   $('#loading').hidden=true;route();
 } catch(error){$('#loading').textContent='无法读取项目：'+error.message;$('#search').disabled=true;for(const id of ['project-nav','project-pill','guide-nav'])$('#'+id).disabled=true;}
 
-$('#conversation-back').addEventListener('click',()=>showGallery());
-$('#conversation-basis').addEventListener('click',()=>openProject(undefined,false));
+$('#conversation-back').addEventListener('click',()=>setStep('open-source'));
+$('#conversation-basis').addEventListener('click',()=>setStep('open-source'));
 $('#copy-return').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText($('#return-instructions').value);toast('已复制交接说明，可在原宿主会话粘贴');}
   catch{$('#return-instructions').focus();$('#return-instructions').select();toast('请手动复制已选中的说明');}

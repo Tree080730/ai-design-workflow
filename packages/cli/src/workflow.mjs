@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {projectRelativePath} from './config.mjs';
+import {basisInputs,sourceUrl} from './basis.mjs';
 import {taskStatus} from './tasks.mjs';
 
 export const workflowFiles = {
@@ -16,6 +17,7 @@ export const dimensions = {
   components: ['official-source','compatibility-version','required-capabilities','theme-extension','accessibility-states','maintenance-license','adaptation'],
   custom: ['user-goals','existing-assets','color-typography','layout','components-states','responsive','adaptation']
 };
+dimensions.combined=[...dimensions.components.map(name=>'components.'+name),...dimensions.reference.map(name=>'reference.'+name)];
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 function file(root, relative) {
   projectRelativePath(relative,'workflow file');
@@ -40,14 +42,19 @@ function input(root) {
   const exists=fs.existsSync(file(root,workflowFiles.basis));
   const basis=exists?read(root,workflowFiles.basis):null;
   if(basis) {
-    if(basis.schemaVersion!==1||!dimensions[basis.mode]||
-      (basis.mode==='custom'?basis.preset!==null:!nonempty(basis.preset?.id))) throw new Error('Invalid design basis.');
+    basisInputs(basis);
     if(basis.projectPath && fs.realpathSync(basis.projectPath)!==root) throw new Error('Design basis belongs to a different project.');
   }
-  const mode=basis?.mode??'custom';
-  const referenceUrl=basis?.referenceUrl||basis?.preset?.reference?.url||basis?.preset?.docs||null;
-  if(mode!=='custom') url(referenceUrl);
-  return {mode,referenceUrl,basisHash:exists?sha(root,workflowFiles.basis):null};
+  const normalized=basisInputs(basis);
+  const mode=normalized.mode;
+  const referenceUrl=basis?.schemaVersion===2?(normalized.component?.docs||normalized.references.find(item=>item.kind==='url')?.url||null):(basis?.referenceUrl||basis?.preset?.reference?.url||basis?.preset?.docs||null);
+  if(referenceUrl)url(referenceUrl);
+  const attachments={};
+  for(const reference of normalized.references.filter(item=>item.kind==='image')){
+    if(sha(root,reference.file)!==reference.sha256)throw new Error('Reference image is missing or changed.');
+    attachments[reference.file]=reference.sha256;
+  }
+  return {mode,referenceUrl,...(basis?.schemaVersion===2?{component:normalized.component,references:normalized.references,attachments}:{}),basisHash:exists?sha(root,workflowFiles.basis):null};
 }
 function atomic(root,relative,value) {
   const target=file(root,relative);fs.mkdirSync(path.dirname(target),{recursive:true});
@@ -73,7 +80,7 @@ export function hostReadStatus(target) {
     const root=fs.realpathSync(path.resolve(target)),selected=input(root);
     if(!fs.existsSync(file(root,workflowFiles.receipt))) return {status:'waiting',reason:'not-read'};
     const receipt=read(root,workflowFiles.receipt);
-    if(receipt.schemaVersion!==1||receipt.method!=='actual-file-read'||!nonempty(receipt.readAt)||receipt.projectPath!==root||receipt.basisHash!==selected.basisHash||receipt.mode!==selected.mode||receipt.referenceUrl!==selected.referenceUrl||receipt.promptHash!==sha(root,receipt.promptFile)) return {status:'stale',reason:'input-changed'};
+    if(receipt.schemaVersion!==1||receipt.method!=='actual-file-read'||!nonempty(receipt.readAt)||receipt.projectPath!==root||receipt.basisHash!==selected.basisHash||receipt.mode!==selected.mode||receipt.referenceUrl!==selected.referenceUrl||JSON.stringify(receipt.attachments??{})!==JSON.stringify(selected.attachments??{})||receipt.promptHash!==sha(root,receipt.promptFile)) return {status:'stale',reason:'input-changed'};
     return {status:'read',readAt:receipt.readAt};
   }catch(error){return {status:'blocked',reason:error.message};}
 }
@@ -89,6 +96,7 @@ export function workflowStatus(target,{stage='implementation'}={}) {
     root=fs.realpathSync(path.resolve(target));
     const selected=input(root),state=hostReadStatus(root);
     if(fs.existsSync(file(root,workflowFiles.basis)))trackedInputs.push(workflowFiles.basis);
+    trackedInputs.push(...Object.keys(selected.attachments??{}));
     if(state.status!=='read') throw new Error(`Host input ${state.status}: ${state.reason}`);
     const receipt=read(root,workflowFiles.receipt);trackedInputs.push(workflowFiles.receipt,receipt.promptFile);
     if(stage!=='analysis') {
@@ -109,19 +117,30 @@ export function workflowStatus(target,{stage='implementation'}={}) {
         }
         trackedInputs.push(item.file);evidence.set(item.id,item);
       }
-      if(selected.mode!=='custom'&&![...evidence.values()].some(item=>!['user-input','existing-source'].includes(item.kind)&&item.url!==undefined&&url(item.url)===url(selected.referenceUrl)))throw new Error('Selected source URL has no evidence.');
+      if(selected.referenceUrl&&![...evidence.values()].some(item=>!['user-input','existing-source'].includes(item.kind)&&item.url!==undefined&&url(item.url)===url(selected.referenceUrl)))throw new Error('Selected source URL has no evidence.');
+      if(selected.references){
+        for(const reference of selected.references){
+          const source=[...evidence.values()].filter(item=>reference.kind==='url'?item.url&&url(item.url)===url(reference.url)&&!['user-input','existing-source'].includes(item.kind):item.file===reference.file&&item.sha256===reference.sha256);
+          if(!source.length)throw new Error('Each selected reference needs actual source evidence.');
+          if(reference.kind==='url'&&(!source.some(item=>item.kind==='screenshot'&&item.viewport.width<768)||!source.some(item=>item.kind==='screenshot'&&item.viewport.width>=1024)))throw new Error('Every website reference needs actual desktop and narrow observations.');
+        }
+      }
+      const hasWebReference=selected.references?selected.references.some(item=>item.kind==='url'):selected.mode==='reference';
       for(const dimension of dimensions[selected.mode]) {
+        const name=dimension.replace(/^(components|reference)\./,'');
+        const isVisual=selected.mode==='reference'||dimension.startsWith('reference.');
         const matches=(analysis.findings??[]).filter(item=>item.dimension===dimension);
         if(matches.length!==1)throw new Error(`Expected one finding for ${dimension}.`);
         const finding=matches[0];
         if(!['observed','adapted','not-applicable'].includes(finding.status)||!nonempty(finding.observation)||!nonempty(finding.decision))throw new Error(`Incomplete analysis: ${dimension}. Pause for user clarification.`);
-        if(finding.status==='not-applicable'&&selected.mode==='reference'&&['hierarchy','color-typography','layout','responsive','adaptation'].includes(dimension))throw new Error(`Core website analysis cannot be omitted: ${dimension}`);
+        if(finding.status==='not-applicable'&&isVisual&&['hierarchy','color-typography','layout','responsive','adaptation'].includes(name))throw new Error(`Core website analysis cannot be omitted: ${dimension}`);
         if(!Array.isArray(finding.evidence)||!finding.evidence.length||finding.evidence.some(id=>!evidence.has(id)))throw new Error(`Missing evidence for ${dimension}.`);
-        if(selected.mode==='reference'&&['hierarchy','color-typography','layout','components-states'].includes(dimension)&&finding.status!=='not-applicable'&&!finding.evidence.some(id=>evidence.get(id).kind==='screenshot'))throw new Error(`Visual evidence required: ${dimension}.`);
-        if(selected.mode==='reference'&&dimension==='responsive'&&finding.status!=='not-applicable') {
+        if(isVisual&&['hierarchy','color-typography','layout','components-states'].includes(name)&&finding.status!=='not-applicable'&&!finding.evidence.some(id=>evidence.get(id).kind==='screenshot'||selected.references?.some(ref=>ref.kind==='image'&&ref.file===evidence.get(id).file)))throw new Error(`Visual evidence required: ${dimension}.`);
+        if(isVisual&&hasWebReference&&name==='responsive'&&finding.status!=='not-applicable') {
           const screenshots=finding.evidence.map(id=>evidence.get(id)).filter(item=>item.kind==='screenshot');
           if(!screenshots.some(item=>item.viewport.width<768)||!screenshots.some(item=>item.viewport.width>=1024))throw new Error('Actual desktop and narrow source observations required.');
         }
+        if(isVisual&&!hasWebReference&&['responsive','interaction-motion'].includes(name)&&finding.status!=='adapted')throw new Error('Static images cannot prove responsive or interaction behavior; record project adaptation.');
         const rule=finding.rule;
         if(!rule||rule.sha256!==sha(root,rule.file)||!nonempty(rule.anchor)||!fs.readFileSync(file(root,rule.file),'utf8').includes(rule.anchor))throw new Error(`Missing or changed rule mapping: ${dimension}.`);
         trackedInputs.push(rule.file);

@@ -4,6 +4,7 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {launchGui} from '../packages/gui/src/launch.mjs';
+import {basisInputs} from '../packages/cli/src/basis.mjs';
 import {hostReturn} from '../packages/gui/src/host-return.mjs';
 
 export async function startDesign({project,hostThread=null,reselect=false}={}) {
@@ -15,8 +16,9 @@ export async function startDesign({project,hostThread=null,reselect=false}={}) {
   // Validate the persisted basis before deciding whether to skip selection.
   if(selection) {
     const {catalog}=await import('../packages/gui/src/catalog.mjs');
-    if(selection.schemaVersion!==1||!['custom','components','reference'].includes(selection.mode)||
-      (selection.mode==='custom'?selection.preset!==null:!catalog.some(item=>item.id===selection.preset?.id)))throw new Error('Unsupported saved selection; preserve and resolve it before startup.');
+    let selected;try{selected=basisInputs(selection);}catch(error){throw new Error('Unsupported saved selection: '+error.message);}
+    if(selection.schemaVersion===1&&selection.mode!=='custom'&&!catalog.some(item=>item.id===selection.preset?.id))throw new Error('Unsupported saved selection.');
+    if(selected.component&&!catalog.some(item=>item.id===selected.component.id&&item.category==='open-source'))throw new Error('Unsupported saved component foundation.');
     if(selection.projectPath&&fs.realpathSync(selection.projectPath)!==root)throw new Error('Saved selection belongs to a different project.');
   }
   const host=hostReturn(hostThread);

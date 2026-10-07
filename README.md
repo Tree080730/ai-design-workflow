@@ -1,5 +1,7 @@
 # AI Design Workflow
 
+The GUI selects an optional component foundation first, then optional visual references (brand websites, custom URLs, and original PNG/JPEG/WebP images). Both inputs are saved together and analyzed by the host before confirmation and implementation.
+
 [中文](README.zh-CN.md)
 
 A Design Harness inside existing coding agents, focused on **0→1 design-system construction and business-page development**. Its Skills turn design evidence into executable constraints, implement design-system source and a Gallery, then reuse real assets to build business pages.

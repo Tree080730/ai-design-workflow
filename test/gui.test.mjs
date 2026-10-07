@@ -208,3 +208,35 @@ test('GUI distinguishes saved selection, actual host acknowledgement and stale i
  acknowledgeInput(root,'spec/request.md');assert.equal((await api('/api/project')).value.handoff.status,'read');
  fs.writeFileSync(path.join(root,'spec/request.md'),'Changed user requirement.');assert.equal((await api('/api/project')).value.handoff.status,'stale');
 }));
+
+test('sequential flow saves independent component and reference inputs, skips, and original images',()=>fixture(async({root,url,api,post})=>{
+  const {acknowledgeInput,hostReadStatus}=await import('../packages/cli/src/workflow.mjs');
+  const {startDesign}=await import('../scripts/design-start.mjs');
+  const png='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+  let current=(await api('/api/project')).value;
+  const input={schemaVersion:2,componentId:'ant-design',references:[{kind:'preset',presetId:'linear-site'},{kind:'url',url:'https://example.com/inspiration'},{kind:'image',name:'原始参考.png',data:png}],revision:current.revision};
+  const result=await post(input);assert.equal(result.status,200);current=result.value;
+  assert.equal(current.selection.mode,'combined');assert.equal(current.selection.component.id,'ant-design');
+  assert.deepEqual(current.selection.component.packages,['antd']);assert.equal(current.selection.references.length,3);assert.equal(current.selection.references[0].url,'https://linear.app/');
+  const image=current.selection.references[2];assert.deepEqual(fs.readFileSync(path.join(root,image.file)),Buffer.from(png,'base64'));
+  assert.equal((await fetch(url+'/api/reference-image?sha='+image.sha256)).status,200);
+  assert.equal((await fetch(url+'/api/reference-image?sha=unknown')).status,404);
+  assert.equal((await startDesign({project:root})).openRequired,false);
+  fs.mkdirSync(path.join(root,'spec'));fs.writeFileSync(path.join(root,'spec/request.md'),'Current combined requirement');
+  const receipt=acknowledgeInput(root,'spec/request.md');assert.equal(receipt.mode,'combined');assert.equal(receipt.references.length,3);assert.equal(hostReadStatus(root).status,'read');
+  fs.appendFileSync(path.join(root,image.file),'changed');assert.equal(hostReadStatus(root).status,'blocked');
+  assert.equal((await fetch(url+'/api/reference-image?sha='+image.sha256)).status,400);
+  fs.writeFileSync(path.join(root,image.file),Buffer.from(png,'base64'));
+  const before=fs.readFileSync(path.join(root,'.design-workflow/design-basis.json'),'utf8');
+  for(const bad of [{...input,componentId:'apple-site'}, {...input,references:[{kind:'url',url:'javascript:alert(1)'}]}, {...input,references:[{kind:'image',data:Buffer.from('not an image').toString('base64')}]}, {...input,references:[{kind:'image',file: '../secret',sha256:image.sha256}]}])assert.equal((await post({...bad,revision:current.revision})).status,400);
+  assert.equal(fs.readFileSync(path.join(root,'.design-workflow/design-basis.json'),'utf8'),before);
+  assert.equal((await post(input)).status,409);
+  for(const [componentId,references,mode] of [['carbon',[],'components'],[null,[{kind:'image',name:'图片',data:png}],'reference'],[null,[],'custom']]){
+    const saved=await post({schemaVersion:2,componentId,references,revision:current.revision});assert.equal(saved.status,200);current=saved.value;assert.equal(current.selection.mode,mode);assert.equal(current.selection.requirementSource,'host');assert.equal(current.selection.intent,'');assert.equal(current.selection.implementationStatus,'not-started');
+  }
+}));
+test('combined handoff retains both inputs and limits image-only inference',async()=>{
+ const {handoff}=await import('../packages/gui/public/handoff.js');
+ const value=handoff({schemaVersion:2,component:{name:'Ant Design'},references:[{kind:'url',name:'Linear',url:'https://linear.app/'},{kind:'image',name:'布局.png',file:'.design-workflow/references/example.png',sha256:'hash'}]},'/project');
+ assert.match(value,/Ant Design/);assert.match(value,/linear.app/);assert.match(value,/读取原图/);assert.match(value,/合并确认一次/);
+});
