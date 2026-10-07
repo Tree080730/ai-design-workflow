@@ -2,11 +2,11 @@
 
 项目的 `.design-workflow/design-basis.json` 记录 GUI 的选择。新版 `schemaVersion: 2` 分别保存 `component`（组件底座或 null）与 `references`（参考数组，可为空），不互相覆盖；旧版 schemaVersion 1 继续读取，不静默改写。
 
-GUI 先选择开源组件（可跳过），再选择视觉参考（可跳过）。参考可组合品牌官网、用户 URL 和原始图片，最多 8 份；图片支持 PNG/JPEG/WebP，每张 5 MB。只有最终保存才写选择；中途浏览不开始构建。
+GUI 先选择开源组件（可跳过），再选择视觉参考（可跳过）。新 GUI 只能选择一个品牌官网或自己的 HTTP(S) URL，或不使用参考；组件底座与这一份参考可同时生效。新 GUI 不提供图片上传，旧版多参考与原始 PNG/JPEG/WebP 图片记录继续可读，宿主须分析旧记录中全部仍有效的输入。只有最终保存才写选择；中途浏览不开始构建。
 
 - `component` 保存官方入口、候选包及主题等来源；参考中的品牌没有组件依赖。
 - URL 参考：`{kind:"url", url, name, presetId?, focus?}`。自定义 URL 同样需要真实来源分析。
-- 图片参考：`{kind:"image", name, file, sha256}`。GUI 把原始字节保存到项目 `.design-workflow/references/<hash>.<ext>`；宿主直接读取该文件。不得把缩略图或口头描述当成原图。
+- 图片参考：`{kind:"image", name, file, sha256}`。历史图片及兼容 API 把原始字节保存到项目 `.design-workflow/references/<hash>.<ext>`；宿主直接读取该文件。不得把缩略图或口头描述当成原图。
 - `mode` 从输入确定：有组件无参考为 components；无组件有参考为 reference；两者都有为 combined；两者都无为 custom。combined 不是二选一，也不允许按一个模式省略另一个模式的要求。
 - 宿主读回执记录两类输入和图片摘要；附件、选择或需求变化使回执及后续证据失效。交付门禁跟踪原始附件。
 

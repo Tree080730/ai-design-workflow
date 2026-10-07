@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-07 — Design Builder single reference flow
+
+- Limit new saves to one brand website or custom URL, with optional component foundation; preserve legacy selection readback.
+- Place custom URL actions at the bottom of the brand list in a smoothly expanding row, sharing brand hover and selected effects.
+- Add the project logo and utility marks, unify icon-only back navigation with the step label, and remove redundant step navigation.
+- Fix the first URL save in a fresh project; update English/Chinese setup and usage documentation.
+- Validate affected GUI/API cases and preview build; retain prior full-suite evidence without claiming a new complete business-page acceptance.
+
 ## Unreleased
 
 - Added a project/session-bound GUI launcher with concurrent reuse and stale-instance recovery, optional review-required Codex SessionStart Hook installation, and honest return-navigation recovery messages. Existing selections and unrelated Hooks are preserved; native Hook triggering and return navigation remain separate acceptance items.

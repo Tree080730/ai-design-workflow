@@ -42,7 +42,7 @@ function saveFlow(root,input) {
   if(input.revision!==current.revision)return null;
   const component=input.componentId===null?null:findPreset(input.componentId);
   if(input.componentId!==null&&component?.category!=='open-source')throw new Error('Choose an open-source component foundation.');
-  if(!Array.isArray(input.references)||input.references.length>8)throw new Error('最多提供 8 份参考。');
+  if(!Array.isArray(input.references)||input.references.length>1)throw new Error('只能选择一份设计参考。');
   const uploads=[];
   const references=input.references.map(item=>{
     if(item.kind==='preset') {
@@ -68,6 +68,7 @@ function saveFlow(root,input) {
   }
   for(const reference of references.filter(ref=>ref.kind==='image')){const target=path.join(root,reference.file);if(fs.lstatSync(target).isSymbolicLink()||crypto.createHash('sha256').update(fs.readFileSync(target)).digest('hex')!==reference.sha256)throw new Error('Reference image is missing or changed.');}
   const file=fileInProject(root),temporary=`${file}.${crypto.randomUUID()}.tmp`;
+  fs.mkdirSync(path.dirname(file),{recursive:true});
   try{fs.writeFileSync(temporary,JSON.stringify(value,null,2)+'\n',{flag:'wx'});fs.renameSync(temporary,file);}finally{if(fs.existsSync(temporary))fs.unlinkSync(temporary);}
   return state(root);
 }
@@ -134,7 +135,7 @@ export function createGuiServer({project,hostThread=null,session=null}) {
       }
       if (url.pathname.startsWith('/api/')) return send(404,{error:'Unknown operation.'});
       if (!['GET','HEAD'].includes(request.method)) return send(405,{error:'Method not allowed.'});
-      const routes = {'/':'index.html','/app.js':'app.js','/handoff.js':'handoff.js','/return-state.js':'return-state.js','/styles.css':'styles.css'};
+      const routes = {'/':'index.html','/app.js':'app.js','/handoff.js':'handoff.js','/return-state.js':'return-state.js','/styles.css':'styles.css','/logos/design-builder.png':'logos/design-builder.png','/logos/custom-reference.svg':'logos/custom-reference.svg','/logos/no-reference.svg':'logos/no-reference.svg'};
       const logo = /^\/logos\/([a-z-]+)\.(svg|ico|png)$/.exec(url.pathname);
       const preset = logo && findPreset(logo[1]);
       const previewEntry = /^\/preview\/([a-z-]+)\.(html|js|css)$/.exec(url.pathname);

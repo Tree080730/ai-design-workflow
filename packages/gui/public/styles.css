@@ -226,17 +226,36 @@
 /* Sequential foundation → visual-reference flow uses the existing page rhythm. */
 :root{--flow-gap:16px}
 .flow-summary{color:var(--muted);margin:0 0 24px;font-size:14px}
-.custom-references{border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:32px}
-.custom-references h2{font-size:20px;margin:0 0 24px}
+#gallery #preset-list{padding-bottom:0}
+.custom-references{padding:0;margin:0;border-bottom:1px solid var(--line);background:var(--paper)}
+#toggle-custom-reference{border-bottom:0;background:transparent;transition:background .36s cubic-bezier(.22,1,.36,1)}
+.custom-references.is-expanded #toggle-custom-reference{background:var(--soft)}
+#toggle-custom-reference[aria-expanded="true"] .system-card-name{transform:translateX(-110px)}
+#toggle-custom-reference[aria-expanded="true"] .card-watermark{opacity:1;transform:translate(0,-50%)}
+#toggle-custom-reference[aria-expanded="true"]>.system-logo,#toggle-custom-reference[aria-expanded="true"] .system-card-publisher,#toggle-custom-reference[aria-expanded="true"] .card-arrow{opacity:0}
+.custom-reference-content{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .36s cubic-bezier(.22,1,.36,1),opacity .24s ease}
+.is-expanded .custom-reference-content{grid-template-rows:1fr;opacity:1}
+.custom-reference-inner{min-height:0;overflow:hidden}
+.custom-reference-body{padding:24px}
+.custom-reference-inner:focus-within{overflow:visible}
 .reference-input-row{display:flex;align-items:center;gap:var(--flow-gap);width:100%;margin-bottom:24px}
 .reference-input-row .text-input{flex:1;min-width:0;width:auto;margin:0}
-.reference-input-row button{flex:none;white-space:nowrap}
-.reference-file-label{display:block;margin-bottom:12px}.reference-file-label span{color:var(--muted);font-size:13px;margin-left:12px}
-.reference-inputs{list-style:none;margin:24px 0;padding:0}.reference-inputs li{display:flex;gap:var(--flow-gap);align-items:center;border-top:1px solid var(--line);padding:16px 0}.reference-inputs li>span{flex:1;min-width:0;overflow-wrap:anywhere}.reference-inputs small{display:block;color:var(--muted);margin-top:6px}.reference-inputs button{flex:none}
-.reference-finish{display:flex;align-items:center;justify-content:space-between;gap:var(--flow-gap);border-top:1px solid var(--line);padding-top:20px}.reference-finish p{font-size:13px;color:var(--muted);line-height:1.7}.reference-finish .primary-button{flex:none}
-@media(max-width:600px){.custom-references{padding:16px}.reference-finish{align-items:stretch;flex-direction:column}.reference-file-label span{display:block;margin:8px 0 0}.gallery-footer{flex-wrap:wrap}.basis-chip{max-width:100%;white-space:normal}.reference-input-row{gap:var(--flow-gap)}}
-.reference-thumbnail{width:96px;height:64px;object-fit:contain;border:1px solid var(--line);border-radius:8px;flex:none;background:var(--soft)}
+.reference-actions{display:flex;align-items:center;gap:var(--flow-gap);flex-wrap:wrap}
+.reference-actions button{min-height:48px}
+@media(max-width:600px){#toggle-custom-reference[aria-expanded="true"] .system-card-name{transform:translateX(-87px)}.custom-reference-body{padding:20px 12px}.reference-actions{align-items:stretch;flex-direction:column}.gallery-footer{flex-wrap:wrap}.basis-chip{max-width:100%;white-space:normal}}
 .filters button:disabled{cursor:default}
-#reference-images{max-width:100%;color:var(--muted);font-size:13px}
-#reference-images::file-selector-button{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 16px;margin-right:var(--flow-gap);cursor:pointer}
 .conversation-basis,.conversation-lead,#return-project-path{overflow-wrap:anywhere}
+
+/* Project mark and utility actions reuse the brand column and monochrome ink. */
+.brand-logo{display:block;width:32px;height:32px;object-fit:contain;flex:none}
+.reference-actions .text-button{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+@media(max-width:600px){.brand-logo{width:28px;height:28px}.header .brand{gap:8px}}
+
+/* Back navigation occupies the same eyebrow row as the step information. */
+.page-kicker{display:flex;align-items:center;flex-wrap:wrap;gap:var(--flow-gap)}
+.page-kicker>p{margin:0;font:inherit;color:inherit;letter-spacing:inherit}
+.page-kicker .back-button,#detail .page-kicker .back-button{margin:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit}
+.page-kicker .back-button:hover{color:inherit;text-decoration:underline;text-underline-offset:4px}
+#detail>.page-kicker{margin-top:16px}
+.conversation-content{margin-top:16px}
+@media(max-width:600px){#detail>.page-kicker{margin-top:12px}.conversation-content{margin-top:12px}}

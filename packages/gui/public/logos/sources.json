@@ -74,5 +74,24 @@
     "source": "https://developer.apple.com/apple-logo.svg",
     "retrievedAt": "2026-10-04",
     "purpose": "Identify the enterprise behind the referenced design system. Trademark rights retained by owners."
+  },
+  "design-builder": {
+    "file": "design-builder.png",
+    "source": "User-provided project logo (Frame 172.png)",
+    "retrievedAt": "2026-10-07",
+    "purpose": "Design Builder project identity.",
+    "extraction": "Original supplied PNG, unchanged."
+  },
+  "custom-reference": {
+    "file": "custom-reference.svg",
+    "source": "Project-authored SVG",
+    "retrievedAt": "2026-10-07",
+    "purpose": "Identify the custom URL reference option."
+  },
+  "no-reference": {
+    "file": "no-reference.svg",
+    "source": "Project-authored SVG",
+    "retrievedAt": "2026-10-07",
+    "purpose": "Identify the no-preset component option."
   }
 }

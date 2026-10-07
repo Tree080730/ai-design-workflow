@@ -1,6 +1,6 @@
 # AI Design Workflow
 
-The GUI selects an optional component foundation first, then optional visual references (brand websites, custom URLs, and original PNG/JPEG/WebP images). Both inputs are saved together and analyzed by the host before confirmation and implementation.
+The GUI selects an optional component foundation first, then at most one visual reference: a brand website or your own HTTP(S) URL. Both inputs are saved together and analyzed by the host before confirmation and implementation. You can skip either step; existing image and multiple-reference records remain readable.
 
 [中文](README.zh-CN.md)
 
@@ -37,7 +37,7 @@ npm ci
 npm run gui -- --project "/path/to/project"
 ```
 
-Open the printed local URL in the host browser (default `http://127.0.0.1:4173/`; add `--port 4174` if needed). Browse the two tabs, inspect details and save a starting point. The GUI saves `.design-workflow/design-basis.json` and attempts to return to the bound original conversation. Describe your business needs and subsequent changes in the host; there is no GUI requirement-entry page.
+Open the printed local URL in the host browser (default `http://127.0.0.1:4173/`; add `--port 4174` if needed). Follow the two steps, inspect details and save a starting point. Choose one brand reference, or expand “Use your own reference” at the bottom to enter a URL or skip references. The GUI saves `.design-workflow/design-basis.json` and attempts to return to the bound original conversation. Describe your business needs and subsequent changes in the host; there is no GUI requirement-entry page.
 
 Launching from Codex can inherit `CODEX_THREAD_ID`; an explicit `--host-thread SESSION_UUID` is also supported. If navigation fails, return manually. Copyable handoff text is an optional project-location fallback, not a required copy/paste step. The host must actually read the latest selection, analyze the source, obtain combined confirmation of analysis and adaptation, then implement and verify design-system source, a Gallery and business pages.
 
@@ -46,6 +46,8 @@ Opening a project directory does not automatically launch the GUI. Automatic ret
 See [product flow and current capability status](docs/product-flow.md), [GUI usage](docs/design-builder.md) and [host integration](docs/host-integration.md).
 
 Optional trusted Codex SessionStart Hooks and a recoverable startup command are available; see [GUI startup](docs/gui-startup.md). Native Hook triggering and browser navigation still require host acceptance.
+
+The GitHub link distributes the source, not a hosted GUI. Each user runs the GUI locally against their own target project. After updating with `git pull --ff-only`, run `npm ci` again before restarting the GUI.
 
 ## One complete 0→1 request
 
