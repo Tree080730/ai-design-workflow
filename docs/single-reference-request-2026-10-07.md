@@ -68,3 +68,5 @@ Header 左侧使用用户提供的 Frame 172.png，原样复制为 logos/design-
 
 ## 提交发布准备
 2026-10-07 用户已授权推送。同步 README/中文 README、Design Builder 说明、产品链路、Logo 来源及安装版 Skill 的单参考契约，并记录 CHANGELOG。发布前定向测试 5 项通过（Logo 路由、目录服务、首次 URL 保存/替换、组合保存/跳过/兼容图片、宿主读回），GUI build:preview 通过；在全新临时目录安装 Codex Skills 成功，安装内容包含最新单参考契约。JS 语法与 git diff --check 通过。本轮没有重复全量测试。公开分发仍采用 GitHub 克隆及本机运行，不是在线托管 GUI。
+
+发布核验：首次提交 f36e935 已推送 main；未经认证的公开浅克隆成功，仓库中的项目及实用 Logo 完整，安装 Codex Skills（46 个文件）、npm ci、GUI build:preview 与 HTTP 启动/静态资源读取均通过。GitHub CI 的 validate 和示例构建通过，但示例 npm audit 发现 source-map-js 1.2.1 的 GHSA-68fv-2mgg-jv7q；仅将示例锁定版本升级至 1.2.2，随后 npm ci、示例构建及 moderate 级 audit 通过（0 vulnerabilities），保留原安全检查。

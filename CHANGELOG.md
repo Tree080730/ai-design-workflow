@@ -6,6 +6,7 @@
 - Place custom URL actions at the bottom of the brand list in a smoothly expanding row, sharing brand hover and selected effects.
 - Add the project logo and utility marks, unify icon-only back navigation with the step label, and remove redundant step navigation.
 - Fix the first URL save in a fresh project; update English/Chinese setup and usage documentation.
+- Update the React/Vite example’s locked source-map-js to 1.2.2 to resolve the indexed source-map denial-of-service advisory (GHSA-68fv-2mgg-jv7q).
 - Validate affected GUI/API cases and preview build; retain prior full-suite evidence without claiming a new complete business-page acceptance.
 
 ## Unreleased
