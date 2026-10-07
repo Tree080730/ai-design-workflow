@@ -5,79 +5,31 @@ description: 优先用于从 0 到 1 构建可执行设计系统、Gallery 和�
 
 # Designer Dev Workflow
 
-默认主线：**确认设计依据与约束 → 构建设计系统源码与 Gallery → 复用设计系统搭建业务页面并交付**。本 Skill 由宿主 Agent 执行，宿主负责模型、工具、权限与会话；CLI 安装和 token 导出可选；0→1 交付默认使用随 Skill 安装的契约与检查器，不依赖独立 CLI。接入见 [宿主说明](references/host-integration.md)。
+主线：**确认设计依据与约束 → 真实设计系统源码与 Gallery → 复用资产构建业务页面 → 全部验收与交付**。宿主负责模型、工具、权限和会话；CLI 与 token 导出可选。完整建设不能在 Gallery 完成后提前结束。
 
-## 交付边界
+## 不可省略的要求
 
-默认面向 0→1 的设计系统与业务页面建设。用户只要求设计系统时完成前两阶段，不虚构业务页面；已确认完整建设时，不能在设计系统或 Gallery 完成后提前结束。已有项目和局部改动沿用真实资产，按需读取 [补充路径](references/existing-project.md)，不自动重建底座。
+- 先读取目标项目真实规则、资产、源码、入口和运行命令，沿用已有工具链与组件。源码必须可编辑、接入实际入口；文档、截图、JSON、dist 或临时预览不能替代源码和 Gallery。
+- 每次设计任务读取最新 GUI 选择（如有）与本次需求，保存需求记录，执行 `scripts/workflow.mjs read PROJECT --prompt-file RELATIVE_PATH`。没有构建需求时不自动构建；`mode: custom`/`preset: null` 表示不用预设，不继承旧选择。
+- 按模式完成七项分析，区分实际观察、推断与项目适配。参考网站必须真实读取并取得桌面/窄屏及适用交互证据。来源不可访问或核心证据不足时暂停依赖步骤，请用户确认调整，不能用猜测或旧截图补成通过。
+- 分析、适配约束、实现范围合并确认一次，绑定当前输入和分析。沿用已有明确授权；高影响变化、输入变化或证据不足重新确认，不能替用户确认。
+- 新建完整项目的 `.design-workflow/delivery.json` 必须 `workflow: true`。存在 GUI 或阶段记录时不能用旧契约绕开检查。
+- 实施前运行 `workflow.mjs status PROJECT --stage implementation`；业务页面实施前运行 `--stage page`，确认 DS 源码、Gallery 与六项真实检查有效。失败先修复，不跳过阶段。
+- 最终运行 `scripts/verify-project.mjs status PROJECT`，并把同一门禁接入 CI。只有 `canFinish: true` 才能宣称已登记验收通过。源码、规则、输入、附件变化使证据过期，必须重验；必需项不得改可选、豁免或伪造。
+- 最终验收覆盖 static、build、规则与源码对照、所有 Gallery/业务入口的桌面与窄屏布局、真实交互和适用业务状态；无执行能力如实标记未验证。模拟数据明确标记。
+- 布局验收必须检查自适应宽度与同类控件间距：应共用边缘的工具栏/内容区域实际对齐，控件按剩余空间伸缩；同类相邻操作使用同一间距 token。按[质量检查](references/quality-check-template.md)测量桌面、窄屏和附属按钮显示/隐藏的实际几何；将适用检查登记为交付契约必需项，失败不得交付。固定宽度或不同间距只有明确设计依据且已确认时保留。
 
-源码必须写入目标项目、可编辑并接入真实运行入口。设计系统包括真实 token/样式来源、当前需要的组件与 Gallery 实现；业务页面包括页面/路由、适用交互与状态、必要依赖和配置。文档、token JSON、截图、dist 包、索引及临时预览均不能单独替代源码。详细要求见 [源码交付契约](references/source-delivery.md)。
+## 按阶段读取，不一次加载全部材料
 
-缺少必需代码、只有占位或入口未接通属于未完成；已有实现但环境无法执行时明确运行未验证，不伪造通过。candidate 状态可以缩小资产规模，不能免除源码与 Gallery。
-
-## 接入：读取项目事实
-
-检查目标目录真实代码、技术栈、包管理器、运行/构建命令，以及已有 tokens、组件、设计规范与展示入口。存在 `.design-workflow/design-basis.json` 时先读取 GUI 保存的设计基础、使用模式、风格参考与需求；按 [GUI 设计基础说明](references/design-basis.md) 核验官方来源与适配，不把选择状态当作源码已实现或范围已确认。空项目先确认平台和技术方案；已有骨架优先复用。项目骨架在阶段二建成后，仍继续完成原先确认的业务页面目标，不重新分诊为局部任务并提前结束。
-
-Project Adapter 只索引实际路径与命令，以源码和配置为事实。需要时读取 [Adapter 模板](references/project-adapter-template.md)；React + Vite 可参考 [项目示例](references/react-vite-adapter-example.md)。CLI 已可用时按需扫描或初始化；缺少 CLI 直接使用宿主工具，不强制安装。
-
-## 阶段一：确认设计依据与约束
-
-**输入**：产品用途、业务页面与用户链路、内容与状态、目标平台、参考网页/截图/设计稿或品牌信息。
-
-读取参考和项目事实，记录证据来源；推断与已确认规则分开，未观察到的状态和断点不得写成事实。确认核心颜色、字体、间距、圆角、布局几何及交互规则，不预先设计当前需求用不到的组件库。
-
-按 [Spec 模板](references/solution-spec-template.md) 写明三阶段范围、所需源码、复用判断、Gallery 与页面入口、数据边界、验收条件和待确认项。没有明确视觉依据且存在多种合理实现时才调用 `proposal-with-preview`；明确设计输入可以跳过提案预览。
-
-**产出**：带来源与确认状态的核心约束、实现 Spec 与范围确认记录。将范围落实为 `.design-workflow/delivery.json`，按 [交付检查说明](references/delivery-gate.md) 登记真实规则、源码/入口与必需验收；确认记录关联 Spec 中实际对话依据，不能替用户确认。用户确认当前范围后进入实现；已有明确授权沿用，不重复索取相同确认。待确认方案不是代码交付完成。
-
-## 阶段二：构建设计系统源码与 Gallery
-
-**输入**：已确认约束、技术方案和首批页面需要的资产。
-
-按需调用 `design-system-builder`，在目标项目建立工程骨架、真实样式/token 接入、当前所需共享组件，以及可运行的持续 Gallery。沿用现有工具链，JSON→CSS 不是前置条件。Gallery 引用真实 tokens 和组件，先展示基础规则与现有组件，页面模式随阶段三实现补齐。没有资产的分区明确标注，不为填满展示制造组件。
-
-最小启动也必须包含源码和 Gallery。子 Skill 不可用时按 [最小设计系统](references/minimal-design-system.md) 直接实现；`init` 只创建模板和索引，不代表本阶段完成。按项目规模维护 [项目规则](references/rules-template.md)、[开发流程](references/dev-workflow-template.md)、规范与资产索引，记录 Gallery 启动命令、真实地址、源码入口及生产构建策略。
-
-**产出与完成条件**：可编辑样式与组件源码、真实接入、可运行 Gallery 和与实现一致的最小规范。仅设计系统交付同样执行 [默认交付检查](references/delivery-gate.md)，不能因跳过业务页面阶段而免除验收。检查入口与实际展示；环境无法验证的内容单独记录。完整需求仍需进入阶段三，不能只交付设计系统文档或 Gallery 后结束。
-
-## 阶段三：复用设计系统搭建业务页面并交付
-
-**输入**：阶段二的真实设计资产和已确认的业务页面 Spec。
-
-实现页面/路由、真实组件组合、适用的加载/空/错误/禁用/边界状态，以及确认范围内的数据与业务交互。组件保持通用，业务层承载场景逻辑；新增必要规则时同步样式、规范、Gallery 和索引，不创建页面专用的设计系统副本。模拟数据必须明确标记，不能冒充已经完成的数据接入。
-
-小步实现并运行相应项目检查。超出确认范围的高影响变化回写 Spec 并确认；范围内工作持续推进。先核验源码内容、引用与入口，再验证构建、真实页面、桌面/窄屏布局、核心交互、共享影响及 Gallery。使用 [质量检查模板](references/quality-check-template.md) 记录实际结果；CLI check 零问题或结构健康不能替代验证。
-
-路由、异步恢复、跨页面状态、持久化或可逆操作变化时，验证适用的成功、失败恢复、刷新、撤销与最终边界状态。优先复用项目已有测试，需要 E2E 时读取 [基准](references/e2e-baseline.md)。普通静态样式不默认要求 E2E；没有验证能力时如实记录未验证项，不把人工打开页面说成端到端通过。
-
-清理临时 proposal 预览，保留正式页面与长期 Gallery。按 [交付模板](references/delivery-template.md) 提供源码路径、入口/引用关系、安装与运行命令、实现范围、各阶段状态和验证结果。必需代码缺失标为未完成；不可执行的环境验证标为未验证，不把整个目标宣称已完成。
-
-交付前必须运行本 Skill 的 `node scripts/verify-project.mjs status <目标项目>`。检查失败时根据 JSON `blockers` 修正实现或补充真实证据，然后复查；不降低验收范围、把必需项改为可选或伪造通过以消除阻塞。默认追踪规则、源码和命令证据，见 [交付检查说明](references/delivery-gate.md)。只有 `canFinish: true` 才可宣称已通过已登记验收；缺少 Node 或执行能力时标记未验证。把同一命令接入项目 CI 后，非零退出状态阻止流程通过；Skill 本身无法强制宿主调用检查器。
-
-**产出**：可运行业务页面源码、适用状态与交互、补齐的 Gallery 页面模式、同步规范与交付记录。后续页面沿用项目资产；新会话重新读取真实约束与实现。
-
-## 按需增强
-
-| 能力 | 使用条件 |
+| 当前工作 | 必须读取 / 按需调用 |
 |---|---|
-| `proposal-with-preview` | 视觉方向不明确且有多种合理方案 |
-| `rules-governance` | 用户要求巡检，或高影响变更确实需要完整审查 |
-| CLI scan/init/check/doctor | 当前项目中有用且已可用的确定性辅助 |
-| token 导出、资产映射 | 项目主动采用，沿用现有管线 |
-| 独立 task 管理与恢复 | 单独任务按需使用；默认 0→1 验收已复用证据引擎，读取 [证据说明](references/task-evidence.md) |
+| GUI 输入与参考分析 | [设计基础](references/design-basis.md)、[分析与阶段契约](references/reference-analysis.md)；宿主接入问题再读 [宿主说明](references/host-integration.md) |
+| 范围与约束确认 | [执行阶段说明](references/execution-stages.md) 中阶段一、[Spec 模板](references/solution-spec-template.md)、[交付门禁](references/delivery-gate.md) |
+| 设计系统与 Gallery | 执行阶段说明中阶段二、[源码交付契约](references/source-delivery.md)；调用 `design-system-builder`，不可用则读 [最小实现](references/minimal-design-system.md) |
+| 业务页面与交付 | 执行阶段说明中阶段三、[质量检查](references/quality-check-template.md)、[交付模板](references/delivery-template.md)；需要 E2E 时读 [基准](references/e2e-baseline.md) |
+| 已有项目局部修改 | [补充路径](references/existing-project.md)，不自动重建设计系统 |
+| 效率与重复检查 | [高效执行规则](references/efficient-execution.md)，仅优化读取和输出，不能减少流程与验收 |
 
-已有项目支持与上述增强保留，当前主要迭代聚焦 0→1 的设计系统和业务页面建设。
+每个阶段首次进入时读取对应完整说明；已读且未变的内容无需每回合重复输出。`proposal-with-preview` 仅用于视觉方向不明且有合理分歧；`rules-governance` 用于请求的巡检或需要完整审查的高影响变化。其余模板和证据恢复说明按当前需求读取。
 
-## 无预设输入的兼容
-`design-basis.json` 中 `mode: custom`、`preset: null` 表示用户明确不采用预设，读取需求和风格输入后继续原工作流；不沿用旧预设、不自动安装候选依赖或迁移已有源码。无文件时原行为不变。
-
-## 严格输入、分析与阶段衔接
-
-新建完整项目的交付契约必须设置 `workflow: true`；已有 GUI 选择文件时检查器自动要求阶段证据，不能用旧契约跳过。先按主流程的 [阶段与参考分析契约](../designer-dev-workflow/references/reference-analysis.md) 执行。
-
-宿主每次设计任务实际读取最新选择与本次用户需求，写入需求记录，再通过主流程 `scripts/workflow.mjs read PROJECT --prompt-file RELATIVE_PATH` 生成读取回执。没有用户构建需求时不自动构建。按使用模式完成全部适用分析，将观察、推断和项目适配分开；来源不可访问或核心证据缺失时暂停依赖步骤，请用户确认替换来源或调整要求，不能自行编造候选风格继续实现。
-
-分析结果、适配约束及范围合并向用户确认一次，保存真实答复并绑定当前输入/分析摘要。已授权范围持续实施；高影响变更或证据不足再次确认。实施前必须执行 `workflow.mjs status PROJECT --stage implementation`，业务页面实施前执行 `--stage page`，交付前执行原有 `verify-project.mjs status PROJECT`。检查非零时处理阻塞；不得降级必需项、伪造证据或把文字说明当作程序通过。
-
-阶段检查是宿主调用时的确定性检查，不是文件写权限限制，也不保证模型已调用 Skill。真实宿主激活与自动返回需单独验收；GUI 保存不是任务启动。
+阶段门禁是确定性检查，不能限制宿主文件权限，也不能保证模型自动调用 Skill；GUI 保存不等于任务已启动。真实自动唤起与回宿主需单独验收。

@@ -11,7 +11,9 @@
     "smoke": "node packages/cli/bin/design-workflow.mjs doctor examples/react-vite",
     "validate": "npm run test && npm run smoke",
     "sync:skill-scanner": "node scripts/sync-skill-scanner.mjs",
-    "gui": "npm run build:preview -w @ai-design-workflow/gui && node packages/gui/src/server.mjs"
+    "gui": "npm run build:preview -w @ai-design-workflow/gui && node packages/gui/src/server.mjs",
+    "design:start": "node scripts/design-start.mjs",
+    "install:gui-hook": "node scripts/install-gui-hook.mjs"
   },
   "engines": {
     "node": ">=18"

@@ -1,9 +1,10 @@
 import {handoff} from './handoff.js';
+import {returnNote} from './return-state.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const officialLink=(url,label)=>`<a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)} ↗</a>`;
 const mark = preset => `<span class="system-logo" data-brand="${escape(preset.id)}"><img src="/logos/${escape(preset.id)}.${escape(preset.logoExtension??'svg')}" alt="" width="64" height="64"></span>`;
-let presets=[],activeId,project,filter='open-source',toastTimer,view='gallery';
+let presets=[],activeId,project,filter='open-source',toastTimer,view='gallery',returnNavigation='idle';
 function toast(message) {$('#toast').textContent=message;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3500);}
 async function api(url,options) {
   const response=await fetch(url,options);const result=await response.json();
@@ -47,14 +48,13 @@ function showReturn(push=true) {
   $('#return-project-path').textContent=project.projectPath;
   $('#return-host').hidden=!project.host?.returnUrl;
   $('#return-host').href=project.host?.returnUrl??'#';
-  const readNote=project.handoff?.status==='read'?'宿主已记录读取当前选择与需求。':project.handoff?.status==='stale'?'选择或需求已变化，等待宿主重新读取。':project.handoff?.status==='blocked'?'交接记录无法核验，请在宿主中检查项目与需求。':'选择已保存，等待宿主读取；保存不代表已开始构建。';
-  $('#return-note').textContent=readNote+(project.host?.returnUrl?' 返回原会话后输入需求；返回不会自动发送消息。':' 请返回打开这个项目的原会话输入需求，或复制下方交接说明。');
+  $('#return-note').textContent=returnNote(project,returnNavigation);
   $('#return-instructions').value=handoff(project.selection,project.projectPath);
   if(push)history.pushState(null,'',`/#selected/${encodeURIComponent(activeId)}`);window.scrollTo(0,0);
 }
 function finishSelection(){
   showReturn();
-  if(project.host?.returnUrl){try{location.assign(project.host.returnUrl);}catch{toast('选择已保存，请点击返回原宿主会话。');}}
+  if(project.host?.returnUrl){returnNavigation='pending';showReturn(false);try{location.assign(project.host.returnUrl);}catch{returnNavigation='failed';showReturn(false);}}
 }
 
 function route() {

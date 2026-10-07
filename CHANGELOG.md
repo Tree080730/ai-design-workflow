@@ -2,9 +2,13 @@
 
 ## Unreleased
 
-- Reworked GUI onboarding into a minimal logo directory, left-to-right theme-color interaction, dedicated system details and a persisted natural-language project entry, retaining explicit host-handoff status. Added locally served official logo assets and provenance.
+- Added a project/session-bound GUI launcher with concurrent reuse and stale-instance recovery, optional review-required Codex SessionStart Hook installation, and honest return-navigation recovery messages. Existing selections and unrelated Hooks are preserved; native Hook triggering and return navigation remain separate acceptance items.
 
-- Added a dependency-free local Design Builder GUI with eight curated design references, searchable directory, official resources, project-scoped persisted selection and portable Skill handoff; separated Apple HIG from open-source component libraries.
+- Unified product-flow documentation: the GUI selects a starting point, requirements and iteration stay in the original host conversation, and Skills analyze/confirm constraints before implementation. Documented actual startup/return boundaries, optional handoff fallback and incomplete real-host acceptance; marked older plans as historical.
+
+- Earlier GUI onboarding introduced a logo directory and natural-language project entry. The current GUI has two category tabs, right-to-left hover treatment and selection-only handoff; requirements now stay in the host. Locally served logo assets retain provenance.
+
+- Introduced the local Design Builder GUI with persisted selection and official sources. The current GUI build uses declared dependencies; its discovery list separates seven open-source component foundations from eight brand websites. Apple HIG remains a legacy-selection compatibility entry.
 
 - Added a versioned default 0→1 delivery contract and portable gate, with required design-system/Gallery/page artifacts, conservative entry reachability, mandatory command/browser/rule-review evidence and fail-closed completion.
 - Reused task logs and stale-input/artifact detection; tracked source inventories, reachable imports and project build definitions, and shipped the verifier with both host Skill installations.

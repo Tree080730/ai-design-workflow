@@ -79,6 +79,9 @@ export function hostReadStatus(target) {
 }
 export function workflowStatus(target,{stage='implementation'}={}) {
   const blockers=[],trackedInputs=[];
+  // Reuse one current task snapshot within this synchronous status call only.
+  // The next invocation reads and hashes everything again, including attachments.
+  const taskSnapshots=new Map();
   const add=(code,message)=>blockers.push({code,message});
   let root;
   try {
@@ -97,7 +100,8 @@ export function workflowStatus(target,{stage='implementation'}={}) {
         if(item.sha256!==sha(root,item.file)||!fs.readFileSync(file(root,item.file)).length) throw new Error(`Missing or changed evidence: ${item.id}`);
         if(!nonempty(item.capturedAt))throw new Error(`Missing capture date: ${item.id}`);
         if(!['screenshot','dom','official-doc','user-input','existing-source','interaction-log'].includes(item.kind))throw new Error(`Unknown evidence kind: ${item.id}`);
-        if(selected.mode!=='custom')url(item.url);
+        if(selected.mode!=='custom'&& !['user-input','existing-source'].includes(item.kind))url(item.url);
+        else if(item.url!==undefined)url(item.url);
         if(item.kind==='screenshot') {
           const bytes=fs.readFileSync(file(root,item.file));
           if(bytes.length<24||bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a'||!bytes.readUInt32BE(16)||!bytes.readUInt32BE(20))throw new Error('Screenshot evidence must be a real PNG.');
@@ -105,7 +109,7 @@ export function workflowStatus(target,{stage='implementation'}={}) {
         }
         trackedInputs.push(item.file);evidence.set(item.id,item);
       }
-      if(selected.mode!=='custom'&&![...evidence.values()].some(item=>url(item.url)===url(selected.referenceUrl)))throw new Error('Selected source URL has no evidence.');
+      if(selected.mode!=='custom'&&![...evidence.values()].some(item=>!['user-input','existing-source'].includes(item.kind)&&item.url!==undefined&&url(item.url)===url(selected.referenceUrl)))throw new Error('Selected source URL has no evidence.');
       for(const dimension of dimensions[selected.mode]) {
         const matches=(analysis.findings??[]).filter(item=>item.dimension===dimension);
         if(matches.length!==1)throw new Error(`Expected one finding for ${dimension}.`);
@@ -138,7 +142,8 @@ export function workflowStatus(target,{stage='implementation'}={}) {
         for(const check of ['static','build','gallery-desktop','gallery-narrow','gallery-interaction','rules']) {
           const record=review.checks?.[check];
           if(record?.status!=='passed'||!nonempty(record.note)||record.sha256!==sha(root,record.file))throw new Error(`Design system check missing or stale: ${check}`);
-          const task=taskStatus(root,record.taskId);
+          if(!taskSnapshots.has(record.taskId))taskSnapshots.set(record.taskId,taskStatus(root,record.taskId));
+          const task=taskSnapshots.get(record.taskId);
           const criterion=task.criteria.find(item=>item.id===record.criterionId);
           if(criterion?.status!=='passed'||!criterion.required||criterion.allowNotApplicable)throw new Error(`Design system task evidence not passed: ${check}`);
           if(criterion.latest?.inputs?.[workflowFiles.confirmation]!==sha(root,workflowFiles.confirmation)||Object.entries(review.sources??{}).some(([name,hash])=>criterion.latest?.inputs?.[name]!==hash))throw new Error(`Design system check is not bound to current sources and confirmation: ${check}`);

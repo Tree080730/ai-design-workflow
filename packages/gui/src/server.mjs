@@ -50,7 +50,7 @@ function save(root, input) {
   finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
   return state(root);
 }
-export function createGuiServer({project,hostThread=null}) {
+export function createGuiServer({project,hostThread=null,session=null}) {
   const root = fs.realpathSync(path.resolve(project));
   const host = hostReturn(hostThread);
   const projectState=()=>({...state(root),host});
@@ -62,6 +62,10 @@ export function createGuiServer({project,hostThread=null}) {
       const validHosts = [`127.0.0.1:${response.socket.localPort}`,`localhost:${response.socket.localPort}`];
       if (!validHosts.includes(host)) return send(403,{error:'Localhost access only.'});
       const url = new URL(request.url,`http://${host}`);
+      if (url.pathname === '/api/session' && request.method === 'GET') {
+        if (!session || request.headers['x-design-session'] !== session.nonce) return send(403,{error:'Session verification required.'});
+        return send(200,{schemaVersion:1,projectPath:root,hostThread:hostReturn(hostThread).threadId,nonce:session.nonce});
+      }
       if (url.pathname === '/api/catalog' && request.method === 'GET') return send(200,{schemaVersion:1,catalogVersion,checkedAt,presets:catalog});
       if (url.pathname === '/api/project' && request.method === 'GET') return send(200,projectState());
       if (url.pathname === '/api/basis' && request.method === 'POST') {
@@ -73,7 +77,7 @@ export function createGuiServer({project,hostThread=null}) {
       }
       if (url.pathname.startsWith('/api/')) return send(404,{error:'Unknown operation.'});
       if (!['GET','HEAD'].includes(request.method)) return send(405,{error:'Method not allowed.'});
-      const routes = {'/':'index.html','/app.js':'app.js','/handoff.js':'handoff.js','/styles.css':'styles.css'};
+      const routes = {'/':'index.html','/app.js':'app.js','/handoff.js':'handoff.js','/return-state.js':'return-state.js','/styles.css':'styles.css'};
       const logo = /^\/logos\/([a-z-]+)\.(svg|ico|png)$/.exec(url.pathname);
       const preset = logo && findPreset(logo[1]);
       const previewEntry = /^\/preview\/([a-z-]+)\.(html|js|css)$/.exec(url.pathname);

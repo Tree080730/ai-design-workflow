@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 import {acknowledgeInput,hostReadStatus,workflowStatus,dimensions} from '../packages/cli/src/workflow.mjs';
 import {createTask,runTaskCheck,recordTaskEvidence} from '../packages/cli/src/tasks.mjs';
 import {deliveryStatus,executeDelivery} from '../packages/cli/src/delivery.mjs';
@@ -46,7 +47,7 @@ test('delivery fails closed when GUI upstream missing; legacy cannot disable ena
 test('workflow library is byte-identical in portable installation source',()=>{
  assert.deepEqual(fs.readFileSync('packages/cli/src/workflow.mjs'),fs.readFileSync('skills/designer-dev-workflow/scripts/lib/workflow.mjs'));
 });
-test('design-system stage requires actual command and Gallery task records bound to current sources',()=>fixture('custom',({root,receipt,analysis,confirm,write,sha})=>{
+test('design-system stage requires actual command and Gallery task records bound to current sources',t=>fixture('custom',({root,receipt,analysis,confirm,write,sha})=>{
  receipt();confirm(analysis());
  const contract=JSON.parse(fs.readFileSync('skills/designer-dev-workflow/references/delivery-contract-template.json'));
  contract.artifacts=[{id:'styles',kind:'styles',source:'src/style.css',entry:'src/main.js'},{id:'gallery',kind:'gallery',source:'src/gallery.js',entry:'src/main.js',url:'/gallery'}];
@@ -62,6 +63,15 @@ test('design-system stage requires actual command and Gallery task records bound
  }
  const review={schemaVersion:1,status:'passed',confirmationHash:sha('.design-workflow/analysis-confirmation.json'),sources,checks};
  write('.design-workflow/design-system-review.json',review);assert.equal(workflowStatus(root,{stage:'page'}).canProceed,true,JSON.stringify(workflowStatus(root,{stage:'page'}).blockers));
+ const originalRead=fs.readFileSync;let taskReads=0;
+ const mock=t.mock.method(fs,'readFileSync',function(name,...args){
+  if(typeof name==='string'&&name.endsWith('/tasks/ds-review/task.json'))taskReads++;
+  return originalRead.call(this,name,...args);
+ });
+ assert.equal(workflowStatus(root,{stage:'page'}).canProceed,true);
+ assert.equal(taskReads,1);mock.mock.restore(); // all six checks use one current snapshot
+ write('proof/rules.md','Changed attachment');assert.equal(workflowStatus(root,{stage:'page'}).canProceed,false);
+ write('proof/rules.md','Synthetic test evidence, not real browser QA.');
  write('src/style.css',':root{--text:#333}');assert.equal(workflowStatus(root,{stage:'page'}).canProceed,false);
 }));
 test('guarded full delivery passes only after upstream, DS checks and final verification; changed basis invalidates all',()=>fixture('custom',({root,receipt,analysis,confirm,write,sha,basis})=>{
@@ -93,4 +103,27 @@ test('removing GUI selection does not disable checks when a read receipt remains
  const c=JSON.parse(fs.readFileSync(new URL('../skills/designer-dev-workflow/references/delivery-contract-template.json',import.meta.url)));
  delete c.workflow;write('.design-workflow/delivery.json',c);
  assert.ok(deliveryStatus(root).blockers.some(item=>item.code==='workflow-incomplete'));
+}));
+
+test('workflow summary preserves input receipt and all stage blockers without changing files',()=>fixture('reference',({root,receipt,analysis,confirm})=>{
+ const script=path.resolve('skills/designer-dev-workflow/scripts/workflow.mjs');
+ const invoke=(action,args=[])=>spawnSync(process.execPath,[script,action,root,...args],{encoding:'utf8'});
+ receipt();confirm(analysis());
+ for(const stage of ['analysis','implementation','page','delivery']){
+  const full=invoke('status',['--stage',stage]);const compact=invoke('status',['--summary','--stage',stage]);
+  assert.equal(compact.status,full.status);const a=JSON.parse(full.stdout),b=JSON.parse(compact.stdout);
+  for(const key of ['canProceed','status','stage','blockers','scopeNote'])assert.deepEqual(b[key],a[key]);
+  assert.equal(b.trackedInputCount,a.trackedInputs.length);
+ }
+ const before=fs.readFileSync(path.join(root,'.design-workflow/host-read.json'),'utf8');
+ const read=invoke('read',['--prompt-file','spec/request.md','--summary']);
+ assert.equal(read.status,0);assert.deepEqual(JSON.parse(read.stdout),JSON.parse(before));
+ assert.equal(fs.readFileSync(path.join(root,'.design-workflow/host-read.json'),'utf8'),before);
+ assert.equal(invoke('status',['--summary','--stage']).status,2);
+}));
+
+for(const mode of ['components','reference'])test(`${mode}: local evidence needs no URL while selected official source remains required`,()=>fixture(mode,({root,receipt,analysis,confirm,write,sha})=>{
+ receipt();const a=analysis();write('proof/local.md','Actual local input in protocol fixture.');a.evidence.push({id:'local',kind:'existing-source',file:'proof/local.md',sha256:sha('proof/local.md'),capturedAt:'2026-10-07T00:00:00Z'});a.findings.at(-1).evidence.push('local');confirm(a);assert.equal(workflowStatus(root,{stage:'implementation'}).canProceed,true);
+ a.evidence.find(x=>x.id==='source').url=undefined;confirm(a);assert.equal(workflowStatus(root,{stage:'implementation'}).canProceed,false);
+ a.evidence.filter(x=>x.id!=='local').forEach(x=>x.url='https://different.example/');a.evidence.find(x=>x.id==='local').url='https://example.com/';confirm(a);assert.equal(workflowStatus(root,{stage:'implementation'}).canProceed,false);
 }));

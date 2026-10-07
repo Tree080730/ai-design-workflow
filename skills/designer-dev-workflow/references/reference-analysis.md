@@ -38,7 +38,7 @@
 }
 ```
 
-例子只说明结构，必须补全当前模式的七项 finding。证据 kind：screenshot、dom、official-doc、interaction-log、existing-source、user-input。每份证据有真实文件、摘要、采集时间；reference/components 有HTTP(S)来源链接。finding 状态 observed/adapted/not-applicable 可进入检查，但仍须真实证据、规则映射、用户确认；unobserved 会阻塞。custom候选值用 adapted 说明来自需求与适配，不伪造外部观察。
+例子只说明结构，必须补全当前模式的七项 finding。证据 kind：screenshot、dom、official-doc、interaction-log、existing-source、user-input。每份证据有真实文件、摘要、采集时间；reference/components 的外部证据必须有 HTTP(S) 来源链接；本地 user-input/existing-source 可无 URL，有 URL 时仍验证格式，且不能替代选定官网来源证据。finding 状态 observed/adapted/not-applicable 可进入检查，但仍须真实证据、规则映射、用户确认；unobserved 会阻塞。custom候选值用 adapted 说明来自需求与适配，不伪造外部观察。
 
 `.design-workflow/analysis-confirmation.json`：schemaVersion=1、status=confirmed、receiptHash、analysisHash、confirmedAt、userDecision（真实答复）、record（相对文件路径）、recordHash。确认记录必须展示上述分析与适配，不把“开始测试”或“选择Apple”写成视觉约束确认。检查器核验摘要，无法鉴别人类批准身份，审查时须对照实际对话。
 

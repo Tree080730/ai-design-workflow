@@ -47,6 +47,10 @@ visual/interaction/documentation 手工记录例子：
 
 CLI 可用时等价使用 `design-workflow delivery prepare|run|record|status <项目>`，`status --json` 输出同一判定。底层复用 task 引擎；中断后先核验原进程已退出，再运行 `node scripts/verify-project.mjs recover <项目>` 清理当前轮次锁，随后重新执行中断检查。恢复不会把未完成检查标为通过；CLI 的 task recover 也可处理返回 `taskId`，见 [证据说明](task-evidence.md)。
 
+## 精简工具输出
+
+上述命令可加 `--summary`，CLI 等价使用 `delivery ... --summary`。所有检查与退出状态不变，保留阻塞、警告、每项覆盖和附件路径；完整历史与哈希留在 task 状态文件。排查时去掉该参数读取全文。按阶段读取和浏览器批量验收见 [高效执行规则](efficient-execution.md)。不跨调用缓存通过结果。
+
 ## 程序约束落点
 
 在目标项目的 CI 验收步骤运行：

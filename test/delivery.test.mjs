@@ -204,3 +204,62 @@ test('shipped template and candidate example are valid pending contracts',()=>{
   assert.ok(result.blockers.some(item => item.code === 'scope-unconfirmed'));
   assert.equal(result.blockers.some(item => item.code === 'integration-unverified'),false);
 });
+
+test('compact output preserves gate decisions, coverage, diagnostics and full persisted evidence',()=>fixture((root,write)=>{
+  const script=path.resolve('skills/designer-dev-workflow/scripts/verify-project.mjs');
+  const run=summary=>spawnSync(process.execPath,[script,'status',root,...(summary?['--summary']:[])],{encoding:'utf8'});
+  const compare=()=>{
+    const full=run(false),compact=run(true);
+    const a=JSON.parse(full.stdout),b=JSON.parse(compact.stdout);
+    assert.equal(compact.status,full.status);
+    for(const key of ['canFinish','status','taskId','stages','blockers','warnings','nextActions','scopeNote'])assert.deepEqual(b[key],a[key]);
+    if(a.evidence){
+      for(const item of a.evidence.criteria){
+        const shorter=b.evidence.criteria.find(check=>check.id===item.id);
+        for(const key of ['id','title','kind','required','status','context','staleArtifacts'])assert.deepEqual(shorter[key],item[key]);
+        assert.deepEqual(shorter.latest?.artifacts,item.latest?.artifacts?.map(artifact=>artifact.file));
+      }
+      assert.equal(b.evidence.historyCount,a.evidence.history.length);
+      assert.ok(JSON.parse(fs.readFileSync(path.join(root,b.evidence.stateFile),'utf8')).history.length);
+      assert.ok(!Object.hasOwn(b.evidence,'history'));
+    }
+    return {a,b,full,compact};
+  };
+  assert.equal(compare().b.canFinish,false);
+  verify(root,write);
+  const passed=compare();assert.equal(passed.b.canFinish,true);
+  assert.ok(Buffer.byteLength(passed.compact.stdout)<Buffer.byteLength(passed.full.stdout));
+  write('proof/visual.md','Changed attachment');
+  assert.equal(compare().b.evidence.criteria.find(x=>x.id==='visual').status,'stale');
+  verify(root,write);write('src/style.css',':root{--text:#444}');
+  assert.equal(compare().b.canFinish,false);
+  fs.unlinkSync(path.join(root,'src/gallery.js'));
+  assert.ok(compare().b.blockers.some(item=>item.code==='missing-input'));
+}));
+
+test('compact run keeps actual failed command and exit status; unknown options still fail',()=>fixture((root,write)=>{
+  const c=contract();c.criteria[0].command=[process.execPath,'-e','console.error("real fixture failure");process.exit(7)'];
+  write('.design-workflow/delivery.json',c);
+  const script=path.resolve('skills/designer-dev-workflow/scripts/verify-project.mjs');
+  const result=spawnSync(process.execPath,[script,'run',root,'--summary','--check','static'],{encoding:'utf8'});
+  assert.equal(result.status,2);
+  const status=JSON.parse(result.stdout);assert.equal(status.operation.status,'failed');
+  const log=status.evidence.criteria.find(x=>x.id==='static').latest.artifacts[0];
+  assert.match(fs.readFileSync(path.join(root,log),'utf8'),/real fixture failure/);
+  const bad=spawnSync(process.execPath,[script,'status',root,'--summary','--typo'],{encoding:'utf8'});
+  assert.equal(bad.status,2);assert.equal(JSON.parse(bad.stdout).canFinish,false);
+  const cli=spawnSync(process.execPath,['packages/cli/bin/design-workflow.mjs','delivery','status',root,'--summary'],{encoding:'utf8'});
+  assert.equal(cli.status,2);assert.deepEqual(JSON.parse(cli.stdout).blockers,status.blockers);
+}));
+
+test('same entry is traversed once per status and rescanned on the next invocation',t=>fixture(root=>{
+  const original=fs.readFileSync;const entry=path.join(fs.realpathSync(root),'src/main.js');let calls=0;
+  const mock=t.mock.method(fs,'readFileSync',function(file,...args){
+    if(file===entry)calls++;
+    return original.call(this,file,...args);
+  });
+  deliveryStatus(root);assert.equal(calls,2); // input nonempty check + shared entry graph
+  mock.mock.restore();
+  fs.writeFileSync(path.join(root,'src/main.js'),"import './missing.js';");
+  assert.ok(deliveryStatus(root).blockers.some(item=>item.code==='integration-unverified'));
+}));

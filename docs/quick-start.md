@@ -25,6 +25,12 @@ Open the project and start a new host session. Ask the host to locate `designer-
 
 Explicit invocation is available when needed: `$designer-dev-workflow` in Codex, `/designer-dev-workflow` in Claude Code. File installation alone is not proof of model-session activation.
 
+## Choose a design starting point in the GUI
+
+From the Harness checkout, run `npm ci`, then `npm run gui -- --project "/path/to/project"` and open the printed local URL in the host browser. Browse a component foundation or brand website, or choose no preset. Save and return to the original host conversation; requirements are entered there. Return links attempt navigation only, with manual return as a fallback. Opening a directory does not automatically launch the GUI. See [GUI instructions](design-builder.md) and [product flow/status](product-flow.md).
+
+After selection, a normal request such as “Build a team document page with search, category filters and empty-result recovery” is sufficient; the host reads the selection and manages workflow records. The detailed example below describes the expected delivery, not a prompt users must repeatedly copy. Pure Skill use without GUI remains supported.
+
 ## 3. Describe the complete 0→1 request
 
 Start with the README's [complete request](../README.md#one-complete-01-request), replacing the business page, references and acceptance requirements.
@@ -37,7 +43,7 @@ Start with the README's [complete request](../README.md#one-complete-01-request)
 
 Once scope is confirmed, the host continues through all three stages without repeating the same approval or stopping at the Gallery. Source must be written into the target project and connected to real entries. Missing implementation and unverified execution are reported separately.
 
-Design-system-only requests finish the first two stages. References require host access; screenshots or structured data can substitute without turning unknowns into facts. Existing-project support, reference extraction and standalone Gallery work remain supplementary paths; do not create unused components. See the [Gallery contract](../skills/design-system-builder/references/gallery.md).
+Design-system-only requests finish the first two stages. References require host access; source replacement or scope changes require user confirmation; available screenshots, structured data or source cover only what they actually evidence. Existing-project support, reference extraction and standalone Gallery work remain supplementary paths; do not create unused components. See the [Gallery contract](../skills/design-system-builder/references/gallery.md).
 
 ## 4. Use optional tools where useful
 
@@ -70,7 +76,7 @@ Keep `.design-workflow/host-installation.json`. If managed Skill content was edi
 |---|---|
 | Target does not exist | Create an empty directory or choose an existing project root |
 | Host does not find the Skill | Confirm the target project is open, start a fresh session and explicitly invoke the Workflow Skill |
-| Reference website is inaccessible | Supply screenshots, structured design data or source; leave unsupported values unresolved |
+| Reference website is inaccessible | Pause dependent steps and confirm a replacement source or adjusted scope; keep unsupported values unresolved |
 | Gallery is not present after installation | Ask the host to construct it; installation copies Skills, not a finished Gallery into your product |
 | Local Skill changes block an update | Reconcile the conflicting content and retain the installation receipt |
 

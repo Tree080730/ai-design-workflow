@@ -24,19 +24,26 @@ Open the **target project** in the host, start a new session and ask:
 
 Once the Skill is located, choose a request below. See [Quick Start](docs/quick-start.md) for details and [Host integration](docs/host-integration.md) for discovery and updates.
 
-## GUI: choose a design foundation
+## GUI: choose a design starting point
 
-From this repository (Node.js 18+, no extra dependencies):
+The GUI offers open-source component foundations and brand-website references, plus a no-preset option. It helps users explore visual directions; the host turns the selected source and business needs into confirmed project constraints.
+
+From this repository, install the GUI build dependencies and start it for the target project:
 
 ```bash
+npm ci
 npm run gui -- --project "/path/to/project"
 ```
 
-Open `http://127.0.0.1:4173/` in the host browser; add `--port 4174` if occupied. Browse/search Ant Design, TDesign, Material, Cloudscape, Carbon, Fluent and Spectrum, plus Apple HIG as a reference-only option. Click a logo card for details, then confirm to enter the natural-language project page. Adjust reference/component mode and add your business needs and visual reference.
+Open the printed local URL in the host browser (default `http://127.0.0.1:4173/`; add `--port 4174` if needed). Browse the two tabs, inspect details and save a starting point. The GUI saves `.design-workflow/design-basis.json` and attempts to return to the bound original conversation. Describe your business needs and subsequent changes in the host; there is no GUI requirement-entry page.
 
-The selection is saved to `.design-workflow/design-basis.json` in the target project. After selection, return to the bound host conversation and describe your requirements there. Skills read the latest selection, confirm compatibility and versions, then implement real design-system source, a Gallery and business pages. Launch inside Codex to inherit CODEX_THREAD_ID, or pass --host-thread SESSION_UUID. An optional copyable handoff includes the target project path when the host needs help locating it. Direct GUI-to-agent dispatch is not connected yet. Selecting a preset does not install components or deliver implementation.
+Launching from Codex can inherit `CODEX_THREAD_ID`; an explicit `--host-thread SESSION_UUID` is also supported. If navigation fails, return manually. Copyable handoff text is an optional project-location fallback, not a required copy/paste step. The host must actually read the latest selection, analyze the source, obtain combined confirmation of analysis and adaptation, then implement and verify design-system source, a Gallery and business pages.
 
-See [GUI guide and official sources](docs/design-builder.md).
+Opening a project directory does not automatically launch the GUI. Automatic return and all three build modes have passed isolated acceptance; formal workspace hook trust and native startup acceptance remain pending. Saving a selection does not send a message, install components or start a build.
+
+See [product flow and current capability status](docs/product-flow.md), [GUI usage](docs/design-builder.md) and [host integration](docs/host-integration.md).
+
+Optional trusted Codex SessionStart Hooks and a recoverable startup command are available; see [GUI startup](docs/gui-startup.md). Native Hook triggering and browser navigation still require host acceptance.
 
 ## One complete 0→1 request
 
@@ -58,7 +65,7 @@ Complete 0→1 construction is the primary path; existing projects, reference ex
 
 > Use design-system-builder to derive colors, typography, spacing, radius, layout and observable component rules from [reference URL] and my screenshots for this project. Distinguish measured values from inferences and record sources. Mark unseen states and breakpoints for confirmation. Let me confirm the core constraints before integrating them into real project styles, components and the Gallery.
 
-Website inspection depends on the host's browser tools and page accessibility. If access fails, use screenshots, structured design data or source code. A URL or screenshot alone does not reveal a website's complete internal design system.
+Website inspection depends on the host's browser tools and page accessibility. If access fails, pause dependent analysis and confirm a replacement source or adjusted scope with the user; use available screenshots, structured data or source code only for what they actually establish. A URL or screenshot alone does not reveal a website's complete internal design system.
 
 ### Design System Gallery: display and maintain
 
@@ -122,7 +129,7 @@ Add the same gate to CI for enforcement. Skills cannot force an arbitrary host t
 | `proposal-with-preview` | Resolve ambiguous page/component implementation choices through progressive previews |
 | `rules-governance` | Requested consistency audits and rule-drift review |
 
-For 0→1 projects, establish minimum usable constraints and assets. For existing projects, adopt real code and established rules. Maintain those assets as pages and shared components evolve. Creative ideation is not the core product responsibility.
+For 0→1 projects, establish minimum usable constraints and assets. For existing projects, adopt real code and established rules. Maintain those assets as pages and shared components evolve. The GUI supports creative exploration; the workflow turns selected evidence into project-specific constraints and implementation.
 
 High-risk flows need relevant success, recovery, persistence, reversal and boundary verification. Reuse existing project tests and the host's browser capabilities. Static styling changes do not automatically require E2E.
 

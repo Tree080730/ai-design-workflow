@@ -10,3 +10,8 @@ dist/
 **/.design-workflow/tasks/
 
 packages/gui/public/preview/
+
+**/.design-workflow/gui-sessions/
+**/.design-workflow/gui-hook-installation.json
+
+.design-workflow/gui-hook-events.jsonl

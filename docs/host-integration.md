@@ -1,6 +1,6 @@
 # Host-first Design Harness
 
-The product focuses on 0→1 design-system construction and business-page development inside an existing coding agent. The default sequence confirms evidence and constraints, implements design-system source and a Gallery, then builds business pages using those assets. Existing-project support is supplementary. The host supplies the model, agent execution loop, permissions, file/shell/browser tools and sessions. The Harness supplies Skills, project constraints, reuse decisions and verification guidance. A standalone agent runtime and GUI are outside the current scope.
+The product focuses on 0→1 design-system construction and business-page development inside an existing coding agent. The default sequence confirms evidence and constraints, implements design-system source and a Gallery, then builds business pages using those assets. Existing-project support is supplementary. The host supplies the model, agent execution loop, permissions, file/shell/browser tools and sessions. The Harness supplies Skills, project constraints, reuse decisions and verification guidance. A local selection GUI is part of the product; a separate agent runtime is not. The GUI saves a project starting point, while requirements and ongoing conversation stay in the host. See [product flow and capability status](product-flow.md).
 
 ## Install from this checkout
 
@@ -39,6 +39,12 @@ Then use an ordinary development request:
 > Implement the settings page using this project's existing design rules and reusable components. Verify the applicable states and desktop/narrow layouts.
 
 If discovery fails, explicitly invoke the Skill: `$designer-dev-workflow` in Codex, or `/designer-dev-workflow` in Claude Code. Check working directory, allowed skill sources, project instruction resolution and host policies. Installing files alone does not prove the host loaded them or will follow every instruction. Nested instruction files can alter behavior; review them when working in subdirectories.
+
+## Choose a starting point before the build request
+
+Run the GUI from the Harness checkout as described in the [GUI guide](design-builder.md). Save a component foundation, brand-website reference or no-preset choice; the GUI attempts to navigate to the explicitly bound original Codex conversation. It does not prefill or submit a message. Users enter requirements there; the Skill reads the latest target-project selection and follows its analysis, combined-confirmation, design-system/Gallery and page-delivery stages. Copyable handoff text is only a fallback.
+
+Opening the project or installing Skills does not automatically start the GUI. An optional trusted SessionStart Hook and recoverable launcher are documented in [GUI startup](gui-startup.md); native triggering is not yet accepted. Pure Skill use remains supported without a GUI selection. GUI return-to-session is Codex-specific; Claude installation does not imply this navigation is supported. Automatic navigation and complete real-host delivery require separate acceptance.
 
 ## Keep the core small
 

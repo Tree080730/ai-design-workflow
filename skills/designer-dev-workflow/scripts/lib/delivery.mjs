@@ -134,12 +134,14 @@ function prepare(root) {
     if (!fs.existsSync(absolute) || !fs.statSync(absolute).isFile()) { add('missing-input',file,'Required project input is missing or is not a file.'); continue; }
     if (!fs.readFileSync(absolute,'utf8').trim()) add('empty-input',file,'Required project input is empty.');
   }
+  const entryGraphs = new Map();
   for (const artifact of contract.artifacts) {
     const absolute = safePath(root,artifact.source);
     if (!fs.existsSync(absolute)) continue;
     const content = fs.readFileSync(absolute,'utf8').replace(/\/\*[\s\S]*?\*\//g,'').replace(/^\s*\/\/.*$/gm,'').trim();
     if (!content || /^export\s+default\s+null;?$/.test(content) || /^export\s+(?:const|let)\s+\w+\s*=\s*\([^)]*\)\s*=>\s*(?:null|\{\s*return\s+null;?\s*\});?$/.test(content) || /^(?:export\s+default\s+)?(?:function\s*\w*\([^)]*\)\s*\{\s*return\s+null;?\s*\}|\(?\)?\s*=>\s*null);?$/.test(content)) add('placeholder-source',artifact.source,'Source is empty or an obvious null placeholder; implement the declared artifact.');
-    const reachable = graph(root,artifact.entry);
+    if (!entryGraphs.has(artifact.entry)) entryGraphs.set(artifact.entry,graph(root,artifact.entry));
+    const reachable = entryGraphs.get(artifact.entry);
     for (const file of reachable.visited) inputs.add(file);
     if (!reachable.visited.has(artifact.source) || reachable.unresolved.length) {
       const finding = {code:'integration-unverified',file:artifact.source,message:`No complete static path from ${artifact.entry}; inspect imports and actual runtime integration.`,unresolved:reachable.unresolved};

@@ -7,6 +7,7 @@ import { initProject } from './init.mjs';
 import { scanProject } from './scan.mjs';
 import { buildTokens } from './tokens.mjs';
 import { executeDelivery, deliveryExitCode } from './delivery.mjs';
+import { summarizeStatus } from './status-output.mjs';
 import { VERSION } from './version.mjs';
 
 const HELP = `AI Design Workflow v${VERSION}
@@ -43,6 +44,7 @@ Options:
   --json    Print machine-readable JSON
   --force   Allow init or tokens to replace existing output files
   --strict  Make check exit non-zero when issues are found
+  --summary Compact delivery JSON; preserves checks and exit status
   --help    Show help
   --version Show the CLI version
 `;
@@ -52,7 +54,7 @@ function parseArguments(args) {
   const positional = [];
   for (let index=0;index<args.length;index++) {
     const argument=args[index];
-    if (['--json','--force','--strict'].includes(argument)) options[argument.slice(2)]=true;
+    if (['--json','--force','--strict','--summary'].includes(argument)) options[argument.slice(2)]=true;
     else if (['--file','--task','--check'].includes(argument)) {
       const value=args[++index];
       if (!value || value.startsWith('--')) throw new Error(`Missing value for ${argument}`);
@@ -150,7 +152,8 @@ export async function runCli(args) {
   else if (command === 'doctor') result = doctorProject(resolved);
   else throw new Error(`Unknown command: ${command}. Run with --help.`);
 
-  if (options.json) console.log(JSON.stringify(result, null, 2));
+  if (options.summary && command === 'delivery') console.log(JSON.stringify(summarizeStatus(result), null, 2));
+  else if (options.json) console.log(JSON.stringify(result, null, 2));
   else if (command === 'delivery') {
     console.log(`Delivery: ${result.status}; can finish: ${result.canFinish}`);
     for (const item of result.blockers) console.log(`- ${item.file}: ${item.message}`);
